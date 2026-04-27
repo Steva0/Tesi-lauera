@@ -2,9 +2,9 @@
 #import "./config/thesis-config.typ": *
 
 #show: config.with(
-  myAuthor: myName,
-  myTitle: myTitle,
-  myLang: myLang
+  myAuthor: "Michele Stevanin",
+  myTitle: "Analisi di sicurezza e integrità crittografica di un sistema di versionamento distribuito",
+  myLang: "it"
 )
 
 #include "structure.typ"

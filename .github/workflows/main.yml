@@ -1,0 +1,105 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Typst compile
+        uses: typst-community/setup-typst@v4
+
+      - name: Compile thesis
+        run: typst c thesis.typ --pdf-standard a-3b
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thesis
+          path: thesis.pdf
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: thesis
+
+      - name: Create viewer page
+        run: |
+          mkdir -p site
+          cp thesis.pdf site/thesis.pdf
+          cat > site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="it">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Tesi — Michele Stevanin</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { background: #1a1a2e; font-family: sans-serif; }
+              header {
+                background: #16213e;
+                color: white;
+                padding: 1rem 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 2px solid #c41230;
+              }
+              header h1 { font-size: 1.1rem; font-weight: 400; }
+              header a {
+                color: #c41230;
+                text-decoration: none;
+                font-size: 0.9rem;
+                border: 1px solid #c41230;
+                padding: 0.3rem 0.8rem;
+                border-radius: 4px;
+              }
+              #viewer {
+                width: 100%;
+                height: calc(100vh - 60px);
+              }
+            </style>
+          </head>
+          <body>
+            <header>
+              <h1>Analisi di sicurezza e integrità crittografica di un sistema di versionamento distribuito</h1>
+              <a href="thesis.pdf" download>Scarica PDF</a>
+            </header>
+            <iframe
+              id="viewer"
+              src="https://mozilla.github.io/pdf.js/web/viewer.html?file=/thesis.pdf"
+              frameborder="0">
+            </iframe>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

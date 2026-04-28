@@ -56,7 +56,7 @@ jobs:
             <title>Tesi — Michele Stevanin</title>
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
-              body { background: #1a1a2e; font-family: sans-serif; }
+              body { background: #1a1a2e; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
               header {
                 background: #16213e;
                 color: white;
@@ -65,19 +65,20 @@ jobs:
                 align-items: center;
                 justify-content: space-between;
                 border-bottom: 2px solid #c41230;
+                flex-shrink: 0;
               }
               header h1 { font-size: 1.1rem; font-weight: 400; }
               header a {
-                color: #c41230;
+                color: white;
                 text-decoration: none;
                 font-size: 0.9rem;
-                border: 1px solid #c41230;
+                background: #c41230;
                 padding: 0.3rem 0.8rem;
                 border-radius: 4px;
               }
-              #viewer {
+              embed {
+                flex: 1;
                 width: 100%;
-                height: calc(100vh - 60px);
               }
             </style>
           </head>
@@ -86,11 +87,7 @@ jobs:
               <h1>Analisi di sicurezza e integrità crittografica di un sistema di versionamento distribuito</h1>
               <a href="thesis.pdf" download>Scarica PDF</a>
             </header>
-            <iframe
-              id="viewer"
-              src="https://mozilla.github.io/pdf.js/web/viewer.html?file=/thesis.pdf"
-              frameborder="0">
-            </iframe>
+            <embed src="thesis.pdf" type="application/pdf">
           </body>
           </html>
           EOF

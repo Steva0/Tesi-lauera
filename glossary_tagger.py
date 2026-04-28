@@ -21,6 +21,7 @@ import os
 TERMS_FILE = "appendix/glossary/terms.typ"
 
 CHAPTER_FILES = [
+    "preface/summary.typ",
     "chapters/1_introduction.typ",
     "chapters/2_stage-description.typ",
     "chapters/3_requirements.typ",
@@ -128,7 +129,7 @@ def process_file(filepath: str, terms: dict) -> tuple:
             last_end = 0
             replacements = 0
 
-            for m in re.finditer(pattern, content):
+            for m in re.finditer(pattern, content, re.IGNORECASE):
                 start = m.start()
                 if (is_inside_gl(content, start) or
                     is_inside_comment(content, start) or

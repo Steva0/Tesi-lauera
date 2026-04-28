@@ -11,7 +11,7 @@
 #v(1em)
 Questa relazione descrive il lavoro svolto durante lo stage curricolare presso #text(myCompany), della durata di trecentoquattro ore, sotto la supervisione del tutor aziendale #myTutor e del tutor accademico #text(myProf).
 \ \
-Lo stage ha riguardato l'analisi della sicurezza di rvc, un sistema di versionamento distribuito sviluppato internamente da #myCompany come alternativa a Git. A differenza dei sistemi tradizionali, #gl("rvc") non richiede un server centrale: i commit vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli hash di ogni commit, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della repository ricevuta, indipendentemente dalla fonte.
+Lo stage ha riguardato l'analisi della sicurezza di #gl("rvc"), un sistema di versionamento distribuito sviluppato internamente da #myCompany come alternativa a Git. A differenza dei sistemi tradizionali, #gl("rvc") non richiede un server centrale: i commit vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli hash di ogni commit, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della repository ricevuta, indipendentemente dalla fonte.
 \ \
 Il lavoro ha previsto lo studio delle tecnologie crittografiche alla base del sistema — chiavi SSH, firma digitale e strumenti di cifratura — seguito dalla simulazione di scenari di attacco con diversi livelli di accesso. Per ciascuno scenario sono state individuate le vulnerabilità presenti, analizzate le possibili conseguenze e proposte contromisure concrete.
 
@@ -32,7 +32,7 @@ Il lavoro ha previsto lo studio delle tecnologie crittografiche alla base del si
 Durante la stesura del testo sono state adottate le seguenti convenzioni tipografiche:
 
 - Gli acronimi, le abbreviazioni e i termini di uso non comune vengono definiti nel #link(<glossary>)[glossario], situato alla fine del documento (#link(<glossary>)[p. #context counter(page).at(<glossary>).at(0)]);
-- I termini presenti nel glossario sono sempre indicati con la notazione: rvc\;
+- I termini presenti nel glossario sono sempre indicati con la notazione: #gl("rvc");
 - I termini in lingua straniera non di uso comune o appartenenti al gergo tecnico sono evidenziati in _corsivo_;
 - I nomi di funzioni, variabili o comandi sono scritti con carattere `monospaziato`;
 - I riferimenti bibliografici sono indicati con il numero identificativo della fonte, es. $[1]$;

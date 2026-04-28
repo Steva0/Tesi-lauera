@@ -1,6 +1,6 @@
 #import "../config/constants.typ": abstract
 #import "../config/variables.typ": *
-#import "../config/thesis-config.typ": glossary-style
+#import "../config/thesis-config.typ": glossary-style, gl
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.8": *
 #pagebreak(to: "odd")
@@ -9,47 +9,49 @@
 #text(24pt, weight: "semibold", abstract)
 
 #v(1em)
-Il presente documento descrive il lavoro svolto durante il periodo di stage curricolare, della durata di circa trecentoventi ore, dal laureando #text(myName) presso l'azienda #text(myCompany). Lo stage è stato condotto sotto la supervisione del tutor aziendale #myTutor, mentre il prof. #text(myProf) ha ricoperto il ruolo di tutor accademico.
+Questa relazione descrive il lavoro svolto durante lo stage curricolare presso #text(myCompany), della durata di trecentoquattro ore, sotto la supervisione del tutor aziendale #myTutor e del tutor accademico #text(myProf).
 \ \
-Questa tesi analizza la sicurezza di *RVC* (_Repositoryless Version Control_), un sistema di versionamento distribuito sviluppato da #myCompany come alternativa a Git. Il sistema garantisce l'integrità dei contenuti attraverso la verifica crittografica degli hash di ogni commit. Lo studio esamina il sistema attraverso la simulazione di scenari di attacco con diversi livelli di accesso, dall'assenza totale di credenziali fino alla compromissione delle chiavi più critiche. Per ogni scenario vengono identificate le vulnerabilità, analizzate le conseguenze e proposte contromisure.
+Lo stage ha riguardato l'analisi della sicurezza di rvc, un sistema di versionamento distribuito sviluppato internamente da #myCompany come alternativa a Git. A differenza dei sistemi tradizionali, #gl("rvc") non richiede un server centrale: i commit vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli hash di ogni commit, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della repository ricevuta, indipendentemente dalla fonte.
+\ \
+Il lavoro ha previsto lo studio delle tecnologie crittografiche alla base del sistema — chiavi SSH, firma digitale e strumenti di cifratura — seguito dalla simulazione di scenari di attacco con diversi livelli di accesso. Per ciascuno scenario sono state individuate le vulnerabilità presenti, analizzate le possibili conseguenze e proposte contromisure concrete.
 
 #linebreak()
 #text(24pt, weight: "semibold")[Organizzazione del testo]
 #linebreak()
 #v(1em)
 
-/ #link(<cap:introduzione>)[Il primo capitolo]: introduce l'azienda, il progetto e le motivazioni che mi hanno portato a sceglierlo;
-/ #link(<cap:descrizione-stage>)[Il secondo capitolo]: descrive l'azienda, il progetto e l'organizzazione del lavoro, definendo gli obiettivi e analizzando i rischi;
-
+/ #link(<cap:introduzione>)[Il primo capitolo]: presenta l'azienda ospitante, introduce il progetto #gl("rvc") e illustra le motivazioni che mi hanno portato a scegliere questo stage;
+/ #link(<cap:descrizione-stage>)[Il secondo capitolo]: descrive l'organizzazione del lavoro, le competenze richieste, i vincoli tecnologici e l'analisi dei rischi affrontati durante il tirocinio;
+/ #link(<cap:analisi-sicurezza>)[Il terzo capitolo]: espone le analisi di sicurezza condotte sul sistema, descrivendo gli scenari di attacco simulati, le vulnerabilità individuate e le contromisure proposte;
+/ #link(<cap:conclusioni>)[Il quarto capitolo]: riassume i risultati raggiunti, valuta il grado di soddisfacimento degli obiettivi prefissati e propone una riflessione personale sull'esperienza.
 
 #linebreak()
 #text(24pt, weight: "semibold", "Convenzioni tipografiche")
 #linebreak()
 #v(1em)
-Durante la stesura del testo ho scelto di adottare le seguenti convenzioni tipografiche:
+Durante la stesura del testo sono state adottate le seguenti convenzioni tipografiche:
 
-//Preferenze personali modificabili a discrezione tua o del relatore
-- Gli acronimi, le abbreviazioni e i termini di uso non comune menzionati vengono definiti nel #link(<glossary>)[glossario], situato alla fine del documento (#link(<glossary>)[p. #context counter(page).at(<glossary>).at(0)]);
-- Per la prima occorrenza dei termini riportati nel glossario viene utilizzata la seguente nomenclatura: #glossary-style[termine]\;
-- I termini in lingua straniera non di uso comune o facenti parti del gergo tecnico sono evidenziati con il carattere _corsivo_;
-- I nomi di funzioni o variabili appartenenti ad un linguaggio di programmazione vengono scritte con un carattere `monospaziato`;
-- Le citazioni ad un libro o ad una risorsa presente nella #link(<bibliography>)[bibliografia] (#link(<bibliography>)[p. #context counter(page).at(<bibliography>).at(0)]) saranno affiancate dal rispettivo numero identificativo, es. $[1]$;
-- I blocchi di codice sono rappresentati nel seguente modo
+- Gli acronimi, le abbreviazioni e i termini di uso non comune vengono definiti nel #link(<glossary>)[glossario], situato alla fine del documento (#link(<glossary>)[p. #context counter(page).at(<glossary>).at(0)]);
+- I termini presenti nel glossario sono sempre indicati con la notazione: rvc\;
+- I termini in lingua straniera non di uso comune o appartenenti al gergo tecnico sono evidenziati in _corsivo_;
+- I nomi di funzioni, variabili o comandi sono scritti con carattere `monospaziato`;
+- I riferimenti bibliografici sono indicati con il numero identificativo della fonte, es. $[1]$;
+- I blocchi di codice sorgente sono rappresentati nel seguente modo:
 #linebreak()
-#figure(caption: "Codice d'esempio.")[
-```c
-float Q_rsqrt( float number ){
-	long i;
-	float x2, y;
-	const float threehalfs = 1.5F;
-	x2 = number * 0.5F;
-	y  = number;
-	i  = * (long * ) &y;
-	i  = 0x5f3759df - (i>>1);
-	y  = * (float * ) &i;
-	y  = y * ( threehalfs - ( x2 * y * y ) );
-//y  = y * ( threehalfs - ( x2 * y * y ) );
-	return y;
-}
+#figure(caption: "Esempio di funzione CPL estratta dal sorgente di " + gl("rvc") + ".")[
+```cpl
+proc ReportInfo(FileManifestPersistent fm, bool files:=false)
+  ? 'project:', fm.project
+  ? 'version:', fm.ver
+  if fm.tag <> nil
+    ? '    tag:', fm.tag
+  end
+  if fm.prev <> nil
+    ? '   prev:', fm.prev
+  end
+  if fm.merge <> nil
+    ? '  merge:', fm.merge
+  end
+end
 ```
 ]

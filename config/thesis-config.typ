@@ -18,8 +18,14 @@
 
   // Codly bootstrap and setup
   show: codly-init.with()
-  codly(languages: codly-languages, zebra-fill: gray.lighten(90%))
-
+  codly(
+    languages: (
+      ..codly-languages,
+      CPL: (name: "CPL", color: rgb("#6b9bd2"), icon: none),
+    ),
+    zebra-fill: gray.lighten(90%)
+  )
+  
   // LaTeX look https://typst.app/docs/guides/guide-for-latex-users#latex-look
   set page(margin: 1.75in, numbering: myNumbering, number-align: center)
   set par(

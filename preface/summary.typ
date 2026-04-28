@@ -11,7 +11,7 @@
 #v(1em)
 Il presente documento descrive il lavoro svolto durante il periodo di stage curricolare, della durata di circa trecentoventi ore, dal laureando #text(myName) presso l'azienda #text(myCompany). Lo stage è stato condotto sotto la supervisione del tutor aziendale #myTutor, mentre il prof. #text(myProf) ha ricoperto il ruolo di tutor accademico.
 \ \
-Questa tesi tratta la progettazione e lo sviluppo di *Nome progetto*, una piattaforma web il cui scopo è .... L'obiettivo è quello di ....
+Questa tesi analizza la sicurezza di *RVC* (_Repositoryless Version Control_), un sistema di versionamento distribuito sviluppato da #myCompany come alternativa a Git. Il sistema garantisce l'integrità dei contenuti attraverso la verifica crittografica degli hash di ogni commit. Lo studio esamina il sistema attraverso la simulazione di scenari di attacco con diversi livelli di accesso, dall'assenza totale di credenziali fino alla compromissione delle chiavi più critiche. Per ogni scenario vengono identificate le vulnerabilità, analizzate le conseguenze e proposte contromisure.
 
 #linebreak()
 #text(24pt, weight: "semibold")[Organizzazione del testo]
@@ -20,6 +20,7 @@ Questa tesi tratta la progettazione e lo sviluppo di *Nome progetto*, una piatta
 
 / #link(<cap:introduzione>)[Il primo capitolo]: introduce l'azienda, il progetto e le motivazioni che mi hanno portato a sceglierlo;
 / #link(<cap:descrizione-stage>)[Il secondo capitolo]: descrive l'azienda, il progetto e l'organizzazione del lavoro, definendo gli obiettivi e analizzando i rischi;
+
 
 #linebreak()
 #text(24pt, weight: "semibold", "Convenzioni tipografiche")

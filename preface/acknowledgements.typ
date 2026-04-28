@@ -6,10 +6,11 @@
 #text(24pt, weight: "semibold", acknlowledgements)
 #v(3em)
 #text(style:"italic")[
-Innanzitutto, vorrei esprimere la mia gratitudine al #myProf relatore della mia tesi, per l'aiuto e il continuo sostegno fornitomi durante la stesura del lavoro.\
-Desidero ringraziare con affetto i miei genitori e i miei parenti per il sostegno e per essermi stati vicini durante gli anni di studio.\
-Ho desiderio di ringraziare poi i miei amici per tutti i bellissimi anni passati insieme.\
-Ci tengo infine a ringraziare i colleghi di #myCompany e il tutor aziendale #myTutor per avermi dato l'opportunità di lavorare a questo progetto.
+Ringrazio il #myProf per la disponibilità e il supporto dimostrati durante la stesura di questo lavoro, e il tutor aziendale #myTutor insieme ai colleghi di #myCompany per l'opportunità offerta e per l'accoglienza durante il periodo di stage.\
+\
+Ai miei genitori, che hanno reso possibile tutto questo. Non con gesti eclatanti, ma con la presenza silenziosa di chi c'è sempre, con la fiducia riposta in me anche quando io stesso ne avevo poca, con i sacrifici che non hanno mai mostrato come tali. Se sono arrivato fin qui, è anche e soprattutto merito loro.\
+\
+A Giorgia, che ha attraversato questi anni universitari insieme a me — le sessioni difficili, le serate a studiare, i momenti in cui mollare sembrava la scelta più ragionevole. Hai creduto in me con una costanza che non ho mai smesso di apprezzare. Questo traguardo è mio, ma un pezzo importante appartiene anche a te.\
 ]
 #v(2em)
 #text(style: "italic", myLocation + ", " + myTime + h(1fr) + myName)

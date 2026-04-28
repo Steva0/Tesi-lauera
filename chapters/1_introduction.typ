@@ -24,9 +24,9 @@ Lo stage è stato svolto presso la sede di Noventa Padovana (PD), sotto la super
 
 == Il progetto
 
-Il progetto ha riguardato l'analisi della sicurezza di #gl("rvc"), un sistema di versionamento distribuito sviluppato internamente da Zucchetti S.p.A. come alternativa a #gl("git"). A differenza dei sistemi tradizionali, #gl("rvc") non richiede un server centrale: i _commit_ vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli #gl("hash") di ogni _commit_, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della _repository_ ricevuta, indipendentemente dalla fonte di distribuzione.
+Il progetto ha riguardato l'analisi della sicurezza di #gl("rvc"), un sistema di versionamento distribuito sviluppato internamente da Zucchetti S.p.A. come alternativa a #gl("git"). A differenza dei sistemi tradizionali, RVC non richiede un server centrale: i _commit_ vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli #gl("hash") di ogni _commit_, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della _repository_ ricevuta, indipendentemente dalla fonte di distribuzione.
 
-L'autenticazione e la firma dei _commit_ avvengono tramite chiavi #gl("ssh"), rendendo ogni modifica crittograficamente attribuibile al suo autore. Questo approccio distingue #gl("rvc") non solo per l'architettura distribuita, ma anche per le garanzie di autenticità che offre rispetto ai sistemi di versionamento convenzionali.
+L'autenticazione e la firma dei _commit_ avvengono tramite chiavi #gl("ssh"), rendendo ogni modifica crittograficamente attribuibile al suo autore. Questo approccio distingue RVC non solo per l'architettura distribuita, ma anche per le garanzie di autenticità che offre rispetto ai sistemi di versionamento convenzionali.
 
 == Scelta del progetto
 
@@ -47,15 +47,15 @@ Gli obiettivi dello stage sono stati definiti in accordo con il tutor aziendale 
     columns: (auto, 1fr),
     align: (center, left),
     table.header([*Codice*], [*Descrizione*]),
-    [O01], [Studio delle tecnologie #gl("ssh"), #gl("age") e #gl("rvc")],
-    [O02], [Analisi del sistema #gl("rvc") e individuazione delle vulnerabilità],
+    [O01], [Studio delle tecnologie SSH, #gl("age") e RVC],
+    [O02], [Analisi del sistema RVC e individuazione delle vulnerabilità],
     [O03], [Simulazione di attacchi senza possesso di credenziali],
-    [O04], [Simulazione di attacchi con chiave privata compromessa],
+    [O04], [Simulazione di attacchi con #gl("chiave-privata") compromessa],
     [O05], [Produzione della documentazione tecnica e della relazione finale],
     [D01], [Simulazione di attacchi con chiave del capo progetto compromessa],
     [D02], [Gestione dei _signers_ per _branch_ diversi all'interno della _repository_],
     [D03], [Studio e implementazione delle tecniche di recovery delle credenziali],
-    [F01], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in #gl("rvc")],
+    [F01], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in RVC],
     [F02], [Progettazione e sviluppo di un sistema di _repository_ cifrato con distribuzione dei permessi],
   )
 ]
@@ -69,7 +69,7 @@ Il lavoro è stato organizzato su otto settimane per un totale di 318 ore, suddi
     columns: (auto, auto, 1fr),
     align: (center, center, left),
     table.header([*Settimana*], [*Ore*], [*Attività*]),
-    [1], [40], [Studio delle chiavi #gl("ssh"), #gl("crittografia-asimmetrica"), #gl("firma-digitale"), #gl("age") e #gl("rvc")],
+    [1], [40], [Studio delle chiavi SSH, #gl("crittografia-asimmetrica"), #gl("firma-digitale"), AGE e RVC],
     [2], [40], [Analisi degli attacchi senza possesso di credenziali],
     [3], [40], [Gestione del team (_signers_ e capo progetto) e attacchi con chiave privata compromessa],
     [4], [40], [Stesura documentazione intermedia e avanzamento relazione finale],
@@ -94,7 +94,7 @@ Prima dell'avvio del progetto è stata condotta un'analisi preventiva dei rischi
     [Complessità delle tecnologie crittografiche da studiare nella prima settimana],
     [Confronto costante con il tutor aziendale e studio guidato della documentazione ufficiale],
     [Media \ Medio],
-    [Accesso limitato ai sorgenti di #gl("rvc") nella fase iniziale],
+    [Accesso limitato ai sorgenti di RVC nella fase iniziale],
     [Utilizzo dei binari disponibili per l'analisi comportamentale in attesa dei sorgenti completi],
     [Alta \ Medio],
     [Difficoltà nel riprodurre scenari di attacco realistici in ambiente di test],

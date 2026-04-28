@@ -2,8 +2,13 @@
 """
 glossary_tagger.py
 ------------------
-Legge i termini direttamente da appendix/glossary/terms.typ e sostituisce
-ogni occorrenza nei file dei capitoli con #gl("chiave").
+Legge i termini direttamente da appendix/glossary/terms.typ.
+Per ogni file:
+1. Rimuove eventuali tag #gl() preesistenti e ripristina il termine testuale.
+2. Inserisce #gl() solo alla PRIMA occorrenza nel summary e alla PRIMA
+   occorrenza nei capitoli.
+
+Ogni termine sarà taggato al massimo 2 volte nel documento finale.
 
 Uso:
     python glossary_tagger.py
@@ -36,12 +41,12 @@ def parse_glossary(filepath: str) -> dict:
     """
     Legge terms.typ ed estrae chiave, short e long per ogni termine.
     Restituisce un dizionario: chiave -> lista di forme testuali da cercare.
+    La prima forma della lista è quella considerata "principale" per ripristinare il testo.
     """
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
     terms = {}
-
     block_pattern = re.compile(r'\(\s*(.*?)\s*\),?\s*(?=\(|\))', re.DOTALL)
 
     for block in block_pattern.finditer(content):
@@ -54,12 +59,14 @@ def parse_glossary(filepath: str) -> dict:
 
         forms = []
 
+        # Estraiamo prima lo short (sarà la forma principale di ripristino)
         short_match = re.search(r'short:\s*\[([^\]]+)\]', block_text)
         if not short_match:
             short_match = re.search(r'short:\s*"([^"]+)"', block_text)
         if short_match:
             forms.append(short_match.group(1).strip())
 
+        # Poi estraiamo il long
         long_match = re.search(r'long:\s*\[([^\]]+)\]', block_text)
         if not long_match:
             long_match = re.search(r'long:\s*"([^"]+)"', block_text)
@@ -75,7 +82,7 @@ def parse_glossary(filepath: str) -> dict:
 
 
 # ─────────────────────────────────────────────
-# LOGICA DI SOSTITUZIONE
+# LOGICA DI CONTROLLO
 # ─────────────────────────────────────────────
 
 def is_inside_gl(text: str, match_start: int) -> bool:
@@ -115,36 +122,63 @@ def is_inside_raw_inline(text: str, match_start: int) -> bool:
     return count % 2 == 1
 
 
-def process_file(filepath: str, terms: dict) -> tuple:
+# ─────────────────────────────────────────────
+# ELABORAZIONE FILE
+# ─────────────────────────────────────────────
+
+def process_file(filepath: str, terms: dict, tagged_keys: set) -> tuple:
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
     total_replacements = 0
 
+    # ==========================================
+    # FASE 1: PULIZIA (Ripristino testo)
+    # Rimuove i #gl("chiave") preesistenti e ci rimette la parola.
+    # Se il termine era duplicato, diventerà testo normale.
+    # ==========================================
     for key, forms in terms.items():
-        for form in sorted(forms, key=len, reverse=True):
-            pattern = r'(?<![#\w"\'-])' + re.escape(form) + r'(?![\w"\'-])'
+        # Usiamo forms[0] (di solito lo "short") come termine testuale di base da rimettere
+        primary_term = forms[0]
+        # Regex per catturare: #gl("chiave"), #gl('chiave') o #gl(chiave)
+        pattern_gl = r'#gl\(\s*["\']?' + re.escape(key) + r'["\']?\s*\)'
+        content = re.sub(pattern_gl, primary_term, content)
 
-            new_content_parts = []
-            last_end = 0
-            replacements = 0
+    # ==========================================
+    # FASE 2: TAGGING (Solo prima occorrenza)
+    # ==========================================
+    # Ordino le chiavi in base alla forma più lunga per evitare sovrapposizioni errate
+    sorted_keys = sorted(terms.keys(), key=lambda k: max(len(f) for f in terms[k]), reverse=True)
 
-            for m in re.finditer(pattern, content, re.IGNORECASE):
-                start = m.start()
-                if (is_inside_gl(content, start) or
-                    is_inside_comment(content, start) or
-                    is_inside_code_block(content, start) or
-                    is_inside_raw_inline(content, start)):
-                    new_content_parts.append(content[last_end:m.end()])
-                else:
-                    new_content_parts.append(content[last_end:start])
-                    new_content_parts.append(f'#gl("{key}")')
-                    replacements += 1
-                last_end = m.end()
+    for key in sorted_keys:
+        if key in tagged_keys:
+            continue
 
-            new_content_parts.append(content[last_end:])
-            content = ''.join(new_content_parts)
-            total_replacements += replacements
+        forms = terms[key]
+        sorted_forms = sorted(forms, key=len, reverse=True)
+        escaped_forms = [re.escape(f) for f in sorted_forms]
+        
+        # Pattern che cerca qualsiasi delle forme del termine
+        pattern = r'(?<![#\w"\'-])(?:' + '|'.join(escaped_forms) + r')(?![\w"\'-])'
+
+        replaced = False
+
+        for m in re.finditer(pattern, content, re.IGNORECASE):
+            start = m.start()
+            if (is_inside_gl(content, start) or
+                is_inside_comment(content, start) or
+                is_inside_code_block(content, start) or
+                is_inside_raw_inline(content, start)):
+                continue # Falso positivo (commenti, codice, ecc.)
+            else:
+                # Trovata la PRIMA occorrenza valida testuale nel file: la tagghiamo
+                content = content[:start] + f'#gl("{key}")' + content[m.end():]
+                replaced = True
+                break # Interrompiamo la ricerca di questa chiave in questo file
+
+        if replaced:
+            tagged_keys.add(key)
+            total_replacements += 1
 
     return content, total_replacements
 
@@ -176,6 +210,10 @@ def main():
         print(f"  {key}: {forms}")
     print()
 
+    # Memorie indipendenti per assicurare le due occorrenze massime
+    tagged_in_summary = set()
+    tagged_in_chapters = set()
+
     total = 0
     for relative_path in CHAPTER_FILES:
         filepath = os.path.join(script_dir, relative_path)
@@ -184,20 +222,29 @@ def main():
             print(f"Attenzione: file non trovato: {relative_path}")
             continue
 
-        new_content, count = process_file(filepath, terms)
-
-        if count > 0:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            print(f"OK {relative_path}: {count} sostituzione/i")
+        if "summary.typ" in relative_path:
+            active_tagged_set = tagged_in_summary
         else:
-            print(f"-- {relative_path}: nessuna modifica")
+            active_tagged_set = tagged_in_chapters
+
+        new_content, count = process_file(filepath, terms, active_tagged_set)
+
+        # Scriviamo in ogni caso il file per consolidare l'untagging (Fase 1)
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+            
+        if count > 0:
+            print(f"OK {relative_path}: {count} nuovo/i tag inserito/i (e file ripulito)")
+        else:
+            print(f"-- {relative_path}: nessun nuovo tag (file ripulito)")
 
         total += count
 
     print()
     print("=" * 60)
-    print(f"Totale sostituzioni: {total}")
+    print(f"Totale nuovi tag inseriti: {total}")
+    print(f"Termini taggati nel summary: {len(tagged_in_summary)}")
+    print(f"Termini taggati nei capitoli: {len(tagged_in_chapters)}")
     print("=" * 60)
 
 

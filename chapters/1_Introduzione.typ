@@ -2,6 +2,7 @@
 #import "@preview/codly-languages:0.1.8": *
 #import "../config/thesis-config.typ": gl, glpl, glossary-style, linkfn
 #import "../config/variables.typ" : *
+#pagebreak(to:"odd")
 
 = Introduzione <cap:introduzione>
 #text(style: "italic", [
@@ -15,7 +16,7 @@ Zucchetti S.p.A. è un'azienda italiana con sede principale a Lodi che produce s
 
 Oggi il gruppo conta più di 8.000 dipendenti, di cui 2.000 dedicati alla Ricerca e Sviluppo, e serve oltre 700.000 clienti tramite sedi distribuite in tutta Italia e più di 1.650 partner. A livello internazionale è presente con proprie società in diversi paesi europei e oltreoceano, con una rete di oltre 350 partner in 50 paesi. Zucchetti si posiziona oggi come la prima _software house_ in Italia per fatturato.
 
-Lo stage è stato svolto presso la sede di Noventa Padovana (PD), sotto la supervisione del tutor aziendale #myTutor.
+Lo stage è stato svolto presso la sede di Padova e di Noventa Padovana (PD), sotto la supervisione del tutor aziendale #myTutor.
 
 #figure(
   image("../images/zucchetti-logo.png", width: 100%),
@@ -27,6 +28,8 @@ Lo stage è stato svolto presso la sede di Noventa Padovana (PD), sotto la super
 Il progetto ha riguardato l'analisi della sicurezza di #gl("rvc"), un sistema di versionamento distribuito sviluppato internamente da Zucchetti S.p.A. come alternativa a #gl("git"). A differenza dei sistemi tradizionali, RVC non richiede un server centrale: i _commit_ vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli #gl("hash") di ogni _commit_, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della _repository_ ricevuta, indipendentemente dalla fonte di distribuzione.
 
 L'autenticazione e la firma dei _commit_ avvengono tramite chiavi #gl("ssh"), rendendo ogni modifica crittograficamente attribuibile al suo autore. Questo approccio distingue RVC non solo per l'architettura distribuita, ma anche per le garanzie di autenticità che offre rispetto ai sistemi di versionamento convenzionali.
+
+La versione di RVC fornita per lo stage è una versione di sviluppo deliberatamente priva di alcuni meccanismi di sicurezza, con l'obiettivo di permettere uno studio autonomo delle vulnerabilità e la progettazione di soluzioni originali. Questo approccio ha consentito di affrontare il problema della sicurezza senza vincoli architetturali predefiniti, producendo analisi e implementazioni indipendenti.
 
 == Scelta del progetto
 
@@ -62,21 +65,21 @@ Gli obiettivi dello stage sono stati definiti in accordo con il tutor aziendale 
 
 == Pianificazione
 
-Il lavoro è stato organizzato su otto settimane per un totale di 318 ore, suddivise tra studio delle tecnologie, analisi della sicurezza, sviluppo e documentazione.
+Il lavoro è stato organizzato su otto settimane per un totale di 304 ore, suddivise tra studio delle tecnologie, analisi della sicurezza, sviluppo e documentazione.
 
 #figure(caption: "Pianificazione del periodo di stage.")[
   #table(
     columns: (auto, auto, 1fr),
     align: (center, center, left),
     table.header([*Settimana*], [*Ore*], [*Attività*]),
-    [1], [40], [Studio delle chiavi SSH, #gl("crittografia-asimmetrica"), #gl("firma-digitale"), AGE e RVC],
-    [2], [40], [Analisi degli attacchi senza possesso di credenziali],
-    [3], [40], [Gestione del team (_signers_ e capo progetto) e attacchi con chiave privata compromessa],
-    [4], [40], [Stesura documentazione intermedia e avanzamento relazione finale],
-    [5], [40], [Gestione avanzata dei _signers_ per _branch_ e attacchi con chiave del capo progetto compromessa],
-    [6], [40], [Progettazione e sviluppo di _repository_ cifrato con distribuzione dei permessi],
-    [7], [40], [Analisi e sviluppo della struttura monorepo/polirepo],
-    [8], [38], [Completamento e revisione della relazione finale],
+    [1], [32], [Studio di SSH, crittografia asimmetrica, firma digitale e AGE],
+    [2], [40], [Studio di RVC: architettura, formato dei commit],
+    [3], [40], [Analisi del codice sorgente CPL e individuazione delle vulnerabilità],
+    [4], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
+    [5], [40], [Implementazione miglioramenti: configurazione, firma SSH, verifica integrità],
+    [6], [32], [Gestione signers, allowed_signers, verifica catena completa],
+    [7], [40], [Simulazione attacchi avanzati e sviluppi futuri],
+    [8], [40], [Completamento e revisione della relazione finale],
   )
 ]
 
@@ -91,17 +94,17 @@ Prima dell'avvio del progetto è stata condotta un'analisi preventiva dei rischi
     table.header(
       [*Descrizione*], [*Contromisura*], [*Probabilità \ Impatto*]
     ),
-    [Complessità delle tecnologie crittografiche da studiare nella prima settimana],
-    [Confronto costante con il tutor aziendale e studio guidato della documentazione ufficiale],
-    [Media \ Medio],
-    [Accesso limitato ai sorgenti di RVC nella fase iniziale],
-    [Utilizzo dei binari disponibili per l'analisi comportamentale in attesa dei sorgenti completi],
+    [Codice sorgente di RVC non disponibile nella fase iniziale, con impossibilità di analisi white-box],
+    [Analisi black-box tramite osservazione del comportamento esterno e dei file prodotti],
+    [Alta \ Alto],
+    [Linguaggio CPL proprietario senza documentazione pubblica, con curva di apprendimento elevata],
+    [Studio della documentazione interna fornita dall'azienda e confronto diretto col tutor],
     [Alta \ Medio],
-    [Difficoltà nel riprodurre scenari di attacco realistici in ambiente di test],
-    [Progettazione di un ambiente di simulazione dedicato con repository di test isolate],
+    [Comportamenti silenziosi del sistema in caso di errore, che rendono difficile il debug],
+    [Aggiunta sistematica di istruzioni di debug nel codice sorgente durante l'analisi],
     [Media \ Alto],
-    [Risultati dell'analisi non sufficientemente documentati per proporre miglioramenti concreti],
-    [Documentazione progressiva di ogni scenario analizzato con output e conclusioni],
-    [Bassa \ Alto],
+    [Vulnerabilità individuate già risolte nella versione interna, rendendo il lavoro ridondante],
+    [Verifica periodica col tutor aziendale sull'allineamento tra la versione di test e quella interna],
+    [Media \ Medio],
   )
 ]

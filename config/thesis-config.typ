@@ -7,8 +7,8 @@
 // This file sets up the properties of the document and the libraries used
 
 #let config(
-  myAuthor: "Nome cognome",
-  myTitle: "Titolo",
+  myAuthor: "Michele Stevanin",
+  myTitle: "Analisi di sicurezza e integrità crittografica di un sistema di versionamento distribuito",
   myLang: "it",
   myNumbering: "1.1",
   body,
@@ -27,7 +27,7 @@
   )
   
   // LaTeX look https://typst.app/docs/guides/guide-for-latex-users#latex-look
-  set page(margin: 1.75in, numbering: myNumbering, number-align: center)
+  set page(margin: 2.5cm, numbering: myNumbering, number-align: center)
   set par(
     leading: 0.55em,
     spacing: 0.55em,
@@ -46,7 +46,7 @@
       } else if it.numbering != none {
         text(size: 1.5em)[#chapter #counter(heading).display()]
       },
-      text(size: 2em, it.body),
+      text(size: 1.9em, it.body),
       [],
     )
   }

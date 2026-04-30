@@ -1,0 +1,13 @@
+#import "../config/thesis-config.typ": glpl
+#import "data/requirements_list.typ": *
+
+#pagebreak(to:"odd")
+
+= Simulazione scenari di attacco<cap:simulazione-scenari-di-attacco>
+
+#text(style: "italic", [
+    In questo capitolo effettuo l'analisi degli utenti, sviluppo le user stories e compongo la lista dei requisiti dividendoli per tipologia e necessità.
+])
+#v(1em)
+
+== Analisi degli utenti

@@ -155,7 +155,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
 
 === RVC a confronto con Git
 
-#gl("rvc", capitalize: true) (_Repositoryless Version Control_) condivide con #gl("git", capitalize: true) il modello distribuito ma si differenzia in aspetti fondamentali di architettura e sicurezza.
+#gl("rvc", capitalize: true) (_CodePainter Language_) condivide con #gl("git", capitalize: true) il modello distribuito ma si differenzia in aspetti fondamentali di architettura e sicurezza.
 
 #figure(caption: "Confronto tra Git e RVC.")[
   #table(

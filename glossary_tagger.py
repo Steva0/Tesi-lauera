@@ -133,7 +133,8 @@ def should_skip(text: str, match_start: int) -> bool:
         is_inside_comment(text, match_start) or
         is_inside_code_block(text, match_start) or
         is_inside_raw_inline(text, match_start) or
-        is_inside_figure_or_import(text, match_start)
+        is_inside_figure_or_import(text, match_start) or
+        is_inside_heading(text, match_start)
     )
 
 
@@ -286,6 +287,14 @@ def main():
     print("=" * 60)
     print(f"Totale tag inseriti: {total}")
     print("=" * 60)
+
+def is_inside_heading(text: str, match_start: int) -> bool:
+    """Controlla se il match è dentro un titolo == o ==="""
+    line_start = text.rfind('\n', 0, match_start) + 1
+    line_prefix = text[line_start:match_start].lstrip()
+    return line_prefix.startswith('=')
+
+
 
 
 if __name__ == "__main__":

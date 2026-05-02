@@ -10,7 +10,7 @@
 ])
 #v(1em)
 
-== #gl("crittografia-asimmetrica", capitalize: true) e #gl("firma-digitale")
+== Crittografia asimmetrica e firma digitale
 
 La crittografia è la disciplina che studia le tecniche per proteggere le informazioni rendendole illeggibili a chi non è autorizzato. Nella sua forma classica, detta _crittografia simmetrica_, mittente e destinatario condividono una stessa chiave segreta per cifrare e decifrare i messaggi. Questo approccio presenta un problema fondamentale: come si trasmette la chiave in modo sicuro prima ancora di poter comunicare in modo sicuro?
 
@@ -26,7 +26,7 @@ Questo meccanismo permette due operazioni fondamentali:
   caption: "Flusso trasferimento messaggio con uso di chiave pubblia e privata"
 )
 
-=== La #gl("firma-digitale") in dettaglio
+=== La firma digitale in dettaglio
 
 La #gl("firma-digitale") non cifra il messaggio intero — sarebbe inefficiente. Funziona invece in questo modo:
 
@@ -42,7 +42,7 @@ La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle 
   caption: "Flusso firma di un documento con chiave pubblia e privata"
 )
 
-=== Curve ellittiche: #gl("ed25519", capitalize: true)
+=== Curve ellittiche: Ed25519
 
 Gli algoritmi crittografici moderni si basano su problemi matematici computazionalmente difficili. RSA, il primo algoritmo a #gl("chiave-pubblica") diffuso, si basa sulla difficoltà di fattorizzare numeri molto grandi. Gli algoritmi moderni basati su _curve ellittiche_ offrono lo stesso livello di sicurezza con chiavi molto più corte, risultando più veloci ed efficienti.
 
@@ -53,7 +53,7 @@ Gli algoritmi crittografici moderni si basano su problemi matematici computazion
   caption: "Comparazione dimensione tra tipologie di chiavi"
 )
 
-== #gl("ssh", capitalize: true) e ssh-keygen
+== SSH e ssh-keygen
 
 #gl("ssh", capitalize: true) è un protocollo di rete che permette di stabilire connessioni sicure tra due macchine attraverso una rete non sicura. Nato come sostituto sicuro di Telnet e rsh, #gl("ssh", capitalize: true) cifra tutto il traffico e autentica sia il server che il client, impedendo attacchi di tipo _man-in-the-middle_.
 
@@ -93,7 +93,7 @@ identita@esempio.com ssh-ed25519 AAAA...chiave...
 
 Se la firma è valida e l'identità è presente nel file, il comando restituisce `Good "file" signature for <identità>`.
 
-== #gl("age", capitalize: true)
+== AGE
 
 *#gl("age", capitalize: true)* (_Actually Good Encryption_) è uno strumento moderno per la cifratura di file, progettato con l'obiettivo di essere semplice, sicuro e componibile. A differenza di PGP, che nel corso degli anni ha accumulato una complessità notevole, #gl("age", capitalize: true) offre un'interfaccia minimale con poche opzioni ben definite.
 
@@ -145,7 +145,7 @@ Questa architettura offre vantaggi significativi: si può lavorare offline, la s
 
 *Mercurial*, rilasciato nello stesso anno di #gl("git", capitalize: true), adottò un approccio simile ma con un'interfaccia considerata più accessibile. Oggi #gl("git", capitalize: true) domina il mercato, ma l'ecosistema dei #gl("vcs", capitalize: true) distribuiti rimane vivo con strumenti come Fossil e Pijul.
 
-=== #gl("git", capitalize: true) in dettaglio
+=== Git in dettaglio
 
 In #gl("git", capitalize: true) ogni oggetto — _blob_ (contenuto di un file), _tree_ (struttura di una directory), _commit_, _tag_ — è identificato da un #gl("hash") SHA del suo contenuto. Questo significa che l'identità di ogni oggetto è determinata dal suo contenuto: due oggetti con lo stesso contenuto hanno lo stesso #gl("hash"), e qualsiasi modifica produce un #gl("hash") diverso.
 
@@ -153,7 +153,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
 
 #gl("git", capitalize: true) supporta la firma crittografica dei #gl("commit") tramite GPG o #gl("ssh", capitalize: true). Tuttavia questa funzionalità è opzionale e deve essere abilitata esplicitamente — non fa parte del flusso di lavoro standard.
 
-=== #gl("rvc", capitalize: true) a confronto con #gl("git", capitalize: true)
+=== RVC a confronto con Git
 
 #gl("rvc", capitalize: true) (_Repositoryless Version Control_) condivide con #gl("git", capitalize: true) il modello distribuito ma si differenzia in aspetti fondamentali di architettura e sicurezza.
 
@@ -173,9 +173,9 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
 
 La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni _commit_ produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un #gl("commit") invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più.
 
-== #gl("rvc", capitalize: true): architettura e funzionamento
+== RVC: architettura e funzionamento
 
-=== Struttura della #gl("repository")
+=== Struttura della repository
 
 Una _repository_ #gl("rvc", capitalize: true) è una semplice cartella sul filesystem, senza strutture dati complesse o indici da mantenere. Ogni _commit_ è rappresentato da due file:
 
@@ -191,7 +191,7 @@ I file seguono una convenzione di denominazione che codifica la struttura della 
 
 L'`id` è un timestamp codificato in base36 (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei #gl("commit") semplicemente confrontando i nomi dei file. Il riferimento al #gl("commit") precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
 
-=== Il file .sig e la #gl("blockchain") degli #gl("hash")
+=== Il file .sig e la blockchain degli hash
 
 Il file `.sig` è il cuore del sistema di sicurezza di #gl("rvc", capitalize: true). Contiene in formato binario proprietario i seguenti campi:
 
@@ -216,7 +216,7 @@ Dopo i metadati, il file `.sig` può contenere una firma #gl("ssh", capitalize: 
 
 Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il #gl("commit"), rendendo ogni modifica crittograficamente attribuibile.
 
-=== Il linguaggio #gl("cpl", capitalize: true)
+=== Il linguaggio CPL
 
 #gl("rvc", capitalize: true) è scritto in *#gl("cpl", capitalize: true)* (_Custom Programming Language_), un linguaggio proprietario sviluppato da Zucchetti S.p.A. #gl("cpl", capitalize: true) è un linguaggio interpretato con sintassi simile al Pascal, tipizzato staticamente, con supporto a classi, moduli e gestione dei file. Viene eseguito tramite un interprete (`cpl.exe`) che supporta sia interpretazione diretta che compilazione #gl("jit", capitalize: true).
 
@@ -224,7 +224,7 @@ Le caratteristiche principali che distinguono #gl("cpl", capitalize: true) dai l
 
 Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi moduli #gl("cpl", capitalize: true), ciascuno con responsabilità ben definite: `ProjectImage.cpl` contiene la logica ad alto livello, `RvcEngine.cpl` gestisce la #gl("repository") fisica, `FileManifest.cpl` gestisce il #gl("manifest") dei file tracciati.
 
-=== Flusso di un #gl("commit")
+=== Flusso di un commit
 
 Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 

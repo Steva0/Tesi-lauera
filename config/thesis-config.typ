@@ -134,6 +134,13 @@
     it
   }
 
+  show outline: it => {
+    show link: set text(fill: black)
+    // Nasconde lo stile glossario nell'indice
+    show text.where(style: "italic"): it => text(style: "normal", fill: black, it)
+    it
+  }
+
   // Glossary bootstrap and setup
   show: make-glossary
   register-glossary(glossary-terms)

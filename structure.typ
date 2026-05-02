@@ -30,7 +30,7 @@
 
 // Backmatter
 #include "appendix/glossary/glossary.typ"
-#include "appendix/bibliography/bibliography.typ"
+// #include "appendix/bibliography/bibliography.typ"
 #include "preface/acknowledgements.typ"
 
 /*

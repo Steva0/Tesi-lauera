@@ -27,7 +27,7 @@
   )
   
   // LaTeX look https://typst.app/docs/guides/guide-for-latex-users#latex-look
-  set page(margin: 2.5cm, numbering: myNumbering, number-align: center)
+  set page(margin: 3cm, numbering: myNumbering, number-align: center)
   set par(
     leading: 0.55em,
     spacing: 0.55em,

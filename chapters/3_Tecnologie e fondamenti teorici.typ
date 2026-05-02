@@ -21,7 +21,10 @@ Questo meccanismo permette due operazioni fondamentali:
 - *Cifratura*: chiunque può cifrare un messaggio usando la chiave pubblica del destinatario. Solo il destinatario, possedendo la chiave privata corrispondente, potrà decifrarlo.
 - *Firma digitale*: il mittente cifra un messaggio con la propria chiave privata. Chiunque, usando la chiave pubblica del mittente, può verificare che il messaggio provenga effettivamente da lui e non sia stato alterato.
 
-// [IMMAGINE SUGGERITA: schema che mostra cifratura e firma digitale con chiave pubblica/privata]
+#figure(
+  image("../images/flusso_crittografia_chiave_asimmetrica.png", width: 75%),
+  caption: "Flusso trasferimento messaggio con uso di chiave pubblia e privata"
+)
 
 === La firma digitale in dettaglio
 
@@ -34,13 +37,21 @@ La #gl("firma-digitale") non cifra il messaggio intero — sarebbe inefficiente.
 
 La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle collisioni delle funzioni di hash (è praticamente impossibile trovare due messaggi diversi con lo stesso hash) e l'impossibilità computazionale di produrre una firma valida senza possedere la chiave privata.
 
+#figure(
+  image("../images/firma_documento.png", width: 85%),
+  caption: "Flusso firma di un documento con chiave pubblia e privata"
+)
+
 === Curve ellittiche: Ed25519
 
 Gli algoritmi crittografici moderni si basano su problemi matematici computazionalmente difficili. RSA, il primo algoritmo a chiave pubblica diffuso, si basa sulla difficoltà di fattorizzare numeri molto grandi. Gli algoritmi moderni basati su _curve ellittiche_ offrono lo stesso livello di sicurezza con chiavi molto più corte, risultando più veloci ed efficienti.
 
 *Ed25519* è un algoritmo di firma digitale basato sulla curva ellittica Curve25519. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma SSH ed è quello utilizzato in questo progetto.
 
-// [IMMAGINE SUGGERITA: confronto visivo tra dimensioni chiavi RSA e Ed25519 per equivalente sicurezza]
+#figure(
+  image("../images/dimensione_chiave.png", width: 65%),
+  caption: "Comparazione dimensione tra tipologie di chiavi"
+)
 
 == SSH e ssh-keygen
 
@@ -82,12 +93,6 @@ identita@esempio.com ssh-ed25519 AAAA...chiave...
 
 Se la firma è valida e l'identità è presente nel file, il comando restituisce `Good "file" signature for <identità>`.
 
-// [IMMAGINE SUGGERITA: schema del flusso firma-verifica con ssh-keygen]
-
-=== PuTTY
-
-Durante lo stage ho utilizzato *PuTTY*, un client SSH open source per Windows, per stabilire connessioni sicure con le macchine di test. PuTTY include anche `puttygen` per la generazione e conversione di chiavi, e `pageant` come agente SSH per gestire le chiavi senza dover reinserire la passphrase ad ogni utilizzo.
-
 == AGE
 
 *AGE* (_Actually Good Encryption_) è uno strumento moderno per la cifratura di file, progettato con l'obiettivo di essere semplice, sicuro e componibile. A differenza di PGP, che nel corso degli anni ha accumulato una complessità notevole, AGE offre un'interfaccia minimale con poche opzioni ben definite.
@@ -102,7 +107,10 @@ Un file cifrato con AGE contiene nell'intestazione le informazioni necessarie pe
 
 Nel contesto di questo progetto, AGE è stato studiato come tecnologia di riferimento per la fase successiva del lavoro, che prevede la progettazione di _repository_ cifrate con distribuzione dei permessi di accesso. In questa fase AGE permette di cifrare il contenuto di una _repository_ in modo che solo gli utenti autorizzati — identificati dalle loro chiavi pubbliche — possano decifrarla, senza dover condividere nessuna chiave segreta.
 
-// [IMMAGINE SUGGERITA: schema anatomia file .age con header e corpo cifrato]
+#figure(
+  image("../images/file_age.png", width: 100%),
+  caption: "Esempio di un file cifrato con AGE"
+)
 
 == Sistemi di controllo versione
 
@@ -124,7 +132,10 @@ Entrambi questi sistemi operavano però a livello di singolo file e su singola m
 
 Il limite fondamentale dei sistemi centralizzati era però strutturale: la presenza di un singolo punto di fallimento. Se il server non era raggiungibile, nessuno poteva fare commit. Se il server veniva perso, si perdeva l'intera storia del progetto.
 
-// [IMMAGINE SUGGERITA: schema architettura centralizzata vs distribuita]
+#figure(
+  image("../images/Differenza-tra-controllo-delle-versioni-centralizzato-e-distribuito.png", width: 70%),
+  caption: "Controllo versioni centralizzato vs distribuito"
+)
 
 ==== Sistemi distribuiti
 
@@ -180,8 +191,6 @@ I file seguono una convenzione di denominazione che codifica la struttura della 
 
 L'`id` è un timestamp codificato in base36 (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
 
-// [IMMAGINE SUGGERITA: schema della struttura dei file nella repository con esempio di nomi]
-
 === Il file .sig e la blockchain degli hash
 
 Il file `.sig` è il cuore del sistema di sicurezza di RVC. Contiene in formato binario proprietario i seguenti campi:
@@ -196,8 +205,6 @@ Il file `.sig` è il cuore del sistema di sicurezza di RVC. Contiene in formato 
 - `cumulativeHash`: lo SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del commit precedente
 
 Il `cumulativeHash` è la chiave della sicurezza: ogni commit incorpora crittograficamente l'intera storia precedente. Verificare che il `cumulativeHash` di un commit sia corretto significa verificare implicitamente che tutti i commit precedenti siano integri.
-
-// [IMMAGINE SUGGERITA: schema della catena di hash tra commit successivi]
 
 Dopo i metadati, il file `.sig` può contenere una firma SSH nel formato standard:
 
@@ -217,8 +224,6 @@ Le caratteristiche principali che distinguono CPL dai linguaggi comuni includono
 
 Il codice sorgente di RVC è organizzato in diversi moduli CPL, ciascuno con responsabilità ben definite: `ProjectImage.cpl` contiene la logica ad alto livello, `RvcEngine.cpl` gestisce la repository fisica, `FileManifest.cpl` gestisce il manifest dei file tracciati.
 
-// [IMMAGINE SUGGERITA: schema dell'architettura a moduli di RVC con frecce di dipendenza]
-
 === Flusso di un commit
 
 Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
@@ -233,4 +238,3 @@ Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 + Se la firma SSH è configurata, esegue `ssh-keygen -Y sign` per firmare il file `.sig` e accoda la firma al file.
 + Copia i due file nella repository.
 
-// [IMMAGINE SUGGERITA: diagramma di flusso del processo di commit]

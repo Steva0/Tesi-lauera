@@ -9,5 +9,3 @@
     In questo capitolo effettuo l'analisi degli utenti, sviluppo le user stories e compongo la lista dei requisiti dividendoli per tipologia e necessità.
 ])
 #v(1em)
-
-== Analisi degli utenti

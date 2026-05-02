@@ -14,6 +14,8 @@
 #include "preface/table-of-contents.typ"
 
 // Mainmatter
+#set page(numbering: none)
+#pagebreak(to: "odd")
 #counter(page).update(1)
 #set page(numbering: "1.")
 #include "chapters/1_Introduzione.typ"

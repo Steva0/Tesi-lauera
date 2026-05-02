@@ -2,11 +2,10 @@
 #import "@preview/codly-languages:0.1.8": *
 #import "../config/thesis-config.typ": gl, glpl, glossary-style, linkfn
 #import "../config/variables.typ" : *
-#pagebreak(to:"odd")
 
 = Introduzione <cap:introduzione>
 #text(style: "italic", [
-    In questo capitolo descrivo l'azienda ospitante, introduco il progetto e spiego le motivazioni che mi hanno portato a sceglierlo.
+    In questo capitolo viene descritta l'azienda ospitante, introdotto il progetto e illustrate le motivazioni che hanno portato alla scelta di questo stage.
 ])
 #v(1em)
 
@@ -25,17 +24,19 @@ Lo stage è stato svolto presso la sede di Padova e di Noventa Padovana (PD), so
 
 == Il progetto
 
-Il progetto ha riguardato l'analisi della sicurezza di #gl("rvc"), un sistema di versionamento distribuito sviluppato internamente da Zucchetti S.p.A. come alternativa a #gl("git"). A differenza dei sistemi tradizionali, RVC non richiede un server centrale: i _commit_ vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli #gl("hash") di ogni _commit_, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della _repository_ ricevuta, indipendentemente dalla fonte di distribuzione.
+Il progetto ha riguardato l'analisi della sicurezza di #gl("rvc", capitalize: true), un sistema di versionamento distribuito sviluppato internamente da Zucchetti S.p.A. come alternativa a #gl("git", capitalize: true). A differenza dei sistemi tradizionali, #gl("rvc", capitalize: true) non richiede un server centrale: i _commit_ vengono distribuiti come archivi firmati, navigabili direttamente tramite filesystem. L'integrità dei contenuti è garantita attraverso la verifica crittografica degli #gl("hash") di ogni _commit_, con l'obiettivo di permettere a qualsiasi utente di accertare autonomamente l'autenticità della _repository_ ricevuta, indipendentemente dalla fonte di distribuzione.
 
-L'autenticazione e la firma dei _commit_ avvengono tramite chiavi #gl("ssh"), rendendo ogni modifica crittograficamente attribuibile al suo autore. Questo approccio distingue RVC non solo per l'architettura distribuita, ma anche per le garanzie di autenticità che offre rispetto ai sistemi di versionamento convenzionali.
+L'autenticazione e la firma dei _commit_ avvengono tramite chiavi #gl("ssh", capitalize: true), rendendo ogni modifica crittograficamente attribuibile al suo autore. Questo approccio distingue #gl("rvc", capitalize: true) non solo per l'architettura distribuita, ma anche per le garanzie di autenticità che offre rispetto ai sistemi di versionamento convenzionali.
 
-La versione di RVC fornita per lo stage è una versione di sviluppo deliberatamente priva di alcuni meccanismi di sicurezza, con l'obiettivo di permettere uno studio autonomo delle vulnerabilità e la progettazione di soluzioni originali. Questo approccio ha consentito di affrontare il problema della sicurezza senza vincoli architetturali predefiniti, producendo analisi e implementazioni indipendenti.
+La versione di #gl("rvc", capitalize: true) fornita per lo stage è una versione di sviluppo deliberatamente priva di alcuni meccanismi di sicurezza, con l'obiettivo di permettere uno studio autonomo delle vulnerabilità e la progettazione di soluzioni originali. Questo approccio ha consentito di affrontare il problema della sicurezza senza vincoli architetturali predefiniti, producendo analisi e implementazioni indipendenti.
 
 == Scelta del progetto
 
 Ho scelto questo progetto per l'interesse verso la sicurezza informatica e la crittografia applicata, temi che avevo già incontrato durante il percorso universitario ma che non avevo mai avuto l'occasione di approfondire in un contesto reale. L'analisi di un sistema in uso aziendale, con l'obiettivo di individuare vulnerabilità concrete e proporre miglioramenti, rappresenta un'opportunità difficilmente replicabile in ambito accademico.
 
 La natura del lavoro — che combina studio teorico delle tecnologie crittografiche e simulazione pratica di scenari di attacco — mi ha convinto che fosse il progetto più adatto per concludere il percorso triennale con un contributo tangibile.
+
+#pagebreak()
 
 == Obiettivi dello stage
 
@@ -50,18 +51,20 @@ Gli obiettivi dello stage sono stati definiti in accordo con il tutor aziendale 
     columns: (auto, 1fr),
     align: (center, left),
     table.header([*Codice*], [*Descrizione*]),
-    [O01], [Studio delle tecnologie SSH, #gl("age") e RVC],
-    [O02], [Analisi del sistema RVC e individuazione delle vulnerabilità],
+    [O01], [Studio delle tecnologie #gl("ssh", capitalize: true), #gl("age", capitalize: true) e #gl("rvc", capitalize: true)],
+    [O02], [Analisi del sistema #gl("rvc", capitalize: true) e individuazione delle vulnerabilità],
     [O03], [Simulazione di attacchi senza possesso di credenziali],
     [O04], [Simulazione di attacchi con #gl("chiave-privata") compromessa],
     [O05], [Produzione della documentazione tecnica e della relazione finale],
     [D01], [Simulazione di attacchi con chiave del capo progetto compromessa],
     [D02], [Gestione dei _signers_ per _branch_ diversi all'interno della _repository_],
     [D03], [Studio e implementazione delle tecniche di recovery delle credenziali],
-    [F01], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in RVC],
+    [F01], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in #gl("rvc", capitalize: true)],
     [F02], [Progettazione e sviluppo di un sistema di _repository_ cifrato con distribuzione dei permessi],
   )
 ]
+
+#pagebreak()
 
 == Pianificazione
 
@@ -72,16 +75,18 @@ Il lavoro è stato organizzato su otto settimane per un totale di 304 ore, suddi
     columns: (auto, auto, 1fr),
     align: (center, center, left),
     table.header([*Settimana*], [*Ore*], [*Attività*]),
-    [1], [32], [Studio di SSH, crittografia asimmetrica, firma digitale e AGE],
-    [2], [40], [Studio di RVC: architettura, formato dei commit],
-    [3], [40], [Analisi del codice sorgente CPL e individuazione delle vulnerabilità],
+    [1], [32], [Studio di #gl("ssh", capitalize: true), #gl("crittografia-asimmetrica"), #gl("firma-digitale") e #gl("age", capitalize: true)],
+    [2], [40], [Studio di #gl("rvc", capitalize: true): architettura, formato dei #gl("commit")],
+    [3], [40], [Analisi del codice sorgente #gl("cpl", capitalize: true) e individuazione delle vulnerabilità],
     [4], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
-    [5], [40], [Implementazione miglioramenti: configurazione, firma SSH, verifica integrità],
+    [5], [40], [Implementazione miglioramenti: configurazione, firma #gl("ssh", capitalize: true), verifica integrità],
     [6], [32], [Gestione signers, allowed_signers, verifica catena completa],
     [7], [40], [Simulazione attacchi avanzati e sviluppi futuri],
     [8], [40], [Completamento e revisione della relazione finale],
   )
 ]
+
+#pagebreak()
 
 == Analisi dei rischi
 
@@ -94,10 +99,10 @@ Prima dell'avvio del progetto è stata condotta un'analisi preventiva dei rischi
     table.header(
       [*Descrizione*], [*Contromisura*], [*Probabilità \ Impatto*]
     ),
-    [Codice sorgente di RVC non disponibile nella fase iniziale, con impossibilità di analisi white-box],
-    [Analisi black-box tramite osservazione del comportamento esterno e dei file prodotti],
+    [Codice sorgente di #gl("rvc", capitalize: true) non disponibile nella fase iniziale, con impossibilità di analisi #gl("white-box")],
+    [Analisi #gl("black-box") tramite osservazione del comportamento esterno e dei file prodotti],
     [Alta \ Alto],
-    [Linguaggio CPL proprietario senza documentazione pubblica, con curva di apprendimento elevata],
+    [Linguaggio #gl("cpl", capitalize: true) proprietario senza documentazione pubblica, con curva di apprendimento elevata],
     [Studio della documentazione interna fornita dall'azienda e confronto diretto col tutor],
     [Alta \ Medio],
     [Comportamenti silenziosi del sistema in caso di errore, che rendono difficile il debug],

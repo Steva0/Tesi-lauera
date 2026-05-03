@@ -125,6 +125,17 @@ def is_inside_figure_or_import(text: str, match_start: int) -> bool:
             return True
     return False
 
+def is_inside_string(text: str, match_start: int) -> bool:
+    """Controlla se il match è dentro una stringa delimitata da doppi apici."""
+    line_start = text.rfind('\n', 0, match_start) + 1
+    before_on_line = text[line_start:match_start]
+    
+    # Rimuoviamo eventuali virgolette escapate (\") per non falsare il conteggio
+    clean_before = before_on_line.replace('\\"', '')
+    
+    # Se c'è un numero dispari di virgolette prima del termine sulla stessa riga, 
+    # significa che la stringa è stata aperta ma non ancora chiusa.
+    return clean_before.count('"') % 2 == 1
 
 def should_skip(text: str, match_start: int) -> bool:
     """Controlla se il match va saltato per qualsiasi motivo"""
@@ -134,7 +145,8 @@ def should_skip(text: str, match_start: int) -> bool:
         is_inside_code_block(text, match_start) or
         is_inside_raw_inline(text, match_start) or
         is_inside_figure_or_import(text, match_start) or
-        is_inside_heading(text, match_start)
+        is_inside_heading(text, match_start) or
+        is_inside_string(text, match_start)
     )
 
 

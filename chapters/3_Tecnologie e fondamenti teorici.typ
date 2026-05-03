@@ -1,5 +1,6 @@
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.8": *
+#import "@preview/cetz:0.3.1": canvas, draw
 #import "../config/thesis-config.typ": gl, glpl, glossary-style, linkfn
 #import "../config/variables.typ": *
 #pagebreak(to:"odd")
@@ -155,7 +156,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
 
 === RVC a confronto con Git
 
-#gl("rvc", capitalize: true) (_CodePainter Language_) condivide con #gl("git", capitalize: true) il modello distribuito ma si differenzia in aspetti fondamentali di architettura e sicurezza.
+#gl("rvc", capitalize: true) condivide con #gl("git", capitalize: true) il modello distribuito ma si differenzia in aspetti fondamentali di architettura e sicurezza.
 
 #figure(caption: "Confronto tra Git e RVC.")[
   #table(
@@ -206,7 +207,12 @@ Il file `.sig` è il cuore del sistema di sicurezza di #gl("rvc", capitalize: tr
 
 Il `cumulativeHash` è la chiave della sicurezza: ogni #gl("commit") incorpora crittograficamente l'intera storia precedente. Verificare che il `cumulativeHash` di un #gl("commit") sia corretto significa verificare implicitamente che tutti i #gl("commit") precedenti siano integri.
 
-Dopo i metadati, il file `.sig` può contenere una firma #gl("ssh", capitalize: true) nel formato standard:
+#figure(
+  image("../images/cumulative_hash.png", width: 80%),
+  caption: "Struttura del file .sig e la catena degli hash cumulativi"
+)
+
+Dopo i metadati, il file `.sig` contiene una firma #gl("ssh", capitalize: true) nel formato standard:
 
 ```
 -----BEGIN SSH SIGNATURE-----
@@ -218,11 +224,16 @@ Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il #gl("
 
 === Il linguaggio CPL
 
-#gl("rvc", capitalize: true) è scritto in *#gl("cpl", capitalize: true)* (_Custom Programming Language_), un linguaggio proprietario sviluppato da Zucchetti S.p.A. #gl("cpl", capitalize: true) è un linguaggio interpretato con sintassi simile al Pascal, tipizzato staticamente, con supporto a classi, moduli e gestione dei file. Viene eseguito tramite un interprete (`cpl.exe`) che supporta sia interpretazione diretta che compilazione #gl("jit", capitalize: true).
+#gl("rvc", capitalize: true) è scritto in *#gl("cpl", capitalize: true)* (_CodePainter Language_), un linguaggio proprietario sviluppato da Zucchetti S.p.A. #gl("cpl", capitalize: true) è un linguaggio interpretato tipizzato staticamente, con supporto a classi, moduli e gestione dei file. Viene eseguito tramite un interprete (`cpl.exe`) che supporta sia interpretazione diretta che compilazione #gl("jit", capitalize: true).
 
 Le caratteristiche principali che distinguono #gl("cpl", capitalize: true) dai linguaggi comuni includono la sintassi di assegnazione con `:=`, l'assenza dell'istruzione `return` esplicita (si usa invece la variabile implicita `result`), la dichiarazione obbligatoria di tutte le variabili in cima alla funzione prima di qualsiasi blocco di codice, e la distinzione tra `func` (funzione con valore di ritorno) e `proc` (procedura senza valore di ritorno).
 
 Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi moduli #gl("cpl", capitalize: true), ciascuno con responsabilità ben definite: `ProjectImage.cpl` contiene la logica ad alto livello, `RvcEngine.cpl` gestisce la #gl("repository") fisica, `FileManifest.cpl` gestisce il #gl("manifest") dei file tracciati.
+
+#figure(
+  image("../images/struttura_rvc.png", width: 110%),
+  caption: "Struttura dei moduli principali di RVC"
+)
 
 === Flusso di un commit
 

@@ -44,7 +44,7 @@ Gli strumenti principali adottati durante lo stage sono stati:
 
 *PuTTY* come client #gl("ssh", capitalize: true) per Windows, utilizzato per la gestione delle chiavi #gl("ssh", capitalize: true) tramite il componente `puttygen`.
 
-*ssh-keygen* (OpenSSH per Windows) per la generazione delle chiavi #gl("ed25519", capitalize: true), la firma crittografica dei file e la verifica delle firme #gl("ssh", capitalize: true). Questo strumento è centrale nel meccanismo di sicurezza implementato in #gl("rvc", capitalize: true).
+*Ssh-keygen* (OpenSSH per Windows) per la generazione delle chiavi #gl("ed25519", capitalize: true), la firma crittografica dei file e la verifica delle firme #gl("ssh", capitalize: true). Questo strumento è centrale nel meccanismo di sicurezza implementato in #gl("rvc", capitalize: true).
 
 *#gl("age", capitalize: true)* come strumento di cifratura moderno, studiato durante lo stage in preparazione alla fase di progettazione delle _repository_ cifrate prevista negli obiettivi desiderabili.
 

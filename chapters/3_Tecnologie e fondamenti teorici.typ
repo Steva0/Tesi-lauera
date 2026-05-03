@@ -167,7 +167,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
     [Firma #gl("commit")], [Opzionale (GPG o #gl("ssh", capitalize: true))], [Integrata nell'architettura],
     [Server centrale], [Non richiesto ma comune], [Non richiesto per design],
     [#gl("repository", capitalize: true) multiple], [Un remote alla volta tipicamente], [Più #gl("repository") sincronizzate nativamente],
-    [Linguaggio], [C], [#gl("cpl", capitalize: true) (proprietario Zucchetti)],
+    [Linguaggio], [C], [#gl("cpl", capitalize: true)],
   )
 ]
 
@@ -235,6 +235,5 @@ Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 + Recupera l'hash e il `cumulativeHash` del #gl("commit") precedente dal suo file `.sig`.
 + Calcola il nuovo `cumulativeHash` come SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` precedente.
 + Crea il file `.sig` con tutti i metadati.
-+ Se la firma #gl("ssh", capitalize: true) è configurata, esegue `ssh-keygen -Y sign` per firmare il file `.sig` e accoda la firma al file.
++ Esegue `ssh-keygen -Y sign` per firmare il file `.sig` e accoda la firma al file.
 + Copia i due file nella #gl("repository").
-

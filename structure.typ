@@ -26,12 +26,10 @@
 #include "chapters/6_Miglioramenti implementati.typ"
 #include "chapters/7_Conclusioni.typ"
 
-// #include "docs/esempi.typ"
-
 // Backmatter
 #include "appendix/glossary/glossary.typ"
 // #include "appendix/bibliography/bibliography.typ"
-#include "preface/acknowledgements.typ"
+//#include "preface/acknowledgements.typ"
 
 /*
 Capitolo 1 — Introduzione

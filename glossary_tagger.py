@@ -4,8 +4,8 @@ glossary_tagger.py
 ------------------
 Legge i termini direttamente da appendix/glossary/terms.typ.
 Per ogni file:
-1. Rimuove eventuali tag #gl() preesistenti e ripristina il termine testuale.
-2. Inserisce #gl() ad OGNI occorrenza del termine nel testo.
+1. Rimuove indiscriminatamente tutti i tag #gl() preesistenti per evitare orfani.
+2. Inserisce #gl() ad OGNI occorrenza dei termini (attualmente in terms.typ) nel testo.
 3. Se il termine nel testo inizia con lettera maiuscola, aggiunge capitalize: true.
 4. Se il termine inizia con lettera minuscola, non aggiunge capitalize.
 
@@ -137,6 +137,12 @@ def is_inside_string(text: str, match_start: int) -> bool:
     # significa che la stringa è stata aperta ma non ancora chiusa.
     return clean_before.count('"') % 2 == 1
 
+def is_inside_heading(text: str, match_start: int) -> bool:
+    """Controlla se il match è dentro un titolo == o ==="""
+    line_start = text.rfind('\n', 0, match_start) + 1
+    line_prefix = text[line_start:match_start].lstrip()
+    return line_prefix.startswith('=')
+
 def should_skip(text: str, match_start: int) -> bool:
     """Controlla se il match va saltato per qualsiasi motivo"""
     return (
@@ -176,26 +182,23 @@ def process_file(filepath: str, terms: dict) -> tuple:
     total_replacements = 0
 
     # ==========================================
-    # FASE 1: PULIZIA
-    # Rimuove tutti i #gl() preesistenti e ripristina il testo originale.
-    # Gestisce sia #gl("chiave") che #gl("chiave", capitalize: true)
+    # FASE 1: PULIZIA GLOBALE
+    # Rimuove tutti i tag #gl() a prescindere dal fatto che il 
+    # termine esista ancora in terms.typ, ripristinando il testo.
     # ==========================================
-    for key, forms in terms.items():
-        primary_term = forms[0]  # forma di base (minuscola)
+    def untag_replacer(match):
+        term = match.group(1)
+        is_cap = match.group(2) == 'true'
+        if is_cap and term:
+            return term[0].upper() + term[1:]
+        return term
 
-        # Rimuove #gl("chiave", capitalize: true) → forma maiuscola
-        pattern_capitalize = r'#gl\(\s*["\']?' + re.escape(key) + r'["\']?\s*,\s*capitalize\s*:\s*true\s*\)'
-        # Prima lettera maiuscola del termine
-        capitalized_term = primary_term[0].upper() + primary_term[1:] if primary_term else primary_term
-        content = re.sub(pattern_capitalize, capitalized_term, content)
-
-        # Rimuove #gl("chiave") → forma minuscola
-        pattern_gl = r'#gl\(\s*["\']?' + re.escape(key) + r'["\']?\s*\)'
-        content = re.sub(pattern_gl, primary_term, content)
+    gl_pattern = re.compile(r'#gl\(\s*["\']([^"\']+)["\']\s*(?:,\s*capitalize\s*:\s*(true|false)\s*)?\)')
+    content = gl_pattern.sub(untag_replacer, content)
 
     # ==========================================
     # FASE 2: TAGGING
-    # Inserisce #gl() ad ogni occorrenza valida.
+    # Inserisce #gl() ad ogni occorrenza valida dei termini correnti.
     # Ordina per lunghezza decrescente per evitare match parziali.
     # ==========================================
     sorted_keys = sorted(
@@ -299,14 +302,6 @@ def main():
     print("=" * 60)
     print(f"Totale tag inseriti: {total}")
     print("=" * 60)
-
-def is_inside_heading(text: str, match_start: int) -> bool:
-    """Controlla se il match è dentro un titolo == o ==="""
-    line_start = text.rfind('\n', 0, match_start) + 1
-    line_prefix = text[line_start:match_start].lstrip()
-    return line_prefix.startswith('=')
-
-
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@
 
 = Tecnologie e fondamenti teorici <cap:tecnologie>
 #text(style: "italic", [
-    In questo capitolo sono illustrate le tecnologie e i concetti teorici alla base del progetto. Partendo dalla #gl("crittografia-asimmetrica"), vengono descritti #gl("ssh", capitalize: true), #gl("age", capitalize: true) e i sistemi di controllo versione, fino ad arrivare all'architettura di #gl("rvc", capitalize: true).
+    In questo capitolo sono illustrate le tecnologie e i concetti teorici alla base del progetto. Partendo dalla crittografia-asimmetrica, vengono descritti #gl("ssh", capitalize: true), #gl("age", capitalize: true) e i sistemi di controllo versione, fino ad arrivare all'architettura di #gl("rvc", capitalize: true).
 ])
 #v(1em)
 
@@ -15,12 +15,12 @@
 
 La crittografia è la disciplina che studia le tecniche per proteggere le informazioni rendendole illeggibili a chi non è autorizzato. Nella sua forma classica, detta _crittografia simmetrica_, mittente e destinatario condividono una stessa chiave segreta per cifrare e decifrare i messaggi. Questo approccio presenta un problema fondamentale: come si trasmette la chiave in modo sicuro prima ancora di poter comunicare in modo sicuro?
 
-La risposta a questo problema arrivò negli anni '70 con la _crittografia asimmetrica_, detta anche _crittografia a chiave pubblica_. L'idea è elegante: ogni utente genera una coppia di chiavi matematicamente collegate tra loro. La *#gl("chiave-pubblica")* può essere distribuita liberamente a chiunque. La *#gl("chiave-privata")* deve rimanere segreta e non lasciare mai il dispositivo del proprietario. Le due chiavi sono collegate da una relazione matematica tale per cui ciò che viene cifrato con una può essere decifrato solo con l'altra, ma è computazionalmente impossibile ricavare la #gl("chiave-privata") a partire da quella pubblica.
+La risposta a questo problema arrivò negli anni '70 con la _crittografia asimmetrica_, detta anche _crittografia a chiave pubblica_. L'idea è elegante: ogni utente genera una coppia di chiavi matematicamente collegate tra loro. La *chiave-pubblica* può essere distribuita liberamente a chiunque. La *chiave-privata* deve rimanere segreta e non lasciare mai il dispositivo del proprietario. Le due chiavi sono collegate da una relazione matematica tale per cui ciò che viene cifrato con una può essere decifrato solo con l'altra, ma è computazionalmente impossibile ricavare la chiave-privata a partire da quella pubblica.
 
 Questo meccanismo permette due operazioni fondamentali:
 
-- *Cifratura*: chiunque può cifrare un messaggio usando la #gl("chiave-pubblica") del destinatario. Solo il destinatario, possedendo la #gl("chiave-privata") corrispondente, potrà decifrarlo.
-- *#gl("firma-digitale", capitalize: true)*: il mittente cifra un messaggio con la propria #gl("chiave-privata"). Chiunque, usando la #gl("chiave-pubblica") del mittente, può verificare che il messaggio provenga effettivamente da lui e non sia stato alterato.
+- *Cifratura*: chiunque può cifrare un messaggio usando la chiave-pubblica del destinatario. Solo il destinatario, possedendo la chiave-privata corrispondente, potrà decifrarlo.
+- *Firma-digitale*: il mittente cifra un messaggio con la propria chiave-privata. Chiunque, usando la chiave-pubblica del mittente, può verificare che il messaggio provenga effettivamente da lui e non sia stato alterato.
 
 #figure(
   image("../images/flusso_crittografia_chiave_asimmetrica.png", width: 60%),
@@ -29,14 +29,14 @@ Questo meccanismo permette due operazioni fondamentali:
 
 === La firma digitale in dettaglio
 
-La #gl("firma-digitale") non cifra il messaggio intero — sarebbe inefficiente. Funziona invece in questo modo:
+La firma-digitale non cifra il messaggio intero — sarebbe inefficiente. Funziona invece in questo modo:
 
 + Il mittente calcola l'_hash_ del messaggio, ovvero una sua impronta digitale di dimensione fissa prodotta da una funzione matematica non invertibile.
-+ Il mittente cifra quell'hash con la propria #gl("chiave-privata"). Il risultato è la #gl("firma-digitale").
-+ Il destinatario riceve messaggio e firma. Decifra la firma usando la #gl("chiave-pubblica") del mittente, ottenendo l'hash originale.
++ Il mittente cifra quell'hash con la propria chiave-privata. Il risultato è la firma-digitale.
++ Il destinatario riceve messaggio e firma. Decifra la firma usando la chiave-pubblica del mittente, ottenendo l'hash originale.
 + Il destinatario calcola autonomamente l'hash del messaggio ricevuto e confronta i due valori. Se coincidono, la firma è valida: il messaggio proviene dal mittente dichiarato e non è stato modificato.
 
-La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle collisioni delle funzioni di #gl("hash") (è praticamente impossibile trovare due messaggi diversi con lo stesso #gl("hash")) e l'impossibilità computazionale di produrre una firma valida senza possedere la #gl("chiave-privata").
+La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle collisioni delle funzioni di #gl("hash") (è praticamente impossibile trovare due messaggi diversi con lo stesso #gl("hash")) e l'impossibilità computazionale di produrre una firma valida senza possedere la chiave-privata.
 
 #figure(
   image("../images/firma_documento.png", width: 73%),
@@ -45,9 +45,9 @@ La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle 
 
 === Curve ellittiche: Ed25519
 
-Gli algoritmi crittografici moderni si basano su problemi matematici computazionalmente difficili. RSA, il primo algoritmo a #gl("chiave-pubblica") diffuso, si basa sulla difficoltà di fattorizzare numeri molto grandi. Gli algoritmi moderni basati su _curve ellittiche_ offrono lo stesso livello di sicurezza con chiavi molto più corte, risultando più veloci ed efficienti.
+Gli algoritmi crittografici moderni si basano su problemi matematici computazionalmente difficili. RSA, il primo algoritmo a chiave-pubblica diffuso, si basa sulla difficoltà di fattorizzare numeri molto grandi. Gli algoritmi moderni basati su _curve ellittiche_ offrono lo stesso livello di sicurezza con chiavi molto più corte, risultando più veloci ed efficienti.
 
-*#gl("ed25519", capitalize: true)* è un algoritmo di #gl("firma-digitale") basato sulla curva ellittica Curve25519. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma #gl("ssh", capitalize: true) ed è quello utilizzato in questo progetto.
+*#gl("ed25519", capitalize: true)* è un algoritmo di firma-digitale basato sulla curva ellittica Curve25519. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma #gl("ssh", capitalize: true) ed è quello utilizzato in questo progetto.
 
 #figure(
   image("../images/dimensione_chiave.png", width: 65%),
@@ -63,10 +63,10 @@ Gli algoritmi crittografici moderni si basano su problemi matematici computazion
 #gl("ssh", capitalize: true) supporta due modalità principali di autenticazione: tramite password e tramite coppia di chiavi. L'autenticazione con chiavi è considerata più sicura e viene raccomandata in tutti i contesti professionali. Il funzionamento è il seguente:
 
 + L'utente genera una coppia di chiavi con `ssh-keygen`.
-+ La #gl("chiave-pubblica") viene copiata sul server remoto, nella cartella `~/.ssh/authorized_keys`.
-+ Al momento della connessione, il server invia una sfida cifrata con la #gl("chiave-pubblica") dell'utente.
-+ Il client dimostra di possedere la #gl("chiave-privata") corrispondente risolvendo la sfida.
-+ La connessione viene stabilita senza che la #gl("chiave-privata") abbia mai lasciato il client.
++ La chiave-pubblica viene copiata sul server remoto, nella cartella `~/.ssh/authorized_keys`.
++ Al momento della connessione, il server invia una sfida cifrata con la chiave-pubblica dell'utente.
++ Il client dimostra di possedere la chiave-privata corrispondente risolvendo la sfida.
++ La connessione viene stabilita senza che la chiave-privata abbia mai lasciato il client.
 
 === ssh-keygen per la firma di file
 
@@ -100,7 +100,7 @@ Se la firma è valida e l'identità è presente nel file, il comando restituisce
 
 #gl("age", capitalize: true) supporta tre modalità di cifratura:
 
-- *#gl("chiave-pubblica", capitalize: true)*: il file viene cifrato con la #gl("chiave-pubblica") del destinatario e può essere decifrato solo con la corrispondente #gl("chiave-privata").
+- *Chiave-pubblica*: il file viene cifrato con la chiave-pubblica del destinatario e può essere decifrato solo con la corrispondente chiave-privata.
 - *Chiave #gl("ssh", capitalize: true)*: #gl("age", capitalize: true) può utilizzare le stesse chiavi #gl("ssh", capitalize: true) già esistenti (incluse le chiavi #gl("ed25519", capitalize: true)) come chiavi di cifratura, senza bisogno di generare nuove chiavi dedicate.
 - *#gl("passphrase", capitalize: true)*: il file viene cifrato con una #gl("passphrase"), usando la funzione di derivazione `scrypt` per proteggersi da attacchi a dizionario.
 

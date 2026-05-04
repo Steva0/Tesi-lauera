@@ -52,7 +52,7 @@ Gli strumenti principali adottati durante lo stage sono stati:
 
 Il percorso di lavoro ha seguito un andamento alternato tra fasi teoriche e fasi pratiche, con transizioni determinate dall'avanzamento della comprensione del sistema e dalla disponibilità del materiale.
 
-Nella *fase iniziale* l'attenzione era rivolta allo studio delle tecnologie crittografiche — chiavi #gl("ssh", capitalize: true), #gl("firma-digitale"), #gl("age", capitalize: true) — attraverso documentazione ufficiale, esempi pratici al terminale e confronto con il tutor aziendale. Parallelamente ho iniziato a esplorare #gl("rvc", capitalize: true) dall'esterno, analizzandone il comportamento tramite i comandi disponibili e studiando il formato dei file prodotti.
+Nella *fase iniziale* l'attenzione era rivolta allo studio delle tecnologie crittografiche — chiavi #gl("ssh", capitalize: true), firma-digitale, #gl("age", capitalize: true) — attraverso documentazione ufficiale, esempi pratici al terminale e confronto con il tutor aziendale. Parallelamente ho iniziato a esplorare #gl("rvc", capitalize: true) dall'esterno, analizzandone il comportamento tramite i comandi disponibili e studiando il formato dei file prodotti.
 
 Una volta ottenuto accesso ai *sorgenti #gl("cpl", capitalize: true)*, l'approccio è cambiato: dall'analisi esterna (_black-box_) si è passati all'analisi interna (_white-box_), con lettura sistematica del codice, identificazione delle vulnerabilità e progettazione degli interventi migliorativi. Questa fase ha richiesto anche lo studio del linguaggio #gl("cpl", capitalize: true), per il quale non esiste documentazione pubblica — la comprensione è avvenuta tramite lettura del codice esistente e consultazione della documentazione interna fornita dall'azienda.
 

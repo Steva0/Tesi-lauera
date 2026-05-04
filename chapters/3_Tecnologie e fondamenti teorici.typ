@@ -24,7 +24,7 @@ Questo meccanismo permette due operazioni fondamentali:
 
 #figure(
   image("../images/flusso_crittografia_chiave_asimmetrica.png", width: 60%),
-  caption: "Flusso trasferimento messaggio con uso di chiave pubblia e privata"
+  caption: "Flusso trasferimento messaggio con uso di chiave pubblica e privata"
 )
 
 === La firma digitale in dettaglio
@@ -40,7 +40,7 @@ La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle 
 
 #figure(
   image("../images/firma_documento.png", width: 73%),
-  caption: "Flusso firma di un documento con chiave pubblia e privata"
+  caption: "Flusso firma di un documento con chiave pubblica e privata"
 )
 
 === Curve ellittiche: Ed25519

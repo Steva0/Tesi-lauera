@@ -3,7 +3,7 @@
 
 #pagebreak(to:"odd")
 
-= Analisi del codice sorgente<cap:analisi-del-codice-sorgente>
+= Analisi dei requisiti<cap:analisi-dei-requisiti>
 
 #text(style: "italic", [
     In questo capitolo effettuo l'analisi degli utenti, sviluppo le user stories e compongo la lista dei requisiti dividendoli per tipologia e necessità.

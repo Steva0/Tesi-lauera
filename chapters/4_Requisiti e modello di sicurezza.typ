@@ -12,7 +12,8 @@
     fondamentali richieste, vengono analizzate le scelte architetturali, i trade-off 
     e le motivazioni che portano alla definizione di un sistema gerarchico di fiducia, 
     di livelli di sicurezza configurabili e di requisiti formali. Il capitolo si conclude 
-    con un analisi del divario che confronta il modello ideale con lo stato attuale di RVC, identificando le aree di intervento affrontate nei capitoli successivi.
+    con un'analisi del divario che confronta il modello ideale con lo stato attuale di RVC, identificando le aree di intervento affrontate nei capitoli successivi.
+    Data la centralità di questi aspetti all'interno del progetto, il capitolo risulta volutamente più esteso rispetto agli altri, così da consentire un'analisi dettagliata ed esaustiva delle problematiche considerate e delle soluzioni adottate.
 ])
 #v(1em)
 
@@ -52,12 +53,11 @@ identificativo nella forma `0Q6JTD7XVZ_A3F2B1C4` — dove la prima parte è il
 timestamp e la seconda sono i primi otto caratteri dell'#gl("hash") #gl("sha256") 
 dell'archivio ZIP — rende praticamente impossibile la collisione intenzionale 
 mantenendo la leggibilità e l'ordinamento per nome file. Questa modifica è 
-identificata come requisito nel modello ideale e discussa nella gap analysis 
-nella @sec:gap-analysis.
+identificata come requisito nel modello ideale e discussa nell'analisi del divario nella @sec:analisi-divario.
 
 == Requisiti di sicurezza formali
 
-A partire dalle proprietà definite nella sezione precedente, è possibile derivare un insieme di requisiti formali che un sistema di versionamento distribuito sicuro deve soddisfare. Ogni requisito è classificato per priorità obbligatorio (O) o desiderabile (D) e verrà ripreso nella _gap analysis_ per valutare lo stato attuale di #gl("rvc", capitalize: true).
+A partire dalle proprietà definite nella sezione precedente, è possibile derivare un insieme di requisiti formali che un sistema di versionamento distribuito sicuro deve soddisfare. Ogni requisito è classificato per priorità obbligatorio (O) o desiderabile (D) e verrà ripreso nell'analisi del divario per valutare lo stato attuale di #gl("rvc", capitalize: true).
 
 === Integrità e ordine verificabile
 
@@ -76,7 +76,7 @@ L'integrità è la proprietà fondamentale di qualsiasi sistema di versionamento
 
 === Autenticità e non ripudio
 
-Garantire l'integrità del contenuto non è sufficiente se non è possibile stabilire chi lo ha prodotto. L'autenticità richiede che ogni #gl("commit") sia crittograficamente attribuibile al suo autore tramite firma digitale. Il non ripudio è una conseguenza diretta di questa scelta — un autore non può negare di aver prodotto una #gl("commit") firmata con la propria #gl("chiave-privata"). La radice di fiducia dell'intera #gl("repository") è la prima #gl("commit"), che deve essere verificabile autonomamente da qualsiasi terzo in possesso della chiave pubblica dell'amministratore, senza dipendere da infrastrutture esterne.
+Garantire l'integrità del contenuto non è sufficiente se non è possibile stabilire chi lo ha prodotto. L'autenticità richiede che ogni #gl("commit") sia crittograficamente attribuibile al suo autore tramite firma digitale. Il non ripudio è una conseguenza diretta di questa scelta — un autore non può negare di aver prodotto una #gl("commit") firmata con la propria #gl("chiave-privata"). La radice di fiducia dell'intera #gl("repository") è la prima #gl("commit"), firmata dall'amministratore con la propria chiave privata. Poiché l'autenticità di tutte le commit successive dipende dalla verificabilità di questa firma, la prima commit è un requisito di autenticità prima ancora che di integrità — senza di essa non è possibile stabilire da chi provenga la catena di autorizzazioni che legittima ogni singola firma successiva.
 
 #figure(caption: "Requisiti di autenticità e non ripudio.")[
   #table(
@@ -104,7 +104,7 @@ In un sistema multi-utente la gestione delle identità è il meccanismo che trad
 
 === Sicurezza configurabile
 
-Non tutti i progetti richiedono lo stesso livello di protezione. Un prototipo interno ha esigenze diverse da un modulo che gestisce dati sensibili di un cliente. Imporre lo stesso livello di sicurezza a tutti i progetti sarebbe eccessivamente restrittivo per alcuni e insufficiente per altri. Il modello proposto prevede livelli di sicurezza configurabili per progetto, con il vincolo che il livello non possa essere abbassato nel tempo — una scelta che previene attacchi che cercano di degradare le garanzie di sicurezza di un progetto già avviato. Per i progetti che richiedono la massima riservatezza, il contenuto delle #gl("commit") può essere cifrato con #gl("age", capitalize: true), rendendo il codice leggibile solo agli utenti autorizzati. La gestione della visibilità dei destinatari introduce un ulteriore grado di configurabilità, permettendo di bilanciare usabilità e privacy in base al contesto.
+Non tutti i progetti richiedono lo stesso livello di protezione. Un prototipo interno ha esigenze diverse da un modulo che gestisce dati sensibili di un cliente. Imporre lo stesso livello di sicurezza a tutti i progetti sarebbe eccessivamente restrittivo per alcuni e insufficiente per altri. Il modello proposto prevede livelli di sicurezza configurabili per progetto, con il vincolo che il livello non possa essere abbassato nel tempo — una scelta che previene attacchi che cercano di degradare le garanzie di sicurezza di un progetto già avviato. Per i progetti che richiedono la massima riservatezza, il contenuto delle #gl("commit") può essere cifrato con #gl("age", capitalize: true), rendendo il codice leggibile solo agli utenti autorizzati.
 
 #figure(caption: "Requisiti di sicurezza configurabile.")[
   #table(
@@ -112,7 +112,6 @@ Non tutti i progetti richiedono lo stesso livello di protezione. Un prototipo in
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
     [RS11], [Il sistema deve supportare livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [D],
     [RS12], [Il contenuto delle #gl("commit") deve poter essere cifrato con #gl("age", capitalize: true) per progetti riservati], [D],
-    [RS13], [La gestione dei destinatari nei progetti cifrati deve supportare modalità configurabili di visibilità], [D],
   )
 ]
 
@@ -124,21 +123,40 @@ I branch sono uno strumento fondamentale nello sviluppo software parallelo, ma i
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
-    [RS14], [I branch compromessi devono poter essere chiusi con una #gl("commit") firmata che ne attesti la compromissione], [D],
+    [RS13], [I branch compromessi devono poter essere chiusi con una #gl("commit") firmata che ne attesti la compromissione], [D],
   )
 ]
 
 I requisiti obbligatori definiscono le proprietà minime senza le quali il sistema non può essere considerato sicuro per il contesto d'uso descritto. I requisiti desiderabili estendono il modello con funzionalità che aumentano significativamente il livello di sicurezza, ma la cui assenza non compromette le garanzie fondamentali.
 
-I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS07, RS08, RS09 e RS10 definiscono il modello di gestione delle identità e dei permessi. RS11, RS12 e RS13 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS14 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui branch.
+I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS07, RS08, RS09 e RS10 definiscono il modello di gestione delle identità e dei permessi. RS11 e RS12 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS13 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui branch.
 
 == Gerarchia di fiducia
 
 In un sistema di versionamento distribuito la fiducia non può essere delegata a un server centrale — deve essere incorporata nella struttura stessa dei dati. Il modello proposto definisce una gerarchia a tre livelli operativi più un livello esterno di sola lettura, ciascuno con responsabilità e permessi ben definiti. La gerarchia è asimmetrica: ogni livello superiore può esercitare i poteri del livello inferiore, ma non viceversa.
 
+=== Commit ordinarie e commit amministrative
+
+Il modello distingue due categorie di commit in base al contenuto dello ZIP.
+
+*Commit ordinaria* — crea o modifica esclusivamente file del progetto, senza toccare nessun file speciale. Può essere firmata da qualsiasi dipendente presente in `allowed_signers`.
+
+*Commit amministrativa* — crea, modifica o elimina almeno uno dei seguenti file speciali: `allowed_Dipendenti`, `.rvc_policy` o `.rvc_branch_status`. Tutte le commit del progetto `_rvc_root` sono amministrative per definizione. 
+
+La verifica delle commit amministrative avviene prima che la commit venga prodotta, ed è il punto cruciale per la segregazione dei permessi tra progetti diversi. Il motore confronta il contenuto dello ZIP con quello della commit precedente e, se rileva modifiche ai file speciali, richiede che la firma appartenga all'amministratore o al responsabile del progetto. 
+Per verificare che il firmatario sia il legittimo responsabile di *quel* progetto, il motore esegue un controllo congiunto: verifica che la chiave del firmatario appartenga a un responsabile (ovvero sia presente nel file `allowed_Responsabili` di `_rvc_root`) *e contemporaneamente* che sia già presente all'interno del file `allowed_Dipendenti` del progetto stesso. Questo doppio vincolo impedisce a un responsabile di alterare le policy o i permessi di un progetto assegnato a un altro responsabile. L'amministratore (identificato invece dalla presenza della sua chiave nel file `allowed_Dipendenti` di `_rvc_root`) è esente dal controllo locale e ha facoltà di produrre commit amministrative su qualsiasi progetto. Se la verifica fallisce, la commit viene rifiutata prima ancora della generazione del file `.sig`.
+
+Nel caso specifico della prima commit assoluta di un nuovo progetto, non esistendo uno stato precedente, il motore applica un'eccezione logica: accetta la creazione dei file speciali verificando che il firmatario sia un responsabile in `_rvc_root` e che si sia auto-incluso nel file `allowed_Dipendenti` appena creato.
+
+La prima commit di qualsiasi progetto è sempre amministrativa — crea `allowed_Dipendenti` e `.rvc_policy` per la prima volta. Di conseguenza solo il responsabile o l'amministratore può inizializzare un progetto.
+
+Questa verifica preventiva ha una conseguenza diretta sulla catena di fiducia: se una commit esiste ed è crittograficamente valida, chiunque la verifichi può assumere che il firmatario avesse i permessi necessari al momento della produzione. Non è quindi necessario accedere al contenuto dello ZIP per verificare la legittimità di una modifica ai file speciali — è sufficiente verificare che la firma della commit sia valida e che il firmatario fosse autorizzato secondo `_rvc_root`. Questa proprietà vale per tutti i livelli di sicurezza incluso il livello 4, dove la verifica avviene prima della cifratura sul contenuto in chiaro.
+
+Le commit amministrative richiedono sempre la verifica dell'identità del firmatario, indipendentemente dal livello di sicurezza del progetto. Ai livelli 0 e 1 non esiste il file `allowed_Dipendenti` e quindi non esiste la figura del responsabile di progetto — l'unico soggetto autorizzato a produrre commit amministrative è l'amministratore, che firma con la propria chiave operativa. Questa regola garantisce che i file speciali siano sempre protetti da una firma verificabile anche nei progetti con il livello di sicurezza più basso, dove le commit ordinarie non richiedono firma o non verificano l'identità. Il progetto `_rvc_root` segue sempre le stesse regole indipendentemente dal livello — tutte le sue commit sono amministrative e devono essere firmate dall'amministratore.
+
 === Amministratore (CapoProgetto)
 
-L'amministratore è la radice assoluta di fiducia dell'intera #gl("repository"). Dispone di due chiavi crittografiche distinte: una chiave operativa utilizzata nelle operazioni quotidiane e una chiave master conservata offline su un dispositivo air-gapped o in una cassaforte fisica. La separazione tra le due chiavi limita la finestra di rischio in caso di compromissione: se la chiave operativa viene rubata o esposta, l'amministratore usa la chiave master per revocarla e nominarne una nuova senza perdere il controllo della #gl("repository").
+L'amministratore è la radice assoluta di fiducia dell'intera #gl("repository"). Questo ruolo può essere ricoperto da un singolo individuo o da un gruppo direttivo (ad esempio i fondatori o i direttori tecnici). A livello crittografico, il sistema si basa su una netta separazione: esiste un'unica chiave master conservata offline su un dispositivo air-gapped o in una cassaforte fisica, e una o più chiavi operative (una per ciascun amministratore autorizzato) utilizzate per le operazioni quotidiane su macchine connesse. La separazione tra la chiave master e le chiavi operative limita la finestra di rischio in caso di compromissione: se una chiave operativa viene rubata o esposta, la chiave master interviene per revocarla e nominarne una nuova senza invalidare le altre chiavi operative o perdere il controllo della #gl("repository").
 
 La prima operazione alla creazione di una #gl("repository") è produrre il file `allowed_Responsabili` — l'elenco delle chiavi pubbliche dei responsabili autorizzati — e firmarlo con la chiave privata operativa. Questo file e la sua firma costituiscono la prima #gl("commit") della #gl("repository") e la radice di fiducia da cui deriva tutta la catena di verifica successiva. L'amministratore ha accesso in lettura e scrittura a tutti i progetti della #gl("repository") a qualsiasi livello di sicurezza, incluso il livello 4 con contenuto cifrato — la sua chiave pubblica è sempre inclusa tra i destinatari autorizzati.
 
@@ -146,65 +164,130 @@ La prima operazione alla creazione di una #gl("repository") è produrre il file 
 
 Il responsabile gestisce uno o più progetti all'interno della #gl("repository"). Il ruolo viene assegnato dall'amministratore tramite inclusione nel file `allowed_Responsabili` — non può essere auto-assegnato né delegato a un altro responsabile. Per ogni progetto gestito, il responsabile mantiene il file `allowed_Dipendenti`, che elenca le chiavi pubbliche dei dipendenti autorizzati a committare. Questo file è versionato all'interno dello ZIP di ogni #gl("commit") del progetto, fa parte del contenuto hashato e firmato, e la sua storia è completamente tracciabile.
 
-Il responsabile aggiunge o rimuove dipendenti dal proprio progetto in autonomia. L'amministratore può sovrascrivere il file `allowed_Dipendenti` di qualsiasi progetto in qualsiasi momento — il suo potere non è vincolato dalla struttura gerarchica. Se un responsabile lascia l'azienda o viene rimosso dal ruolo, l'amministratore nomina un sostituto aggiornando il file `allowed_Responsabili`. Fino alla nomina del sostituto il progetto entra in stato di attesa: i dipendenti esistenti possono continuare a committare, ma non è possibile aggiungere nuovi dipendenti né modificare i permessi esistenti.
+Il responsabile aggiunge o rimuove dipendenti dal proprio progetto in autonomia tramite commit amministrative — modificando il file `allowed_Dipendenti` e firmando la commit con la propria chiave privata. L'amministratore può sovrascrivere il file `allowed_Dipendenti` di qualsiasi progetto in qualsiasi momento — il suo potere non è vincolato dalla struttura gerarchica. Se un responsabile lascia l'azienda o viene rimosso dal ruolo, l'amministratore nomina un sostituto aggiornando il file `allowed_Responsabili`. Fino alla nomina del sostituto il progetto entra in stato di attesa: i dipendenti esistenti possono continuare a committare, ma non è possibile aggiungere nuovi dipendenti né modificare i permessi esistenti.
+
+Il responsabile può alzare il livello di sicurezza del proprio progetto in qualsiasi momento producendo una #gl("commit") firmata che aggiorna il file `.rvc_policy`. Il livello non può essere abbassato — questa operazione viene rifiutata dal motore indipendentemente dall'identità del firmatario. L'amministratore ha lo stesso potere su qualsiasi progetto della #gl("repository").
 
 === Dipendente
 
-Il dipendente è autorizzato a committare su un progetto se e solo se la propria chiave pubblica è presente nel file `allowed_Dipendenti` della #gl("commit") più recente di quel progetto. I permessi sono definiti per progetto — un dipendente autorizzato su ProgettoA non ha accesso a ProgettoB, anche se entrambi appartengono alla stessa #gl("repository"). Non esistono permessi per branch: un dipendente autorizzato su un progetto può committare su qualsiasi branch di quel progetto.
+Il dipendente è autorizzato a produrre commit ordinarie su un progetto se e solo se la propria chiave pubblica è presente nel campo `allowed_signers` della #gl("commit") più recente di quel progetto. I permessi sono definiti per progetto — un dipendente autorizzato su ProgettoA non ha accesso a ProgettoB, anche se entrambi appartengono alla stessa #gl("repository"). Non esistono permessi per branch: un dipendente autorizzato su un progetto può committare su qualsiasi branch di quel progetto.
+
+I dipendenti non possono produrre commit amministrative — qualsiasi tentativo di creare, modificare o eliminare un file speciale (`allowed_Dipendenti`, `.rvc_policy`, `.rvc_branch_status`) viene rifiutato dal motore indipendentemente dalla presenza della firma. Questa restrizione vale per tutti i livelli di sicurezza.
 
 La revoca è operativa dalla #gl("commit") successiva alla modifica del file `allowed_Dipendenti`: il dipendente rimosso non può produrre #gl("commit") valide sul progetto. Le #gl("commit") prodotte prima della revoca rimangono valide in quanto firmate da un'identità che era autorizzata al momento della firma — la storia del progetto è immutabile e ogni modifica ai permessi è tracciata nella catena.
 
-=== Cliente
+=== Cliente o Guest
 
-Il cliente riceve la #gl("repository") e verifica autonomamente autenticità e integrità del contenuto, senza dipendere dall'infrastruttura del produttore. La verifica parte dalla chiave pubblica operativa dell'amministratore, ottenuta tramite un canale indipendente dalla #gl("repository") stessa — ad esempio il sito ufficiale del produttore distribuito tramite HTTPS. Con questa chiave il cliente verifica la firma sul file `allowed_Responsabili` della prima #gl("commit") e da lì risale crittograficamente all'intera catena di autorizzazioni e #gl("commit").
+Il cliente o guest riceve la #gl("repository") e verifica autonomamente autenticità e integrità del contenuto, senza dipendere dall'infrastruttura del produttore. La verifica parte dalla chiave pubblica operativa dell'amministratore, ottenuta tramite un canale indipendente dalla #gl("repository") stessa — ad esempio il sito ufficiale del produttore distribuito tramite HTTPS. Con questa chiave il cliente verifica la firma sul file `allowed_Responsabili` della prima #gl("commit") e da lì risale crittograficamente all'intera catena di autorizzazioni e #gl("commit").
 
-Il cliente non ha permessi di scrittura sulla #gl("repository"). Quando riceve un aggiornamento, verifica che le nuove #gl("commit") si colleghino correttamente alla catena già in suo possesso, partendo dalla stessa radice di fiducia. Nei progetti di livello 4 la chiave pubblica del cliente deve essere registrata tra i destinatari autorizzati per poter decifrare il contenuto — la verifica della catena e delle firme è comunque possibile senza decifrare, poiché l'hash nel file `.sig` è calcolato sul contenuto cifrato.
+Il cliente opera in sola lettura e non ha permessi di scrittura sulla #gl("repository"). Quando riceve un aggiornamento, verifica che le nuove #gl("commit") si colleghino correttamente alla catena già in suo possesso. Nei progetti di livello 4 la chiave pubblica #gl("age", capitalize: true) del cliente deve essere registrata tra i destinatari autorizzati (`recipients`) per poter decifrare il contenuto. Questo meccanismo sfrutta la separazione architetturale dei permessi: il cliente è autorizzato alla lettura tramite AGE, ma la sua assenza dal file `allowed_Dipendenti` gli impedisce crittograficamente di produrre #gl("commit") valide, proteggendo l'integrità dello sviluppo. La verifica della catena e delle firme rimane comunque possibile anche per i non autorizzati senza decifrare, poiché l'hash nel file `.sig` è calcolato sul contenuto cifrato.
 
 === Inizializzazione della repository
 
 La creazione di una nuova #gl("repository") segue questa procedura:
 
-+ L'amministratore genera la coppia di chiavi master con `ssh-keygen -t ed25519` e conserva la chiave privata master su un dispositivo offline. La chiave pubblica master è l'ancora di fiducia primaria del sistema.
-+ L'amministratore genera la coppia di chiavi operativa con `ssh-keygen -t ed25519`. La chiave pubblica operativa viene firmata con la chiave privata master, creando un certificato che attesta la delega operativa.
-+ L'amministratore crea il file `allowed_Responsabili` con le chiavi pubbliche dei responsabili nominati e lo firma con la chiave privata operativa.
-+ Il file `allowed_Responsabili`, la sua firma e il certificato della chiave operativa costituiscono la prima #gl("commit") della #gl("repository") — la radice di fiducia verificabile da qualsiasi terzo in possesso della chiave pubblica master.
-+ La chiave pubblica master viene pubblicata su un canale indipendente dalla #gl("repository"). Chiunque la possieda può verificare la legittimità della chiave operativa e, da lì, tutta la catena di autorizzazioni.
++ L'amministratore genera la singola coppia di chiavi master con `ssh-keygen -t ed25519` e conserva la chiave privata master su un dispositivo offline.
++ Gli amministratori generano le proprie coppie di chiavi operative sui rispettivi computer di lavoro. Usando la chiave privata master, vengono firmate tutte le chiavi pubbliche operative autorizzate.
++ Viene creata la primissima #gl("commit") del progetto `_rvc_root`. Questa commit è fondamentale perché inizializza lo stato del motore e deve contenere:
+  - Il file `master.pub` (la chiave pubblica master in chiaro).
+  - I file di certificato `.sig` (le firme crittografiche della master sulle chiavi operative).
+  - Il file `allowed_Dipendenti` contenente l'elenco di tutte le chiavi pubbliche operative.
+  - Il file `allowed_Responsabili` (inizialmente vuoto o con i primi nominati).
++ Questa prima commit viene firmata con la chiave master stessa, stabilendo l'ancora di fiducia interna al sistema. 
++ Infine, la chiave pubblica master viene pubblicata su un canale indipendente (es. sito web HTTPS). Il cliente verifica che la `master.pub` dentro la repository coincida con quella sul sito web, validando a cascata l'intera catena.
 
-In caso di compromissione della chiave operativa, l'amministratore genera una nuova coppia operativa, la firma con la chiave master e pubblica una #gl("commit") di revoca che dichiara la vecchia chiave non più valida e introduce la nuova. La chiave master non viene mai esposta durante le operazioni ordinarie — il suo utilizzo è limitato alla firma della chiave operativa e alle operazioni di revoca.
+=== Compromissione di una chiave operativa
+
+La compromissione di una chiave operativa è lo scenario critico del modello. Si utilizza la chiave master — conservata offline — per revocare esclusivamente la chiave operativa compromessa, lasciando intatte le eventuali altre chiavi operative valide. La procedura è la seguente:
+
++ Viene recuperato il dispositivo offline contenente la chiave privata master.
++ Se necessario, il soggetto compromesso genera una nuova coppia di chiavi operativa, la cui parte pubblica viene firmata con la chiave master per creare un nuovo certificato di delega.
++ Viene prodotta una speciale #gl("commit") amministrativa su `_rvc_root` che aggiorna il file `allowed_Dipendenti` (inserendo la nuova chiave e/o rimuovendo la vecchia compromessa) e aggiorna i certificati.
++ Questa #gl("commit") di revoca viene firmata eccezionalmente con la *chiave privata master*.
++ Il motore di RVC riceve la commit. Poiché la chiave master non è elencata in `allowed_Dipendenti`, il motore procederebbe a rifiutarla. Tuttavia, prima di emettere il rifiuto definitivo, il motore verifica la firma della commit contro il file `master.pub` registrato in modo immutabile nella commit iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master e accetta la commit; altrimenti la rifiuta.
 
 === Inizializzazione di un progetto
 
-La creazione di un nuovo progetto all'interno di una #gl("repository") esistente è gestita dal responsabile nominato per quel progetto, senza necessità di intervento dell'amministratore:
+La creazione di un nuovo progetto all'interno di una #gl("repository") esistente segue percorsi diversi a seconda del livello di sicurezza scelto. La prima commit di qualsiasi progetto è sempre una commit amministrativa, ma i file da generare e i soggetti autorizzati cambiano in base al contesto.
 
-+ Il responsabile crea il file `allowed_Dipendenti` con le chiavi pubbliche dei dipendenti autorizzati.
-+ Il responsabile crea il file `.rvc_policy` con il livello di sicurezza scelto per il progetto.
-+ Il responsabile produce la prima #gl("commit") del progetto, firmata con la propria chiave privata. La firma è verificabile tramite il file `allowed_Responsabili` della #gl("repository").
-+ Da questo momento i dipendenti elencati in `allowed_Dipendenti` sono autorizzati a committare sul progetto.
+Per i *progetti ai livelli di sicurezza 2, 3 e 4*, l'inizializzazione è gestita dal responsabile nominato, senza necessità di intervento dell'amministratore. La procedura è la seguente:
++ Il responsabile crea il file `allowed_Dipendenti` con le chiavi pubbliche dei dipendenti autorizzati. In questa fase inaugurale, il motore richiede tassativamente che il responsabile includa la propria chiave pubblica nel file, in modo da stabilire il vincolo di appartenenza al progetto discusso in precedenza.
++ Il responsabile crea il file `.rvc_policy` con il livello di sicurezza scelto (da 2 a 4) e, per il livello 4, la lista iniziale dei destinatari autorizzati alla decifratura.
++ Il responsabile produce la prima #gl("commit") del progetto, firmata con la propria chiave privata. Il motore accetta la commit verificando che il firmatario sia in `_rvc_root` e si sia auto-incluso nel nuovo `allowed_Dipendenti`.
 
-Il livello di sicurezza definito nella prima #gl("commit") non può essere abbassato — può essere alzato in qualsiasi momento tramite una #gl("commit") firmata dal responsabile o dall'amministratore. Questa scelta elimina la possibilità di degradare le garanzie di sicurezza di un progetto già avviato.
+Per i *progetti ai livelli di sicurezza 0 e 1*, non esistendo il file `allowed_Dipendenti` né la figura del responsabile, l'inizializzazione può essere eseguita esclusivamente dall'amministratore. L'amministratore produce una prima commit contenente unicamente il file `.rvc_policy` (che dichiara il livello 0 o 1) e la firma con la propria chiave operativa. Qualsiasi tentativo da parte di un responsabile o di un dipendente di inizializzare un progetto a questi livelli viene rifiutato dal motore.
+
+Il livello di sicurezza definito nella prima #gl("commit") non può essere abbassato — può essere alzato in qualsiasi momento tramite una commit amministrativa firmata dal responsabile o dall'amministratore. Questa scelta elimina la possibilità di degradare le garanzie di sicurezza di un progetto già avviato.
 
 === File amministrativi della repository
 
 In RVC ogni #gl("commit") appartiene a un progetto — non esiste il concetto di #gl("commit") globale della #gl("repository"). I file amministrativi `allowed_Responsabili` e la sua firma devono però risiedere nella #gl("repository") in modo verificabile e versionato, indipendentemente da qualsiasi progetto specifico.
 
-Il modello proposto risolve questo problema definendo un progetto riservato con nome convenzionale `_rvc_root`, dedicato esclusivamente all'amministrazione della #gl("repository"). Solo l'amministratore è autorizzato a committare su questo progetto — il file `allowed_Responsabili` e la sua firma risiedono all'interno dello ZIP di ogni #gl("commit") di `_rvc_root`, seguendo la stessa struttura di qualsiasi altro progetto. La verifica della radice di fiducia usa lo stesso codice che verifica qualsiasi altra #gl("commit") — nessun caso speciale è necessario nel motore.
+Il modello proposto risolve questo problema definendo un progetto riservato con nome convenzionale `_rvc_root`, dedicato esclusivamente all'amministrazione della #gl("repository"). Al suo interno risiede il file `allowed_Responsabili` e la sua firma. Anche `_rvc_root` contiene al suo interno un proprio file `allowed_Dipendenti`. In questo file è presente unicamente la chiave pubblica operativa dell'amministratore. Solo l'amministratore è quindi autorizzato a committare su questo progetto, seguendo la medesima struttura logica di tutti gli altri.
 
-Il nome `_rvc_root` è riservato per convenzione del modello. Per prevenire conflitti, il motore verifica all'inizializzazione che questo nome non sia già in uso e lo riserva automaticamente — qualsiasi tentativo di creare un progetto con questo nome da parte di un responsabile o dipendente viene rifiutato. Questa è l'unica modifica richiesta al motore di RVC rispetto al comportamento standard.
+Il nome `_rvc_root` è riservato per convenzione del modello. Per prevenire conflitti, il motore verifica all'inizializzazione che questo nome non sia già in uso e lo riserva automaticamente — qualsiasi tentativo di creare un progetto con questo nome da parte di un responsabile o dipendente viene rifiutato.
 
 Questa scelta è preferita all'alternativa di file speciali nella radice della #gl("repository") perché non richiede modifiche architetturali al motore e mantiene la coerenza del modello — la verifica della radice di fiducia usa esattamente la stessa logica della verifica di qualsiasi altro progetto.
+
+Il progetto `_rvc_root` opera al livello di sicurezza 2 — ogni #gl("commit") deve essere firmata dall'amministratore e la firma viene verificata contro il campo `allowed_signers` del `.sig`, che contiene esclusivamente la chiave pubblica operativa dell'amministratore. Il livello 2 è il minimo che garantisce la verifica dell'identità del firmatario senza richiedere la cifratura del contenuto — `_rvc_root` deve rimanere leggibile da qualsiasi soggetto che voglia verificare la catena di fiducia.
+
+=== Il file .rvc_policy
+
+Il file `.rvc_policy` definisce le proprietà di sicurezza di un progetto ed è collocato nella radice dello ZIP di ogni #gl("commit"). È un file speciale — la sua creazione e modifica sono operazioni amministrative riservate al responsabile o all'amministratore. I campi che il file deve contenere sono i seguenti:
+
+- `security_level`: valore intero da 0 a 4 che definisce il livello di sicurezza del progetto. Questo valore viene estratto dal motore e riportato nel campo `security_level` del `.sig` ad ogni #gl("commit"), in modo che il livello sia verificabile senza accedere allo ZIP. Il livello non può essere abbassato nelle #gl("commit") successive.
+- `recipients`: lista delle chiavi pubbliche dei destinatari autorizzati alla decifratura. Presente solo nei progetti a livello 4. Definisce la lista iniziale dei destinatari al momento della creazione del progetto e include sia i soggetti autorizzati alla scrittura sia eventuali "Guest" in sola lettura (clienti, auditor). Le modifiche successive avvengono tramite commit amministrative che aggiornano sia questo campo che l'header AGE dello ZIP cifrato.
+
+Il file `.rvc_policy` non contiene informazioni sulle identità dei dipendenti — quelle risiedono in `allowed_Dipendenti`. La separazione tra policy di sicurezza e lista delle identità permette di aggiornare i due aspetti indipendentemente, mantenendo in entrambi i casi la tracciabilità completa nella catena delle #gl("commit").
+
+=== Struttura del file .sig nel modello proposto
+
+Il file `.sig` è il punto di contatto tra il contenuto crittografico e il modello di sicurezza. Nel modello proposto la sua struttura estende quella attuale di #gl("rvc", capitalize: true) con i campi necessari per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione dei branch. Il `.sig` è firmato crittograficamente nella sua interezza — qualsiasi modifica a uno qualsiasi dei suoi campi invalida la firma e quindi la commit.
+
+I campi del `.sig` nel modello proposto sono i seguenti:
+
+- `author`: identificativo dell'autore della commit, nella forma definita dal file `allowed_Dipendenti` del progetto. Il formato — email, nome opaco o qualsiasi altra convenzione — è una scelta dell'organizzazione che gestisce la #gl("repository").
+- `comment`: messaggio descrittivo della commit.
+- `fn`: nome del file ZIP corrispondente.
+- `id`: identificativo della commit, composto da timestamp in base36 e hash parziale del contenuto — ad esempio `0Q6JTD7XVZ_A3F2B1C4`.
+- `prevId`: identificativo della commit precedente.
+- `hash`: #gl("sha256") del file ZIP di questa commit.
+- `prevHash`: #gl("sha256") del file ZIP della commit precedente.
+- `cumulativeHash`: #gl("sha256") della concatenazione dell'hash attuale con il `cumulativeHash` della commit precedente.
+- `security_level`: livello di sicurezza del progetto — da 0 a 4. Estratto dal file `.rvc_policy` dello ZIP e riportato in chiaro nel `.sig` per permettere al motore di applicare le regole corrette senza dover decifrare il contenuto. Questo è necessario in particolare per i progetti a livello 4 — il motore deve sapere che il contenuto è cifrato prima ancora di tentare di leggerlo. La conseguenza è che il livello di sicurezza di un progetto è visibile a chiunque possa leggere il `.sig`, incluso il fatto che un progetto sia riservato. Questo è considerato accettabile perché l'esistenza di un progetto è già visibile dalla struttura dei file nella #gl("repository").
+- `allowed_signers`: elenco delle chiavi pubbliche #gl("ssh", capitalize: true) degli identificativi autorizzati a committare al momento di questa commit. Presente solo nei progetti a livello 2, 3 e 4 — estratto dal file `allowed_Dipendenti` dello ZIP *prima* di qualsiasi cifratura e riportato in chiaro nel `.sig`. Questo garantisce che il campo sia sempre leggibile indipendentemente dal livello di sicurezza del progetto: anche al livello 4, dove lo ZIP viene cifrato dopo l'estrazione, `allowed_signers` rimane in chiaro nel `.sig` e permette la verifica delle firme senza dover decifrare il contenuto. Per il progetto `_rvc_root` contiene esclusivamente la chiave pubblica operativa dell'amministratore. Ai livelli 0 e 1 questo campo è assente.
+- `branch_status`: stato corrente del branch — `active`, `archived` o `compromised`. È presente in ogni #gl("commit") e riflette il contenuto del file `.rvc_branch_status` dentro lo ZIP. Il motore legge sempre questo campo direttamente dal `.sig` — senza dover accedere allo ZIP — indipendentemente dal livello di sicurezza del progetto. Questo garantisce che la gestione dei branch funzioni correttamente anche per i progetti a livello 4 dove lo ZIP è cifrato. Il file `.rvc_branch_status` dentro lo ZIP rimane la fonte di verità completa e può contenere informazioni aggiuntive — motivazione, riferimenti, note — accessibili a chi ha i permessi di lettura.
+- `recipients`: elenco delle identità complete dei destinatari autorizzati alla decifratura del contenuto ZIP. Presente solo nei progetti a livello 4. Contiene le chiavi pubbliche #gl("age", capitalize: true) dei destinatari in chiaro — chiunque possa leggere il `.sig` può determinare chi ha accesso al contenuto cifrato. Questa scelta è deliberata: la complessità di meccanismi di oscuramento parziale introduce buchi nella verificabilità senza offrire garanzie di riservatezza robuste.
+
+Dopo questi campi il file `.sig` contiene la firma #gl("ssh", capitalize: true) dell'autore nel formato standard, assente al livello 0:
+
+#figure(
+  caption: [Esempio di firma ssh],
+  block(width: auto)[
+    ```
+    -----BEGIN OPENSSH SIGNATURE-----
+    <contenuto della firma>
+    -----END OPENSSH SIGNATURE-----
+    ```
+  ]
+)
+
+La presenza di `allowed_signers` nel `.sig` in chiaro risolve il problema della verificabilità per qualsiasi livello di sicurezza: il motore di RVC e qualsiasi terzo possono verificare la firma della commit e la legittimità del firmatario leggendo esclusivamente il `.sig`, senza dover decifrare il contenuto dello ZIP. Il file `allowed_Dipendenti` dentro lo ZIP rimane la fonte di verità completa — contiene le chiavi pubbliche degli autorizzati con le relative informazioni ed eventuali dati aggiuntivi ad uso interno — ma non è necessario per la verifica crittografica.
 
 === Catena di fiducia tra progetti
 
 Il progetto `_rvc_root` non collega crittograficamente i progetti della #gl("repository") tra loro — ogni progetto mantiene una propria catena di #gl("commit") indipendente. La funzione di `_rvc_root` è certificare le identità autorizzate, non la struttura dei dati. La fiducia tra i progetti è gerarchica attraverso le identità, non crittografica attraverso la struttura.
 
-La verifica di una #gl("commit") di un qualsiasi progetto segue questa catena:
+La verifica completa di una #gl("commit") di un qualsiasi progetto segue questa catena:
 
-+ La firma della #gl("commit") viene verificata contro le chiavi presenti in `allowed_Dipendenti`.
-+ La firma di `allowed_Dipendenti` viene verificata contro la chiave del responsabile.
-+ La chiave del responsabile viene verificata contro `allowed_Responsabili` presente in `_rvc_root`.
-+ La firma di `allowed_Responsabili` viene verificata con la chiave pubblica master dell'amministratore, ottenuta fuori banda.
++ La firma della #gl("commit") viene verificata crittograficamente contro le chiavi pubbliche presenti nel campo `allowed_signers` del `.sig` di quella #gl("commit"). Il campo `allowed_signers` è fidato perché il motore garantisce che solo il responsabile o l'amministratore possano produrre le commit amministrative che lo modificano — qualsiasi altra modifica viene rifiutata prima della creazione della commit. Di conseguenza, se una commit esiste ed è crittograficamente valida, il suo campo `allowed_signers` riflette una lista di autorizzati approvata da chi ne aveva il potere.
++ La firma della #gl("commit") di `_rvc_root` che ha prodotto la versione corrente di `allowed_Responsabili` viene verificata contro la chiave pubblica operativa dell'amministratore, presente nel campo `allowed_signers` del `.sig` di `_rvc_root`. A differenza degli altri progetti, il campo `allowed_signers` di `_rvc_root` contiene esclusivamente la chiave pubblica operativa dell'amministratore — i responsabili sono il contenuto di `_rvc_root`, non i suoi firmatari.
++ La legittimità della chiave pubblica operativa viene verificata tramite il certificato firmato con la chiave master, presente nella prima #gl("commit") di `_rvc_root`.
++ La chiave pubblica master viene verificata tramite il canale indipendente dalla #gl("repository").
 
 Questa catena implica un requisito operativo: la verifica completa di qualsiasi #gl("commit") richiede la presenza di `_rvc_root` nella #gl("repository"). Chi riceve la #gl("repository") riceve automaticamente tutti i progetti incluso `_rvc_root` — ma un sistema che distribuisce solo i file di un singolo progetto non permette la verifica completa della catena di fiducia.
+
+Questa catena di verifica si applica ai progetti a livello 2 o superiore, dove il campo `allowed_signers` è presente nel `.sig`. Per i progetti a livello 0 e 1 la verifica delle identità attraverso la catena non è applicabile — è una conseguenza diretta del livello di sicurezza scelto, che non prevede né l'autorizzazione esplicita né la lista degli autorizzati. In questi progetti l'unica garanzia verificabile è l'integrità della catena degli hash. Questa limitazione è documentata come scelta consapevole: i livelli 0 e 1 sono destinati a contesti dove la tracciabilità formale delle identità non è un requisito.
 
 === Implicazioni di sicurezza della radice pubblica
 
@@ -224,11 +307,13 @@ Il modello proposto introduce livelli di sicurezza configurabili per progetto, d
 
 === Livello 0 — Aperto
 
-Nessuna firma è richiesta. Chiunque abbia accesso fisico alla #gl("repository") può aggiungere #gl("commit"). Non vengono verificate né l'identità dell'autore né l'integrità della catena. Questo livello è appropriato per prototipi interni in fase esplorativa dove la velocità di sviluppo è prioritaria e la tracciabilità formale non è richiesta. Non fornisce nessuna delle quattro proprietà di sicurezza definite nella sezione 4.1.
+Nessuna firma è richiesta per le commit ordinarie. Le commit amministrative (come la prima #gl("commit") di inizializzazione prodotta dall'amministratore) costituiscono un'eccezione architetturale globale: devono sempre essere firmate e includere il campo `allowed_signers` nel `.sig`. Per le commit ordinarie, invece, chiunque abbia accesso fisico alla #gl("repository") può aggiungere #gl("commit"). Il sistema non impone la verifica automatica dell'identità né dell'integrità, sebbene quest'ultima resti calcolabile matematicamente tramite la catena degli hash. Il file `.sig` per le commit ordinarie al livello 0 contiene solo i campi strutturali — `author`, `comment`, `fn`, `id`, `prevId`, `hash`, `prevHash`, `cumulativeHash`, `security_level` e `branch_status` — ma non il campo `allowed_signers` e non la firma SSH. L'assenza della firma nelle commit ordinarie è la caratteristica distintiva del livello 0 e viene rilevata dal motore come indicazione che il progetto opera senza controllo delle identità.
+
+Questo livello è appropriato per prototipi interni in fase esplorativa dove la velocità di sviluppo è prioritaria e la tracciabilità formale non è richiesta. Non fornisce nessuna delle quattro proprietà di sicurezza definite nella sezione precedente — né integrità crittografica delle identità, né autenticità, né non ripudio, né ordine verificabile tramite firme.
 
 === Livello 1 — Autenticato
 
-Ogni #gl("commit") deve essere firmata digitalmente, ma non esiste una lista di identità autorizzate — qualsiasi chiave #gl("ssh", capitalize: true) valida è accettata. Il sistema verifica che la firma sia crittograficamente valida e che corrisponda a una chiave privata reale, ma non verifica se quella chiave appartenga a un soggetto autorizzato. Questo livello garantisce autenticità e non ripudio — ogni #gl("commit") è attribuibile a chi possiede la chiave corrispondente — ma non autorizzazione. È appropriato per repository interne dove tutti i partecipanti sono implicitamente fidati ma si vuole mantenere la tracciabilità delle modifiche.
+Ogni #gl("commit") deve contenere una firma #gl("ssh", capitalize: true) valida nel formato standard. Il motore verifica che la firma sia presente e crittograficamente corretta — non verifica l'identità del firmatario né se la chiave appartenga a un soggetto autorizzato. Questo livello garantisce autenticità e non ripudio: ogni #gl("commit") è attribuibile a chi possiede la chiave privata corrispondente alla firma, e la presenza della firma è prova crittografica della paternità. Non garantisce autorizzazione — chiunque possieda una chiave #gl("ssh", capitalize: true) può committare. È appropriato per #gl("repository") interne dove tutti i partecipanti sono implicitamente fidati ma si vuole mantenere la tracciabilità delle modifiche.
 
 === Livello 2 — Autorizzato
 
@@ -242,17 +327,21 @@ Come il livello 2, con l'aggiunta della verifica obbligatoria della catena degli
 
 Come il livello 3, con l'aggiunta della cifratura del contenuto degli archivi ZIP tramite #gl("age", capitalize: true). Solo i soggetti la cui chiave pubblica è registrata tra i destinatari autorizzati possono decifrare e leggere il contenuto. La verifica della catena e delle firme rimane possibile senza decifrare — l'#gl("hash") nel file `.sig` è calcolato sul contenuto cifrato, non su quello in chiaro. Questo livello è appropriato per progetti che contengono codice o dati la cui riservatezza è un requisito contrattuale o legale.
 
-AGE supporta nativamente la cifratura per destinatari multipli: il contenuto è cifrato una volta sola con una chiave di sessione, e la chiave di sessione è cifrata separatamente per ogni destinatario autorizzato. Aggiungere o rimuovere un destinatario richiede solo la modifica dell'header del file cifrato nella #gl("commit") successiva — il contenuto non deve essere ricitrato.
+Una proprietà fondamentale del Livello 4 è il disaccoppiamento esplicito tra permessi di lettura e permessi di scrittura. Mentre la capacità di produrre #gl("commit") è governata dal file `allowed_Dipendenti`, la capacità di leggere i sorgenti è governata dalla lista dei destinatari in `.rvc_policy`. Questa asimmetria permette di definire la figura del "Guest" (ad esempio auditor, tester o clienti): utenti la cui chiave è inclusa tra i destinatari per consentire l'ispezione del codice, ma a cui è inibita la scrittura poiché assenti dall'elenco degli `allowed_Dipendenti`. In un progetto a Livello 4, l'insieme degli utenti autorizzati in scrittura deve essere un sottoinsieme degli utenti autorizzati in lettura.
+
+AGE supporta nativamente la cifratura per destinatari multipli: il contenuto è cifrato una volta sola con una chiave di sessione, e la chiave di sessione è cifrata separatamente per ogni destinatario autorizzato. Aggiungere o rimuovere un destinatario richiede solo la modifica dell'header del file cifrato nella #gl("commit") successiva — il contenuto non deve essere nuovamente cifrato.
+
+Nei progetti a livello 4 il file `allowed_Dipendenti` risiede all'interno dello ZIP cifrato — è parte del contenuto riservato e non è accessibile a chi non ha i permessi di lettura. La verifica crittografica rimane comunque possibile per qualsiasi osservatore grazie al campo `allowed_signers` presente in chiaro nel `.sig`: questo campo contiene le chiavi pubbliche degli autorizzati al momento della commit ed è parte del contenuto firmato, quindi la sua integrità è garantita dalla firma stessa. Un osservatore senza permessi di lettura può verificare che la commit sia firmata da una chiave presente negli `allowed_signers` del `.sig`, risalire alla gerarchia tramite `_rvc_root` e verificare l'intera catena di fiducia — senza mai dover decifrare il contenuto del progetto.
+
+Il file `allowed_Dipendenti` dentro lo ZIP rimane la fonte di verità completa per chi ha i permessi di lettura — contiene le chiavi pubbliche degli autorizzati con le relative informazioni ed eventuali dati aggiuntivi ad uso interno.
 
 === Gestione dei destinatari nel livello 4
 
-La cifratura del contenuto introduce il problema della visibilità dei destinatari: come può un utente sapere se ha accesso a un progetto riservato senza tentare la decifratura? Il modello propone tre modalità configurabili nel file `.rvc_policy`:
+Nei progetti a livello 4 il campo `recipients` del `.sig` contiene le identità complete dei destinatari autorizzati alla decifratura — le loro chiavi pubbliche #gl("age", capitalize: true) in chiaro. Chiunque possa leggere il `.sig` può determinare chi ha accesso al contenuto cifrato.
 
-*Modalità nascosta* (`recipients_mode: hidden`) — nessuna informazione sui destinatari è esposta. L'utente deve tentare la decifratura per scoprire se ha accesso. Questa modalità offre la massima riservatezza — un osservatore esterno non può determinare chi ha accesso al progetto — ma comporta un'esperienza d'uso meno immediata e non permette la costruzione di strumenti di gestione automatica dei permessi.
+Questa scelta è deliberata. Meccanismi di oscuramento parziale — come fingerprint delle chiavi o lista nascosta — introducono complessità implementativa e buchi nella verificabilità senza offrire garanzie di riservatezza robuste: un osservatore che conosce le chiavi pubbliche dei candidati può sempre risalire alle identità. La riservatezza reale dei destinatari è garantita dalla scelta organizzativa di non distribuire le chiavi pubbliche dei dipendenti, non da meccanismi tecnici nel `.sig`.
 
-*Modalità impronta* (`recipients_mode: fingerprint`) — il file `.sig` include i fingerprint delle chiavi pubbliche dei destinatari, calcolati come #gl("sha256") della chiave. Un utente che conosce la propria chiave pubblica può calcolare il proprio fingerprint e verificare se è presente nella lista senza rivelare la propria identità a osservatori esterni. Questa modalità è il compromesso raccomandato tra usabilità e riservatezza.
-
-*Modalità pubblica* (`recipients_mode: public`) — le identità complete dei destinatari sono elencate in chiaro nel file `.sig`. Questa modalità offre la massima usabilità — è immediatamente verificabile chi ha accesso — ma espone la lista dei partecipanti a qualsiasi osservatore. In contesti dove anche la lista dei partecipanti è informazione sensibile, questa modalità introduce un rischio di target enumeration: un attaccante può identificare quali soggetti hanno accesso al codice più riservato e concentrare su di essi eventuali attacchi.
+La gestione dei destinatari segue le stesse regole degli `allowed_signers`: l'amministratore è sempre incluso tra i destinatari di qualsiasi progetto a livello 4. Aggiungere o rimuovere un destinatario richiede una nuova #gl("commit") firmata dal responsabile o dall'amministratore che aggiorna l'header AGE del file ZIP cifrato — il contenuto non deve essere nuovamente cifrato.
 
 #figure(caption: "Confronto tra i livelli di sicurezza configurabili.")[
   #table(
@@ -269,7 +358,9 @@ La cifratura del contenuto introduce il problema della visibilità dei destinata
   )
 ]
 
-Il livello di sicurezza è definito nella prima #gl("commit") del progetto e non può essere abbassato. Questa proprietà è garantita dal motore di RVC: prima di accettare una nuova #gl("commit"), il sistema verifica che il livello dichiarato nel file `.rvc_policy` sia maggiore o uguale a quello della #gl("commit") precedente. Qualsiasi tentativo di abbassare il livello viene rifiutato indipendentemente dall'identità del firmatario.
+Il livello di sicurezza è definito nella prima #gl("commit") del progetto tramite il file `.rvc_policy` e non può essere abbassato nelle commit successive. Alla prima #gl("commit") il motore accetta il livello dichiarato nel `.rvc_policy` senza confronto con commit precedenti — non esistendone. Per ogni #gl("commit") successiva il motore verifica che il campo `security_level` del `.sig` sia maggiore o uguale a quello della #gl("commit") precedente. Qualsiasi tentativo di abbassare il livello viene rifiutato indipendentemente dall'identità del firmatario.
+
+L'innalzamento del livello di sicurezza può essere effettuato in qualsiasi momento tramite una #gl("commit") firmata dal responsabile del progetto o dall'amministratore. Una volta alzato, il nuovo livello diventa il minimo accettabile per tutte le commit successive — il sistema non permette di tornare al livello precedente.
 
 == Gestione delle identità e ciclo di vita delle chiavi
 
@@ -282,14 +373,14 @@ Un dipendente può cambiare la propria coppia di chiavi #gl("ssh", capitalize: t
 + Il dipendente genera una nuova coppia di chiavi con `ssh-keygen -t ed25519`.
 + Il dipendente comunica la nuova chiave pubblica al responsabile.
 + Il responsabile aggiorna il file `allowed_Dipendenti` rimuovendo la vecchia chiave pubblica e aggiungendo la nuova.
-+ Il responsabile produce una #gl("commit") firmata con la modifica al file `allowed_Dipendenti`.
++ Il responsabile produce una commit amministrativa firmata con la modifica al file `allowed_Dipendenti` — il motore verifica che la firma appartenga al responsabile o all'amministratore prima di accettarla.
 + Dalla #gl("commit") successiva il dipendente firma con la nuova chiave privata.
 
 Le #gl("commit") prodotte con la vecchia chiave rimangono valide — erano firmate da un'identità autorizzata al momento della firma e il file `allowed_Dipendenti` di quelle #gl("commit") conteneva la vecchia chiave pubblica. La storia del progetto è immutabile e ogni cambio di chiave è tracciato nella catena.
 
 === Revoca per compromissione
 
-Se una chiave privata viene compromessa — rubata, esposta accidentalmente o sospettata tale — la revoca deve avvenire nel minor tempo possibile. La procedura è identica al cambio ordinario ma con priorità immediata: il responsabile aggiorna `allowed_Dipendenti` rimuovendo la chiave compromessa e produce una #gl("commit") di revoca esplicita che documenta l'evento.
+Se una chiave privata viene compromessa — rubata, esposta accidentalmente o sospettata tale — la revoca deve avvenire nel minor tempo possibile. La procedura è identica al cambio ordinario ma con priorità immediata: il responsabile aggiorna `allowed_Dipendenti` rimuovendo la chiave compromessa e produce una #gl("commit") amministrativa che documenta l'evento.
 
 Esiste una finestra di rischio tra il momento della compromissione e la #gl("commit") di revoca: durante questo intervallo un attaccante in possesso della chiave privata rubata può produrre #gl("commit") fraudolente che risultano valide. La dimensione di questa finestra dipende dalla rapidità con cui la compromissione viene rilevata e comunicata al responsabile. Il sistema non può eliminare questa finestra — è una limitazione strutturale di qualsiasi sistema basato su revoca — ma la minimizza richiedendo che la revoca sia operativa dalla #gl("commit") successiva senza procedure straordinarie.
 
@@ -315,11 +406,11 @@ Fino alla nomina del sostituto il progetto rimane in stato di attesa: i dipenden
 
 La compromissione della chiave operativa dell'amministratore è lo scenario più critico del modello. L'amministratore usa la chiave master — conservata offline — per revocare la chiave operativa compromessa e nominarne una nuova. La procedura è la seguente:
 
-+ L'amministratore recupera il dispositivo offline contenente la chiave master.
-+ Genera una nuova coppia di chiavi operativa.
-+ Firma la nuova chiave pubblica operativa con la chiave privata master.
-+ Produce una #gl("commit") su `_rvc_root` che dichiara la vecchia chiave operativa non più valida e introduce la nuova, firmata con la chiave master.
-+ Pubblica la nuova chiave pubblica operativa sul canale indipendente dalla #gl("repository").
++ L'amministratore recupera il dispositivo offline contenente la chiave privata master.
++ Genera una nuova coppia di chiavi operativa e ne firma la parte pubblica con la chiave master, creando il nuovo certificato di delega.
++ Produce una speciale #gl("commit") amministrativa su `_rvc_root` che aggiorna il file `allowed_Dipendenti` (inserendo la nuova chiave operativa e rimuovendo la vecchia compromessa) e aggiorna il certificato di delega.
++ Questa #gl("commit") di revoca viene firmata eccezionalmente con la *chiave privata master*.
++ Il motore di RVC riceve la commit. Poiché il firmatario non è in `allowed_Dipendenti` prima di rifutare la commit verifica la firma contro il file `master.pub` registrato in modo immutabile nella commit iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master, accetta la commit e rende operativa la nuova delega altriemnti rifiuta la commit.
 
 Chiunque possieda la chiave pubblica master può verificare la legittimità della nuova chiave operativa e, da lì, ricominciare a verificare la catena di fiducia. Le #gl("commit") prodotte con la vecchia chiave operativa rimangono valide — erano legittime al momento della firma. Le #gl("commit") prodotte da un attaccante con la chiave compromessa durante la finestra di rischio sono identificabili come fraudolente tramite analisi della storia nel periodo sospetto.
 
@@ -331,17 +422,18 @@ I branch sono uno strumento fondamentale nello sviluppo software parallelo — p
 
 Il principio fondamentale che governa la gestione dei branch nel modello proposto è l'*immutabilità della storia*: nessuna #gl("commit") viene mai cancellata o modificata retroattivamente. Qualsiasi intervento su un branch — archiviazione, chiusura o dichiarazione di compromissione — avviene aggiungendo nuove #gl("commit") che ne attestano lo stato, non rimuovendo quelle esistenti. Questo principio garantisce che la storia del progetto rimanga sempre verificabile nella sua interezza, inclusa la traccia degli eventi straordinari.
 
-=== Archiviazione di branch inutili
+=== Archiviazione di un branch 
 
-Un branch di sviluppo che ha concluso il proprio ciclo di vita — perché la funzionalità è stata integrata nel branch principale o perché è stata abbandonata — può essere marcato come archiviato. Il responsabile produce una #gl("commit") firmata sul branch con un file speciale `.rvc_branch_status` all'interno dello ZIP che dichiara lo stato `archived` e la motivazione. Lo stato viene riportato anche nel campo `branch_status` del file `.sig` di quella #gl("commit") — in chiaro e firmato crittograficamente insieme agli altri metadati. Questo permette al motore di RVC di rilevare lo stato del branch leggendo esclusivamente il `.sig`, senza dover decifrare lo ZIP, garantendo il corretto funzionamento anche per i progetti a livello 4.
+Un branch di sviluppo che ha concluso il proprio ciclo di vita — perché la funzionalità è stata integrata nel branch principale o perché è stata abbandonata — può essere marcato come archiviato tramite una commit amministrativa. Il responsabile produce una #gl("commit") firmata sul branch contenente il file speciale `.rvc_branch_status` dentro lo ZIP, che dichiara lo stato `archived` e può includere motivazione, riferimenti e note aggiuntive. Lo stato viene estratto da questo file e riportato nel campo `branch_status` del `.sig` — in chiaro e parte del contenuto firmato. Il motore legge esclusivamente il campo `branch_status` del `.sig` per determinare lo stato del branch, senza dover accedere allo ZIP — questo garantisce il corretto funzionamento a qualsiasi livello di sicurezza, incluso il livello 4 con contenuto cifrato.
 
-Il motore tratta i branch archiviati come sola lettura — è possibile leggerne la storia ma non aggiungere nuove #gl("commit"). L'archiviazione è reversibile: il responsabile o l'amministratore può produrre una nuova #gl("commit") che riporta lo stato a `active`. Questa operazione è tracciata nella catena e richiede una firma autorizzata.
+I branch archiviati sono trattati dal motore in una speciale modalità protetta: rifiutano tassativamente qualsiasi nuova commit ordinaria, cristallizzando di fatto lo stato del codice. È possibile leggerne la storia in modo completo, ma i dipendenti non possono aggiungervi modifiche.
+L'archiviazione è un'operazione reversibile esclusivamente tramite una commit amministrativa con la modifica del file `.rvc_branch_status` per impostarlo ad `active`, con il conseguente aggiornamento del campo `branch_status` nel `.sig`. Questa commit riporta il branch allo stato operativo normale e ristabilisce i permessi di scrittura standard.
 
 === Chiusura di branch compromessi
 
-Un branch compromesso è un branch su cui è stata prodotta una o più #gl("commit") fraudolente o non autorizzate — ad esempio durante la finestra di rischio successiva alla compromissione di una chiave privata. La gestione di questo scenario segue una procedura in due fasi.
+Un branch compromesso è un branch su cui sono state prodotte una o più #gl("commit") fraudolente o non autorizzate — ad esempio durante la finestra di rischio successiva alla compromissione di una chiave privata. La gestione di questo scenario segue una procedura in due fasi.
 
-Nella prima fase il branch compromesso viene dichiarato tale tramite una #gl("commit") firmata dal responsabile o dall'amministratore. Il file `.rvc_branch_status` all'interno dello ZIP dichiara lo stato `compromised`, il riferimento all'identificativo della prima #gl("commit") sospetta e la motivazione. Lo stato `compromised` viene riportato anche nel campo `branch_status` del file `.sig` — in chiaro e firmato — in modo che il motore possa imporre il blocco immediato del branch senza dover decifrare il contenuto, indipendentemente dal livello di sicurezza del progetto. Il branch viene immediatamente bloccato — nessuna nuova #gl("commit") è accettata. Le #gl("commit") fraudolente rimangono nella storia e sono visibili, ma il branch è marcato come non affidabile.
+Nella prima fase il branch compromesso viene dichiarato tale tramite una commit amministrativa firmata dal responsabile o dall'amministratore. Il file `.rvc_branch_status` dentro lo ZIP dichiara lo stato `compromised`, l'identificativo della prima #gl("commit") sospetta, la motivazione e qualsiasi informazione aggiuntiva utile alla gestione dell'incidente. Lo stato `compromised` viene estratto e riportato nel campo `branch_status` del `.sig` — il motore legge questo campo direttamente e blocca immediatamente il branch senza dover decifrare il contenuto, indipendentemente dal livello di sicurezza del progetto. Le #gl("commit") fraudolente rimangono nella storia e sono visibili, ma il branch è marcato come non affidabile.
 
 Nella seconda fase viene creato un nuovo branch pulito a partire dall'ultima #gl("commit") verificata come integra prima della compromissione. Lo sviluppo riprende sul nuovo branch. Il branch compromesso rimane nella #gl("repository") come evidenza dell'incidente — la sua storia è verificabile e costituisce la prova crittografica di cosa è accaduto e quando.
 
@@ -353,6 +445,6 @@ Come definito nella sezione sulla gerarchia di fiducia, i permessi sono per prog
 
 Questa scelta è deliberata: introdurre permessi per branch aggiungerebbe complessità gestionale significativa senza un corrispondente aumento delle garanzie di sicurezza. La sicurezza del sistema si basa sull'autenticità delle #gl("commit"), non sulla restrizione dei branch su cui è possibile scrivere. Un dipendente che produce una #gl("commit") non autorizzata — ad esempio direttamente sul branch principale saltando il processo di verifica — è comunque identificabile tramite la firma crittografica e la sua azione è permanentemente tracciata nella storia del progetto.
 
-== Gap analysis <sec:gap-analysis>
+== Analisi del divario <sec:analisi-divario>
 
 

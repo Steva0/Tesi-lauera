@@ -34,7 +34,7 @@ La versione di #gl("rvc", capitalize: true) fornita per lo stage è una versione
 
 Ho scelto questo progetto per l'interesse verso la sicurezza informatica e la crittografia applicata, temi che avevo già incontrato durante il percorso universitario ma che non avevo mai avuto l'occasione di approfondire in un contesto reale. L'analisi di un sistema in uso aziendale, con l'obiettivo di individuare vulnerabilità concrete e proporre miglioramenti, rappresenta un'opportunità difficilmente replicabile in ambito accademico.
 
-La natura del lavoro — che combina studio teorico delle tecnologie crittografiche e simulazione pratica di scenari di attacco — mi ha convinto che fosse il progetto più adatto per concludere il percorso triennale con un contributo tangibile.
+La natura del lavoro — che combina studio teorico delle tecnologie crittografiche, progettazione di modelli di sicurezza e simulazione pratica di scenari di attacco — mi ha convinto che fosse il progetto più adatto per concludere il percorso triennale con un contributo originale e tangibile.
 
 #pagebreak()
 
@@ -52,15 +52,14 @@ Gli obiettivi dello stage sono stati definiti in accordo con il tutor aziendale 
     align: (center, left),
     table.header([*Codice*], [*Descrizione*]),
     [O01], [Studio delle tecnologie #gl("ssh", capitalize: true), #gl("age", capitalize: true) e #gl("rvc", capitalize: true)],
-    [O02], [Analisi del sistema #gl("rvc", capitalize: true) e individuazione delle vulnerabilità],
-    [O03], [Simulazione di attacchi senza possesso di credenziali],
-    [O04], [Simulazione di attacchi con chiave-privata compromessa],
-    [O05], [Produzione della documentazione tecnica e della relazione finale],
-    [D01], [Simulazione di attacchi con chiave del capo progetto compromessa],
-    [D02], [Gestione dei _signers_ per _branch_ diversi all'interno della _repository_],
-    [D03], [Studio e implementazione delle tecniche di recovery delle credenziali],
-    [F01], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in #gl("rvc", capitalize: true)],
-    [F02], [Progettazione e sviluppo di un sistema di _repository_ cifrato con distribuzione dei permessi],
+    [O02], [Analisi del sistema #gl("rvc", capitalize: true): architettura, formato dei #gl("commit") e individuazione delle vulnerabilità],
+    [O03], [Definizione di un modello di sicurezza formale per sistemi di versionamento distribuito, con requisiti classificati per priorità e confronto con lo stato attuale di #gl("rvc", capitalize: true)],
+    [O04], [Produzione della documentazione tecnica e della relazione finale],
+    [D01], [Progettazione della gerarchia di fiducia e dei livelli di sicurezza configurabili per #gl("repository") distribuite],
+    [D02], [Simulazione di scenari di attacco con diversi livelli di accesso e analisi delle vulnerabilità individuate],
+    [D03], [Implementazione dei miglioramenti prioritari nel codice sorgente #gl("cpl", capitalize: true) di #gl("rvc", capitalize: true)],
+    [F01], [Progettazione del meccanismo di Redazione Trasparente per la gestione di contenuto illegale o sensibile nella #gl("repository")],
+    [F02], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in #gl("rvc", capitalize: true)],
   )
 ]
 
@@ -80,8 +79,8 @@ Il lavoro è stato organizzato su otto settimane per un totale di 304 ore, suddi
     [3], [40], [Analisi del codice sorgente #gl("cpl", capitalize: true) e individuazione delle vulnerabilità],
     [4], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
     [5], [40], [Implementazione miglioramenti: configurazione, firma #gl("ssh", capitalize: true), verifica integrità],
-    [6], [32], [Gestione signers, allowed_signers, verifica catena completa],
-    [7], [40], [Simulazione attacchi avanzati e sviluppi futuri],
+    [6], [32], [Progettazione della gerarchia di fiducia, gestione delle identità e verifica della catena completa],
+    [7], [40], [Simulazione attacchi avanzati e progettazione del meccanismo di Redazione Trasparente],
     [8], [40], [Completamento e revisione della relazione finale],
   )
 ]

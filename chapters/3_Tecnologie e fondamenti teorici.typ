@@ -172,7 +172,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
   )
 ]
 
-La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni _commit_ produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un #gl("commit") invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più.
+La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni #gl("commit") produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un #gl("commit") invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
 
 == RVC: architettura e funzionamento
 
@@ -221,6 +221,8 @@ Dopo i metadati, il file `.sig` contiene una firma #gl("ssh", capitalize: true) 
 ```
 
 Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il #gl("commit"), rendendo ogni modifica crittograficamente attribuibile.
+
+Questi sono i campi presenti nella versione attuale di #gl("rvc", capitalize: true). Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi — tra cui `security_level`, `allowed_signers`, `branch_status`, `recipients` e `redacted` — necessari per supportare la gerarchia di fiducia e i livelli di sicurezza configurabili.
 
 === Il linguaggio CPL
 

@@ -181,7 +181,7 @@ La differenza più significativa riguarda la sicurezza: mentre in #gl("git", cap
 Una _repository_ #gl("rvc", capitalize: true) è una semplice cartella sul filesystem, senza strutture dati complesse o indici da mantenere. Ogni _commit_ è rappresentato da due file:
 
 - Un archivio *ZIP* contenente il _commit_ del progetto nella versione corrispondente, incluso il file `.FileManifest` che descrive lo stato di tutti i file tracciati.
-- Un file *.sig* contenente i metadati del #gl("commit") e, opzionalmente, la firma #gl("ssh", capitalize: true).
+- Un file *.sig* contenente i metadati del #gl("commit") e la firma #gl("ssh", capitalize: true), la cui apposizione è opzionale nella versione iniziale del sistema.
 
 I file seguono una convenzione di denominazione che codifica la struttura della storia:
 

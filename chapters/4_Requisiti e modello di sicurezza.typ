@@ -12,7 +12,7 @@
     fondamentali richieste, vengono analizzate le scelte architetturali, i trade-off 
     e le motivazioni che portano alla definizione di un sistema gerarchico di fiducia, 
     di livelli di sicurezza configurabili e di requisiti formali. Il capitolo si conclude 
-    con un'analisi del divario che confronta il modello ideale con lo stato attuale di #gl("rvc", capitalize: true), identificando le aree di intervento affrontate nei capitoli successivi.
+    con un'analisi del divario che confronta il modello ideale con lo stato iniziale di #gl("rvc", capitalize: true), identificando per ciascun requisito il grado di soddisfacimento nella versione del sistema fornita dall'azienda all'avvio dello stage, prima di qualsiasi intervento migliorativo.
     Data la centralità di questi aspetti all'interno del progetto, il capitolo risulta volutamente più esteso rispetto agli altri, così da consentire un'analisi dettagliata ed esaustiva delle problematiche considerate e delle soluzioni adottate.
 ])
 #v(1em)
@@ -23,7 +23,7 @@ Un sistema di versionamento distribuito è considerato sicuro quando garantisce,
 
 - *Integrità* — il contenuto di ogni #gl("commit") non può essere alterato senza che la modifica sia rilevabile. Questa proprietà è garantita da funzioni di #gl("hash") crittografiche: dato un archivio ZIP, la sua impronta SHA256 è univoca e deterministica. Qualsiasi modifica — anche di un singolo byte — produce un #gl("hash") completamente diverso. Un sistema che garantisce l'integrità permette a chiunque di verificare che il contenuto ricevuto sia identico a quello prodotto dall'autore, senza dover contattare nessuna fonte autoritativa.
 
-- *Autenticità* — ogni #gl("commit") è crittograficamente attribuibile all'autore che l'ha prodotta. L'autenticità è garantita dalla firma-digitale: l'autore firma il #gl("commit") con la propria chiave-privata e chiunque può verificare la firma usando la corrispondente chiave-pubblica. Senza autenticità, un sistema può garantire che i dati non siano stati modificati durante il trasferimento, ma non può garantire chi li abbia prodotti originariamente.
+- *Autenticità* — ogni #gl("commit") è crittograficamente attribuibile all'autore che lo ha prodotto. L'autenticità è garantita dalla firma-digitale: l'autore firma il #gl("commit") con la propria chiave-privata e chiunque può verificare la firma usando la corrispondente chiave-pubblica. Senza autenticità, un sistema può garantire che i dati non siano stati modificati durante il trasferimento, ma non può garantire chi li abbia prodotti originariamente.
 
 - *Non ripudio* — un autore non può negare di aver prodotto un #gl("commit") firmato con la propria chiave-privata. Il non ripudio è una conseguenza diretta della firma-digitale: poiché solo il possessore della chiave-privata può produrre una firma valida, la presenza di una firma valida è prova crittografica della paternità. Questa proprietà è rilevante in contesti contrattuali e legali — se un fornitore di software distribuisce codice firmato, non può successivamente sostenere di non averlo prodotto.
 
@@ -50,7 +50,7 @@ Per mitigare parzialmente questa limitazione, il modello proposto prevede che l'
 
 == Requisiti di sicurezza formali
 
-A partire dalle proprietà definite nella sezione precedente, è possibile derivare un insieme di requisiti formali che un sistema di versionamento distribuito sicuro deve soddisfare. Ogni requisito è classificato per priorità obbligatorio (O) o desiderabile (D) e verrà ripreso nell'analisi del divario per valutare lo stato attuale di #gl("rvc", capitalize: true).
+A partire dalle proprietà definite nella sezione precedente, è possibile derivare un insieme di requisiti formali che un sistema di versionamento distribuito sicuro deve soddisfare. Ogni requisito è classificato per priorità obbligatorio (O) o desiderabile (D) e verrà ripreso nell'analisi del divario per valutare lo stato iniziale di #gl("rvc", capitalize: true).
 
 === Integrità e ordine verificabile
 
@@ -403,7 +403,7 @@ La compromissione della chiave operativa dell'amministratore è lo scenario più
 + Genera una nuova coppia di chiavi operativa e ne firma la parte pubblica con la chiave master, creando il nuovo certificato di delega.
 + Produce uno speciale #gl("commit") amministrativo su `_rvc_root` che aggiorna il file `allowed_Dipendenti` (inserendo la nuova chiave operativa e rimuovendo la vecchia compromessa) e aggiorna il certificato di delega.
 + Questo #gl("commit") di revoca viene firmato eccezionalmente con la *chiave-privata master*.
-+ Il motore di #gl("rvc", capitalize: true) riceve il #gl("commit"). Poiché il firmatario non è in `allowed_Dipendenti` prima di rifiutare il #gl("commit"), il motore verifica la firma contro il file `master.pub` registrato in modo immutabile nel #gl("commit") iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master, accetta il #gl("commit") e rende operativa la nuova delega altriementi rifiuta il #gl("commit").
++ Il motore di #gl("rvc", capitalize: true) riceve il #gl("commit"). Poiché il firmatario non è presente in `allowed_Dipendenti`, il motore — prima di emettere il rifiuto definitivo — verifica la firma contro il file `master.pub` registrato in modo immutabile nel #gl("commit") iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master, accetta il #gl("commit") e rende operativa la nuova delega; altrimenti lo rifiuta.
 
 Chiunque possieda la chiave-pubblica master può verificare la legittimità della nuova chiave operativa e, da lì, ricominciare a verificare la catena di fiducia. I #gl("commit") prodotti con la vecchia chiave operativa rimangono validi — erano legittimi al momento della firma. I #gl("commit") prodotti da un attaccante con la chiave compromessa durante la finestra di rischio sono identificabili come fraudolenti tramite analisi della storia nel periodo sospetto.
 
@@ -511,5 +511,115 @@ Le limitazioni residue sono le seguenti.
 I file già scaricati sui client locali prima della redazione non possono essere rimossi dal motore — questa è la limitazione strutturale del modello distribuito già discussa. La funzione richiede la chiave master — un attaccante che compromette la chiave master può produrre redazioni fraudolente. La mitigazione è che ogni redazione è pubblica e rilevabile, e che la chiave master è conservata offline.
 
 == Analisi del divario <sec:analisi-divario>
+
+Questa sezione confronta il modello di sicurezza definito nelle sezioni precedenti con lo stato iniziale di #gl("rvc", capitalize: true), identificando per ciascun requisito il grado di soddisfacimento nella versione del sistema disponibile durante lo stage. I requisiti vengono classificati in tre stati: *soddisfatto* (il comportamento nella versione iniziale corrisponde al requisito), *parziale* (esiste una base implementativa ma il requisito non è completamente soddisfatto) e *assente* (il comportamento non è implementato).
+
+Nella versione iniziale di #gl("rvc", capitalize: true) nessun requisito risulta completamente soddisfatto — i migliori risultati sono parziali, il che riflette la natura deliberatamente ridotta della versione fornita per lo stage.
+
+=== Integrità e ordine verificabile
+
+L'integrità strutturale è la proprietà meglio supportata dalla versione iniziale di #gl("rvc", capitalize: true). Il calcolo dell'hash SHA256 del file ZIP e del `cumulativeHash` sono già presenti nel flusso di commit — ogni commit produce un `.sig` con i valori corretti. Tuttavia la verifica di questi valori non è ancora accessibile tramite interfaccia a riga di comando: esistono funzioni helper nel codice sorgente predisposte per la verifica, ma non sono ancora esposte come comandi utilizzabili. Il sistema calcola ma non verifica — la garanzia di integrità è quindi presente nella struttura dati ma non è ancora azionabile dall'utente.
+
+L'identificativo del commit è attualmente composto dal solo timestamp codificato in base36, senza la componente hash del contenuto prevista dal modello. Questo lo rende vulnerabile a collisioni intenzionali basate sulla manipolazione del timestamp. Infine, la limitazione dell'ordine temporale assoluto non è documentata esplicitamente in nessun documento tecnico al di fuori di questa relazione.
+
+#figure(caption: "Analisi del divario — integrità e ordine verificabile.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Descrizione*], [*Stato*]),
+    [RS01], [Verificabilità tramite hash crittografico del contenuto], [Parziale],
+    [RS02], [Verifica della catena degli hash a ogni operazione], [Parziale],
+    [RS03], [Identificativi univoci e non manipolabili tramite timestamp], [Assente],
+    [RS04], [Documentazione esplicita delle limitazioni sull'ordine temporale], [Assente],
+  )
+]
+
+RS01 è parziale perché l'hash viene calcolato e memorizzato ma non verificato automaticamente. RS02 è parziale perché il `cumulativeHash` esiste nella struttura dati ma la sua verifica non è esposta all'utente. RS03 è assente perché l'identificativo è il solo timestamp. RS04 è assente perché la limitazione non era documentata prima di questa relazione.
+
+=== Autenticità e non ripudio
+
+La firma #gl("ssh", capitalize: true) è il punto di maggiore maturità della versione iniziale. Il meccanismo è implementato e funzionante — ogni commit può essere firmato con una chiave #gl("ssh", capitalize: true) e la firma viene apposta al file `.sig`. Tuttavia la firma è opzionale: deve essere abilitata esplicitamente al momento del commit tramite un parametro della riga di comando. Il modello proposto la rende obbligatoria dal livello di sicurezza 1 in poi.
+
+Non esiste invece nessun concetto di radice di fiducia o prima commit privilegiata. Tutte le commit sono trattate allo stesso modo dal motore — non c'è distinzione tra la commit iniziale che dovrebbe stabilire l'ancora di fiducia e le commit successive. Il progetto `_rvc_root` e l'intera gerarchia di fiducia sono assenti.
+
+#figure(caption: "Analisi del divario — autenticità e non ripudio.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Descrizione*], [*Stato*]),
+    [RS05], [Prima commit come radice di fiducia verificabile autonomamente], [Assente],
+    [RS06], [Firma digitale SSH supportata e imposta per i livelli di sicurezza maggiori o uguali a 1], [Parziale],
+  )
+]
+
+RS05 è assente perché non esiste il concetto di radice di fiducia né di commit privilegiata. RS06 è parziale perché la firma è implementata e funzionante ma opzionale — il modello richiede che sia imposta automaticamente in base al livello di sicurezza del progetto.
+
+=== Gestione delle identità
+
+La gestione delle identità è l'area con il divario più ampio tra il modello proposto e la versione iniziale. Non esiste nessuna distinzione tra utenti — amministratore, responsabile e dipendente sono concetti assenti dal motore. Non esiste un file `allowed_Dipendenti` né nessun altro meccanismo per limitare chi può produrre commit validi su un progetto. Di conseguenza non esiste nemmeno il concetto di revoca — non c'è nulla da revocare se non c'è nessuna lista di autorizzati.
+
+La versione fornita per lo stage era deliberatamente sprovvista di questi meccanismi, con l'obiettivo di permettere uno studio autonomo delle vulnerabilità e la progettazione di soluzioni originali. L'assenza di questi controlli è il punto di partenza dell'intero modello proposto in questo capitolo.
+
+#figure(caption: "Analisi del divario — gestione delle identità.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Descrizione*], [*Stato*]),
+    [RS07], [Gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [Assente],
+    [RS08], [Permessi di scrittura configurabili per progetto tramite file di autorizzazione versionato], [Assente],
+    [RS09], [Revoca efficace dal commit successivo alla modifica del file di autorizzazione], [Assente],
+    [RS10], [Successione del responsabile gestita esclusivamente dall'amministratore], [Assente],
+  )
+]
+
+Tutti i requisiti di questa categoria sono assenti per la ragione strutturale già descritta: senza una lista di autorizzati non è possibile implementare nessuno dei meccanismi che ne dipendono.
+
+=== Sicurezza configurabile
+
+Non esiste nella versione iniziale nessun concetto di livello di sicurezza per progetto. Tutti i progetti sono trattati in modo identico dal motore — non c'è nessun file `.rvc_policy` né nessun altro meccanismo per configurare il comportamento del sistema per singolo progetto. La cifratura del contenuto tramite #gl("age", capitalize: true) è completamente assente: la versione fornita per lo stage non includeva nessuna implementazione di cifratura degli archivi ZIP.
+
+#figure(caption: "Analisi del divario — sicurezza configurabile.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Descrizione*], [*Stato*]),
+    [RS11], [Livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [Assente],
+    [RS12], [Cifratura dei commit con AGE per progetti riservati], [Assente],
+  )
+]
+
+=== Gestione dei branch e incidenti
+
+Non esiste nella versione iniziale nessun meccanismo formale per dichiarare lo stato di un branch. I branch sono sequenze di commit senza nessuna metainformazione sullo stato — non esiste il concetto di branch archiviato, compromesso o bloccato. Il file `.rvc_branch_status` e il campo `branch_status` nel `.sig` sono proposte del modello ideale, assenti nell'implementazione corrente. Il meccanismo di Redazione Trasparente, che permette di rendere inaccessibile il contenuto di commit problematici senza rompere la catena crittografica, è anch'esso una proposta originale di questa relazione e non ha nessuna corrispondenza nella versione iniziale.
+
+#figure(caption: "Analisi del divario — gestione dei branch e incidenti.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Descrizione*], [*Stato*]),
+    [RS13], [Branch compromessi chiudibili con commit firmato che ne attesti la compromissione], [Assente],
+  )
+]
+
+=== Sintesi
+
+Il confronto tra il modello proposto e lo stato iniziale di #gl("rvc", capitalize: true) evidenzia un sistema con solide basi crittografiche — la struttura degli hash cumulativi e il meccanismo di firma #gl("ssh", capitalize: true) sono già presenti e funzionanti — ma privo dei meccanismi organizzativi e di controllo degli accessi necessari per un uso in contesti aziendali con requisiti di sicurezza non banali.
+
+#figure(caption: "Sintesi dell'analisi del divario.")[
+  #table(
+    columns: (auto, 1fr, auto),
+    table.header([*Codice*], [*Requisito*], [*Stato*]),
+    [RS01], [Verificabilità tramite hash crittografico], [Parziale],
+    [RS02], [Verifica della catena degli hash], [Parziale],
+    [RS03], [Identificativi univoci e non manipolabili], [Assente],
+    [RS04], [Documentazione limitazioni ordine temporale], [Assente],
+    [RS05], [Radice di fiducia verificabile autonomamente], [Assente],
+    [RS06], [Firma digitale SSH imposta per livello ≥ 1], [Parziale],
+    [RS07], [Gerarchia di fiducia a tre livelli], [Assente],
+    [RS08], [Permessi configurabili per progetto], [Assente],
+    [RS09], [Revoca efficace dal commit successivo], [Assente],
+    [RS10], [Successione del responsabile], [Assente],
+    [RS11], [Livelli di sicurezza configurabili], [Assente],
+    [RS12], [Cifratura AGE per progetti riservati], [Assente],
+    [RS13], [Gestione branch compromessi], [Assente],
+  )
+]
+
+I requisiti RS01, RS02 e RS06 sono parzialmente soddisfatti — la base implementativa esiste ma non è ancora completa o accessibile all'utente. Tutti gli altri requisiti sono assenti. Questo divario non è una critica al sistema esistente — #gl("rvc", capitalize: true) è stato progettato con obiettivi diversi e la versione fornita per lo stage era deliberatamente ridotta — ma definisce con precisione l'area di intervento che i capitoli successivi affrontano con la simulazione degli scenari di attacco e l'implementazione dei miglioramenti prioritari.
 
 

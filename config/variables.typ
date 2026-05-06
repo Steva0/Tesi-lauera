@@ -2,7 +2,7 @@
 #let myName = "Michele Stevanin"
 #let myMatricola = "2101741"
 #let myTitle = "Analisi di sicurezza e integrità crittografica di un sistema di versionamento distribuito"
-#let myProf = "Prof. Vardanega"
+#let myProf = "Prof. Tullio Vardanega"
 #let myCompany = "Zucchetti S.p.A."
 #let myLocation = "Padova"
 #let myAY = "2025-2026"

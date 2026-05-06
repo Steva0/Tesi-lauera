@@ -65,6 +65,6 @@ Per riprodurre scenari di attacco in modo controllato e reversibile, ho configur
 - Una *directory di lavoro* (`simulazione/`) contenente i file di un progetto fittizio su cui eseguire le operazioni #gl("rvc", capitalize: true).
 - Una *#gl("repository") locale* (`repo/`) dove vengono archiviati i _commit_, separata dalla directory di lavoro.
 - Un file `.git/repository.info` che collega la directory di lavoro alla #gl("repository"), seguendo la convenzione di #gl("rvc", capitalize: true).
-- Un file `allowed_signers` contenente le chiavi pubbliche degli autori autorizzati a firmare i _commit_, utilizzato per i test di verifica dell'integrità.
+- Un file `allowed_signers` nel formato OpenSSH, contenente le chiavi pubbliche degli autori autorizzati, utilizzato manualmente per i test di verifica delle firme tramite `ssh-keygen`.
 
 Questo ambiente ha permesso di simulare scenari realistici — inclusi la manomissione dei file di _commit_, la compromissione delle chiavi #gl("ssh", capitalize: true) e la verifica della propagazione degli errori nella catena degli #gl("hash") — senza rischiare di danneggiare dati reali.

@@ -9,11 +9,11 @@ la copia di backup `stato_iniziale_pulito/`.
 
 | ID | Operazione | File coinvolto |
 |----|------------|----------------|
-| 0Q6PFBCITQ | Aggiunta | file.txt |
-| 0Q6PFCSTYO | Modifica | file.txt |
-| 0Q6PFDXALZ | Aggiunta | FileSuperPrivato.txt |
-| 0Q6PFFWYUY | Modifica | FileSuperPrivato.txt |
-| 0Q6PFI6GHY | Aggiunta | fileNuovo.txt |
+| 0Q6PHT7QCI | Aggiunta | file.txt |
+| 0Q6PHUAOSV | Modifica | file.txt |
+| 0Q6PHV1YTU | Aggiunta | fileNuovo.txt |
+| 0Q6PHW0IJW | Modifica | fileNuovo.txt |
+| 0Q6PHWPMPQ | Aggiunta | fileSuperPrivato.txt |
 
 ## Output del verificatore sullo stato iniziale
 
@@ -22,11 +22,11 @@ rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
 Verifica integrita repository: tutti i progetti
 allowed_signers: C:\Users\stemic\stage\allowed_signers
 analyzing repository C:\Users\stemic\stage\repo\ ...
-[OK]  0Q6PFBCITQ  hash:OK  catena:OK  firma:OK  (Michele)
-[OK]  0Q6PFCSTYO  hash:OK  catena:OK  firma:OK  (Michele)
-[OK]  0Q6PFDXALZ  hash:OK  catena:OK  firma:OK  (Michele)
-[OK]  0Q6PFFWYUY  hash:OK  catena:OK  firma:OK  (Michele)
-[OK]  0Q6PFI6GHY  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHT7QCI  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHUAOSV  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHV1YTU  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHW0IJW  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHWPMPQ  hash:OK  catena:OK  firma:OK  (Michele)
 Risultato: 0/5 commit con problemi.
 Risultato: 0/5 commit con warning.
 ```

@@ -110,7 +110,7 @@ Non tutti i progetti richiedono lo stesso livello di protezione. Un prototipo in
 
 === Gestione dei branch
 
-I #gl("branch") sono uno strumento fondamentale nello sviluppo software parallelo, ma introducono scenari di sicurezza che vanno gestiti esplicitamente. Un #gl("branch") può diventare inutile al termine di una funzionalità, oppure può risultare compromesso a seguito di un #gl("commit") fraudolento o non autorizzato. In entrambi i casi il sistema deve fornire un meccanismo formale per dichiarare lo stato del #gl("branch"), senza cancellare la storia — che rimane immutabile e verificabile, salvo il meccanismo di Redazione Trasparente descritto nella @sec:redazione-trasparente — ma aggiungendo un commit firmato che ne attesti la chiusura o la compromissione. Questo approccio mantiene la tracciabilità completa degli eventi, inclusa la prova della compromissione stessa.
+I #gl("branch") sono uno strumento fondamentale nello sviluppo software parallelo, ma introducono scenari di sicurezza che vanno gestiti esplicitamente. Un #gl("branch") può diventare inutile al termine di una funzionalità, oppure può risultare compromesso a seguito di un #gl("commit") fraudolento o non autorizzato. In entrambi i casi il sistema deve fornire un meccanismo formale per dichiarare lo stato del #gl("branch"), senza cancellare la storia — che rimane immutabile e verificabile, salvo il meccanismo di Redazione Trasparente descritto nella @sec:redazione-trasparente — ma aggiungendo un #gl("commit") firmato che ne attesti la chiusura o la compromissione. Questo approccio mantiene la tracciabilità completa degli eventi, inclusa la prova della compromissione stessa.
 
 #figure(caption: "Requisiti di gestione dei branch.")[
   #table(
@@ -143,7 +143,7 @@ Nel caso specifico del primo #gl("commit") assoluto di un nuovo progetto, non es
 
 Il primo #gl("commit") di qualsiasi progetto è sempre amministrativo — crea `allowed_Dipendenti` e `.rvc_policy` per la prima volta. Di conseguenza solo il responsabile o l'amministratore può inizializzare un progetto.
 
-Questa verifica preventiva ha una conseguenza diretta sulla catena di fiducia: se un #gl("commit") esiste ed è crittograficamente valido, chiunque lo verifichi può assumere che il firmatario avesse i permessi necessari al momento della produzione. Non è quindi necessario accedere al contenuto dello ZIP per verificare la legittimità di una modifica ai file speciali — è sufficiente verificare che il commit sia crittograficamente valido e che il firmatario fosse autorizzato secondo `_rvc_root`. Questa proprietà vale per tutti i livelli di sicurezza incluso il livello 4, dove la verifica avviene prima della cifratura sul contenuto in chiaro.
+Questa verifica preventiva ha una conseguenza diretta sulla catena di fiducia: se un #gl("commit") esiste ed è crittograficamente valido, chiunque lo verifichi può assumere che il firmatario avesse i permessi necessari al momento della produzione. Non è quindi necessario accedere al contenuto dello ZIP per verificare la legittimità di una modifica ai file speciali — è sufficiente verificare che il #gl("commit") sia crittograficamente valido e che il firmatario fosse autorizzato secondo `_rvc_root`. Questa proprietà vale per tutti i livelli di sicurezza incluso il livello 4, dove la verifica avviene prima della cifratura sul contenuto in chiaro.
 
 I #gl("commit") amministrativi richiedono sempre la verifica dell'identità del firmatario, indipendentemente dal livello di sicurezza del progetto. Ai livelli 0 e 1 non esiste il file `allowed_Dipendenti` e quindi non esiste la figura del responsabile di progetto — l'unico soggetto autorizzato a produrre #gl("commit") amministrativi è l'amministratore, che firma con la propria chiave operativa. Questa regola garantisce che i file speciali siano sempre protetti da una firma verificabile anche nei progetti con il livello di sicurezza più basso, dove i #gl("commit") ordinari non richiedono firma o non verificano l'identità. Il progetto `_rvc_root` segue sempre le stesse regole indipendentemente dal livello — tutti i suoi #gl("commit") sono amministrativi e devono essere firmati dall'amministratore.
 
@@ -151,7 +151,7 @@ I #gl("commit") amministrativi richiedono sempre la verifica dell'identità del 
 
 L'amministratore è la radice assoluta di fiducia dell'intera #gl("repository"). Questo ruolo può essere ricoperto da un singolo individuo o da un gruppo direttivo (ad esempio i fondatori o i direttori tecnici). A livello crittografico, il sistema si basa su una netta separazione: esiste un'unica chiave master conservata offline su un dispositivo air-gapped o in una cassaforte fisica, e una o più chiavi operative (una per ciascun amministratore autorizzato) utilizzate per le operazioni quotidiane su macchine connesse. La separazione tra la chiave master e le chiavi operative limita la finestra di rischio in caso di compromissione: se una chiave operativa viene rubata o esposta, la chiave master interviene per revocarla e nominarne una nuova senza invalidare le altre chiavi operative o perdere il controllo della #gl("repository").
 
-La prima operazione alla creazione di una #gl("repository") è produrre il file `allowed_Responsabili` — l'elenco delle chiavi pubbliche dei responsabili autorizzati — e firmarlo con la chiave-privata operativa. Questo file e la sua firma costituiscono il primo #gl("commit") della #gl("repository") e la radice di fiducia da cui deriva tutta la catena di verifica successiva. L'amministratore ha accesso in lettura e scrittura a tutti i progetti della #gl("repository") a qualsiasi livello di sicurezza, incluso il livello 4 con contenuto cifrato — la sua chiave pubblica è sempre inclusa tra i destinatari autorizzati.
+La prima operazione alla creazione di una #gl("repository") è produrre il file `allowed_Responsabili` — l'elenco delle chiavi pubbliche dei responsabili autorizzati — e firmarlo con la chiave-privata operativa. Questo file e la sua firma costituiscono il primo #gl("commit") della #gl("repository") e la radice di fiducia da cui deriva tutta la catena di verifica successiva. L'amministratore ha accesso in lettura e scrittura a tutti i progetti della #gl("repository") a qualsiasi livello di sicurezza, incluso il livello 4 con contenuto cifrato — la sua #gl("chiave-pubblica") è sempre inclusa tra i destinatari autorizzati.
 
 === Responsabile di progetto
 
@@ -248,7 +248,7 @@ I campi del `.sig` nel modello proposto sono i seguenti:
 - `prevHash`: SHA256 del file ZIP del #gl("commit") precedente.
 - `cumulativeHash`: SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del #gl("commit") precedente.
 - `security_level`: livello di sicurezza del progetto — da 0 a 4. Estratto dal file `.rvc_policy` dello ZIP e riportato in chiaro nel `.sig` per permettere al motore di applicare le regole corrette senza dover decifrare il contenuto. Questo è necessario in particolare per i progetti a livello 4 — il motore deve sapere che il contenuto è cifrato prima ancora di tentare di leggerlo. La conseguenza è che il livello di sicurezza di un progetto è visibile a chiunque possa leggere il `.sig`, incluso il fatto che un progetto sia riservato. Questo è considerato accettabile perché l'esistenza di un progetto è già visibile dalla struttura dei file nella #gl("repository").
-- `allowed_signers`: elenco delle chiavi pubbliche #gl("ssh", capitalize: true) degli identificativi autorizzati a committare al momento di questo #gl("commit"). Presente solo nei progetti a livello 2, 3 e 4 — estratto dal file `allowed_Dipendenti` dello ZIP prima di qualsiasi cifratura e riportato in chiaro nel `.sig`. Questo garantisce che il campo sia sempre leggibile indipendentemente dal livello di sicurezza del progetto: anche al livello 4, dove lo ZIP viene cifrato dopo l'estrazione, `allowed_signers` rimane in chiaro nel `.sig` e permette la verifica delle firme senza dover decifrare il contenuto. Per il progetto `_rvc_root` contiene esclusivamente la chiave-pubblica operativa dell'amministratore. Nei commit ordinari ai livelli 0 e 1 questo campo è assente. Nei commit amministrativi ai livelli 0 e 1, dove solo l'amministratore può operare, il campo è presente e contiene esclusivamente la chiave-pubblica operativa dell'amministratore.
+- `allowed_signers`: elenco delle chiavi pubbliche #gl("ssh", capitalize: true) degli identificativi autorizzati a committare al momento di questo #gl("commit"). Presente solo nei progetti a livello 2, 3 e 4 — estratto dal file `allowed_Dipendenti` dello ZIP prima di qualsiasi cifratura e riportato in chiaro nel `.sig`. Questo garantisce che il campo sia sempre leggibile indipendentemente dal livello di sicurezza del progetto: anche al livello 4, dove lo ZIP viene cifrato dopo l'estrazione, `allowed_signers` rimane in chiaro nel `.sig` e permette la verifica delle firme senza dover decifrare il contenuto. Per il progetto `_rvc_root` contiene esclusivamente la chiave-pubblica operativa dell'amministratore. Nei #gl("commit") ordinari ai livelli 0 e 1 questo campo è assente. Nei #gl("commit") amministrativi ai livelli 0 e 1, dove solo l'amministratore può operare, il campo è presente e contiene esclusivamente la chiave-pubblica operativa dell'amministratore.
 - `branch_status`: stato corrente del #gl("branch") — `active`, `archived` o `compromised`. È presente in ogni #gl("commit") e riflette il contenuto del file `.rvc_branch_status` dentro lo ZIP. Il motore legge sempre questo campo direttamente dal `.sig` — senza dover accedere allo ZIP — indipendentemente dal livello di sicurezza del progetto. Questo garantisce che la gestione dei #gl("branch") funzioni correttamente anche per i progetti a livello 4 dove lo ZIP è cifrato. Il file `.rvc_branch_status` dentro lo ZIP rimane la fonte di verità completa e può contenere informazioni aggiuntive — motivazione, riferimenti, note — accessibili a chi ha i permessi di lettura.
 - `recipients`: elenco delle identità complete dei destinatari autorizzati alla decifratura del contenuto ZIP. Presente solo nei progetti a livello 4. Contiene le chiavi pubbliche #gl("age", capitalize: true) dei destinatari in chiaro — chiunque possa leggere il `.sig` può determinare chi ha accesso al contenuto cifrato. Questa scelta è deliberata: la complessità di meccanismi di oscuramento parziale introduce buchi nella verificabilità senza offrire garanzie di riservatezza robuste.
 
@@ -334,7 +334,7 @@ Nei progetti a livello 4 il campo `recipients` del `.sig` contiene le identità 
 
 Questa scelta è deliberata. Meccanismi di oscuramento parziale — come fingerprint delle chiavi o lista nascosta — introducono complessità implementativa e buchi nella verificabilità senza offrire garanzie di riservatezza robuste: un osservatore che conosce le chiavi pubbliche dei candidati può sempre risalire alle identità. La riservatezza reale dei destinatari è garantita dalla scelta organizzativa di non distribuire le chiavi pubbliche dei dipendenti, non da meccanismi tecnici nel `.sig`.
 
-La gestione dei destinatari segue le stesse regole degli `allowed_signers`: l'amministratore è sempre incluso tra i destinatari di qualsiasi progetto a livello 4. Aggiungere o rimuovere un destinatario richiede un nuovo #gl("commit") amministrativo firmato dal responsabile o dall'amministratore. Questo #gl("commit") aggiorna il campo `recipients` nel file `.rvc_policy` e rigenera l'header #gl("age", capitalize: true) del file ZIP cifrato per riflettere la nuova lista dei destinatari — il contenuto cifrato non deve essere nuovamente prodotto, poiché #gl("age", capitalize: true) separa la cifratura del contenuto dalla cifratura delle chiavi di sessione. Il nuovo #gl("commit") produce un nuovo file `.sig` con il campo `recipients` aggiornato — i file `.sig` delle commit precedenti rimangono immutati e continuano a riflettere la lista dei destinatari valida al momento della loro produzione.
+La gestione dei destinatari segue le stesse regole degli `allowed_signers`: l'amministratore è sempre incluso tra i destinatari di qualsiasi progetto a livello 4. Aggiungere o rimuovere un destinatario richiede un nuovo #gl("commit") amministrativo firmato dal responsabile o dall'amministratore. Questo #gl("commit") aggiorna il campo `recipients` nel file `.rvc_policy` e rigenera l'header #gl("age", capitalize: true) del file ZIP cifrato per riflettere la nuova lista dei destinatari — il contenuto cifrato non deve essere nuovamente prodotto, poiché #gl("age", capitalize: true) separa la cifratura del contenuto dalla cifratura delle chiavi di sessione. Il nuovo #gl("commit") produce un nuovo file `.sig` con il campo `recipients` aggiornato — i file `.sig` delle #gl("commit") precedenti rimangono immutati e continuano a riflettere la lista dei destinatari valida al momento della loro produzione.
 
 #figure(caption: "Confronto tra i livelli di sicurezza configurabili.")[
   #table(
@@ -426,11 +426,11 @@ L'archiviazione è un'operazione reversibile esclusivamente tramite un #gl("comm
 
 Un #gl("branch") compromesso è un #gl("branch") su cui sono state prodotte uno o più #gl("commit") fraudolenti o non autorizzati — ad esempio durante la finestra di rischio successiva alla compromissione di una chiave-privata. La gestione di questo scenario segue una procedura in due fasi.
 
-Nella prima fase il #gl("branch") compromesso viene dichiarato tale tramite un #gl("commit") amministrativo firmato dal responsabile o dall'amministratore. Il file `.rvc_branch_status` dentro lo ZIP dichiara lo stato `compromised`, l'identificativo del primo #gl("commit") sospetto, la motivazione e qualsiasi informazione aggiuntiva utile alla gestione dell'incidente. Lo stato `compromised` viene estratto e riportato nel campo `branch_status` del `.sig` — il motore legge questo campo direttamente e blocca immediatamente il #gl("branch") senza dover decifrare il contenuto, indipendentemente dal livello di sicurezza del progetto. I commit fraudolenti rimangono nella storia e sono visibili, ma il branch è marcato come non affidabile. Nei casi in cui la presenza stessa del contenuto fraudolento costituisca un problema legale o di sicurezza, è possibile applicare il meccanismo di Redazione Trasparente descritto nella @sec:redazione-trasparente per rendere inaccessibile il contenuto pur mantenendo la catena intatta.
+Nella prima fase il #gl("branch") compromesso viene dichiarato tale tramite un #gl("commit") amministrativo firmato dal responsabile o dall'amministratore. Il file `.rvc_branch_status` dentro lo ZIP dichiara lo stato `compromised`, l'identificativo del primo #gl("commit") sospetto, la motivazione e qualsiasi informazione aggiuntiva utile alla gestione dell'incidente. Lo stato `compromised` viene estratto e riportato nel campo `branch_status` del `.sig` — il motore legge questo campo direttamente e blocca immediatamente il #gl("branch") senza dover decifrare il contenuto, indipendentemente dal livello di sicurezza del progetto. I #gl("commit") fraudolenti rimangono nella storia e sono visibili, ma il #gl("branch") è marcato come non affidabile. Nei casi in cui la presenza stessa del contenuto fraudolento costituisca un problema legale o di sicurezza, è possibile applicare il meccanismo di Redazione Trasparente descritto nella @sec:redazione-trasparente per rendere inaccessibile il contenuto pur mantenendo la catena intatta.
 
-Nella seconda fase viene creato un nuovo #gl("branch") pulito a partire dall'ultimo #gl("commit") verificato come integro prima della compromissione. Lo sviluppo riprende sul nuovo #gl("branch"). Il branch compromesso rimane nella repository come evidenza dell'incidente — la sua storia è verificabile e costituisce la prova crittografica di cosa è accaduto e quando. Se necessario, il contenuto dei commit fraudolenti può essere rimosso tramite Redazione Trasparente (@sec:redazione-trasparente) mantenendo comunque intatta la traccia forense delle firme e dei timestamp.
+Nella seconda fase viene creato un nuovo #gl("branch") pulito a partire dall'ultimo #gl("commit") verificato come integro prima della compromissione. Lo sviluppo riprende sul nuovo #gl("branch"). Il #gl("branch") compromesso rimane nella #gl("repository") come evidenza dell'incidente — la sua storia è verificabile e costituisce la prova crittografica di cosa è accaduto e quando. Se necessario, il contenuto dei #gl("commit") fraudolenti può essere rimosso tramite Redazione Trasparente (@sec:redazione-trasparente) mantenendo comunque intatta la traccia forense delle firme e dei timestamp.
 
-Questa procedura garantisce che la risposta a una compromissione non introduca ambiguità nella storia del progetto. Un approccio alternativo — cancellare i commit fraudolenti rompendo la catena crittografica — renderebbe impossibile distinguere una storia ripulita da una storia alterata da un attaccante. Il meccanismo di Redazione Trasparente (@sec:redazione-trasparente) offre una terza via: rendere inaccessibile il contenuto fraudolento senza rompere la catena, con una traccia formale firmata dalla chiave master.
+Questa procedura garantisce che la risposta a una compromissione non introduca ambiguità nella storia del progetto. Un approccio alternativo — cancellare i #gl("commit") fraudolenti rompendo la catena crittografica — renderebbe impossibile distinguere una storia ripulita da una storia alterata da un attaccante. Il meccanismo di Redazione Trasparente (@sec:redazione-trasparente) offre una terza via: rendere inaccessibile il contenuto fraudolento senza rompere la catena, con una traccia formale firmata dalla chiave master.
 
 === Branch e permessi
 
@@ -446,7 +446,7 @@ Il modello proposto introduce un meccanismo denominato *Redazione Trasparente* c
 
 === Principio matematico
 
-La catena degli hash in #gl("rvc", capitalize: true) segue questa struttura:
+La catena degli #gl("hash") in #gl("rvc", capitalize: true) segue questa struttura:
 
 $ "cumulativeHash"(N) = "SHA256"("hash"("ZIP"_N) + "cumulativeHash"(N-1)) $
 
@@ -470,7 +470,7 @@ La firma originale del dipendente sul #gl("commit") non viene rimossa — è pro
 
 === Opzioni per il contenuto del nuovo ZIP
 
-L'amministratore sceglie cosa inserire nel nuovo ZIP in base alla gravità del caso e ai requisiti legali. In tutti i casi il nuovo ZIP contiene sempre il file `REDACTION_NOTICE.json` con i campi: identificativo del #gl("commit") originale, hash originale, data della redazione, riferimento legale, tipo di contenuto sostitutivo e contatto per informazioni.
+L'amministratore sceglie cosa inserire nel nuovo ZIP in base alla gravità del caso e ai requisiti legali. In tutti i casi il nuovo ZIP contiene sempre il file `REDACTION_NOTICE.json` con i campi: identificativo del #gl("commit") originale, #gl("hash") originale, data della redazione, riferimento legale, tipo di contenuto sostitutivo e contatto per informazioni.
 
 Le opzioni disponibili sono le seguenti.
 
@@ -480,25 +480,25 @@ Le opzioni disponibili sono le seguenti.
 
 *Cifrato per l'amministratore* (`redaction_content: encrypted_master`) — il contenuto originale viene cifrato con #gl("age", capitalize: true) usando esclusivamente la chiave master. Solo l'amministratore può recuperarlo accedendo al dispositivo offline. Utile per preservare il contenuto per uso interno o per future indagini mantenendolo inaccessibile a tutti gli altri.
 
-*Cifrato per l'autorità* (`redaction_content: encrypted_authority`) — il contenuto originale viene cifrato con #gl("age", capitalize: true) usando la chiave pubblica dell'autorità giudiziaria o regolatoria competente, oltre alla chiave master. L'autorità può accedere al contenuto originale per le sue indagini tramite la propria chiave privata. Utile nei casi in cui l'autorità ha bisogno di accedere al contenuto come prova.
+*Cifrato per l'autorità* (`redaction_content: encrypted_authority`) — il contenuto originale viene cifrato con #gl("age", capitalize: true) usando la #gl("chiave-pubblica") dell'autorità giudiziaria o regolatoria competente, oltre alla chiave master. L'autorità può accedere al contenuto originale per le sue indagini tramite la propria #gl("chiave-privata"). Utile nei casi in cui l'autorità ha bisogno di accedere al contenuto come prova.
 
 === Redazione massiva e automazione
 
-Quando il dato problematico è distribuito su più #gl("commit") — ad esempio un file rimasto nella #gl("repository") per diversi commit consecutivi — la redazione deve essere applicata a tutti i #gl("commit") che lo contengono. Il motore supporta tre modalità operative.
+Quando il dato problematico è distribuito su più #gl("commit") — ad esempio un file rimasto nella #gl("repository") per diversi #gl("commit") consecutivi — la redazione deve essere applicata a tutti i #gl("commit") che lo contengono. Il motore supporta tre modalità operative.
 
 *Redazione singola* — applicata a un singolo #gl("commit") identificato dal suo identificativo.
 
-*Redazione su range* — applicata a tutti i #gl("commit") di un branch compresi tra due identificativi specificati.
+*Redazione su range* — applicata a tutti i #gl("commit") di un #gl("branch") compresi tra due identificativi specificati.
 
-*Redazione di branch intero* — applicata a tutti i #gl("commit") di un branch dall'inizio alla fine, con marcatura automatica del branch come `compromised`. Questa modalità è la risposta al caso più grave: un branch il cui contenuto è problematico fin dalla prima commit. Il branch rimane nella #gl("repository") come evidenza formale — la sua catena è verificabile, le firme originali dei dipendenti sono leggibili, i timestamp sono certificati — ma nessun contenuto è accessibile. Anche in questo caso la traccia forense è preservata: si sa chi ha lavorato su cosa e quando, anche se il cosa non è più leggibile.
+*Redazione di #gl("branch") intero* — applicata a tutti i #gl("commit") di un #gl("branch") dall'inizio alla fine, con marcatura automatica del #gl("branch") come `compromised`. Questa modalità è la risposta al caso più grave: un #gl("branch") il cui contenuto è problematico fin dalla prima #gl("commit"). Il #gl("branch") rimane nella #gl("repository") come evidenza formale — la sua catena è verificabile, le firme originali dei dipendenti sono leggibili, i timestamp sono certificati — ma nessun contenuto è accessibile. Anche in questo caso la traccia forense è preservata: si sa chi ha lavorato su cosa e quando, anche se il cosa non è più leggibile.
 
-In tutti e tre i casi il motore produce automaticamente il file `REDACTION_NOTICE.json` per ogni #gl("commit") redatto, verifica che la firma della chiave master sia presente e valida prima di procedere, e aggiorna il `branch_status` del branch a `compromised` se non lo è già.
+In tutti e tre i casi il motore produce automaticamente il file `REDACTION_NOTICE.json` per ogni #gl("commit") redatto, verifica che la firma della chiave master sia presente e valida prima di procedere, e aggiorna il `branch_status` del #gl("branch") a `compromised` se non lo è già.
 
 === Sincronizzazione con i client esistenti
 
 Quando un client che aveva già sincronizzato la #gl("repository") si aggiorna, riceve il nuovo `.sig` con `redacted: true` per il #gl("commit") interessato. Il motore riconosce questo campo, verifica la `redaction_signature` contro la chiave master, e accetta l'aggiornamento come autoritativo — sovrascrivendo il `.sig` locale.
 
-Il vecchio file ZIP originale rimane sul dispositivo locale ma il motore non lo distribuisce mai ad altri client, poiché il `.sig` ora dichiara il #gl("commit") come redatto. Il sistema non può cancellare fisicamente i file già presenti sui dispositivi — questa è una limitazione strutturale di qualsiasi sistema di versionamento distribuito e non è specifica di #gl("rvc", capitalize: true). Nessun sistema distribuito esistente — inclusi Git e i suoi derivati — può garantire la cancellazione fisica sui client che hanno già sincronizzato.
+Il vecchio file ZIP originale rimane sul dispositivo locale ma il motore non lo distribuisce mai ad altri client, poiché il `.sig` ora dichiara il #gl("commit") come redatto. Il sistema non può cancellare fisicamente i file già presenti sui dispositivi — questa è una limitazione strutturale di qualsiasi sistema di versionamento distribuito e non è specifica di #gl("rvc", capitalize: true). Nessun sistema distribuito esistente — inclusi #gl("git", capitalize: true) e i suoi derivati — può garantire la cancellazione fisica sui client che hanno già sincronizzato.
 
 === Garanzie e limitazioni
 
@@ -518,16 +518,16 @@ Nella versione iniziale di #gl("rvc", capitalize: true) nessun requisito risulta
 
 === Integrità e ordine verificabile
 
-L'integrità strutturale è la proprietà meglio supportata dalla versione iniziale di #gl("rvc", capitalize: true). Il calcolo dell'hash SHA256 del file ZIP e del `cumulativeHash` sono già presenti nel flusso di commit — ogni commit produce un `.sig` con i valori corretti. Tuttavia la verifica di questi valori non è ancora accessibile tramite interfaccia a riga di comando: esistono funzioni helper nel codice sorgente predisposte per la verifica, ma non sono ancora esposte come comandi utilizzabili. Il sistema calcola ma non verifica — la garanzia di integrità è quindi presente nella struttura dati ma non è ancora azionabile dall'utente.
+L'integrità strutturale è la proprietà meglio supportata dalla versione iniziale di #gl("rvc", capitalize: true). Il calcolo dell'hash SHA256 del file ZIP e del `cumulativeHash` sono già presenti nel flusso di #gl("commit") — ogni #gl("commit") produce un `.sig` con i valori corretti. Tuttavia la verifica di questi valori non è ancora accessibile tramite interfaccia a riga di comando: esistono funzioni helper nel codice sorgente predisposte per la verifica, ma non sono ancora esposte come comandi utilizzabili. Il sistema calcola ma non verifica — la garanzia di integrità è quindi presente nella struttura dati ma non è ancora azionabile dall'utente.
 
-L'identificativo del commit è attualmente composto dal solo timestamp codificato in base36, senza la componente hash del contenuto prevista dal modello. Questo lo rende vulnerabile a collisioni intenzionali basate sulla manipolazione del timestamp. Infine, la limitazione dell'ordine temporale assoluto non è documentata esplicitamente in nessun documento tecnico al di fuori di questa relazione.
+L'identificativo del #gl("commit") è attualmente composto dal solo timestamp codificato in base36, senza la componente #gl("hash") del contenuto prevista dal modello. Questo lo rende vulnerabile a collisioni intenzionali basate sulla manipolazione del timestamp. Infine, la limitazione dell'ordine temporale assoluto non è documentata esplicitamente in nessun documento tecnico al di fuori di questa relazione.
 
 #figure(caption: "Analisi del divario — integrità e ordine verificabile.")[
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS01], [Verificabilità tramite hash crittografico del contenuto], [Parziale],
-    [RS02], [Verifica della catena degli hash a ogni operazione], [Parziale],
+    [RS01], [Verificabilità tramite #gl("hash") crittografico del contenuto], [Parziale],
+    [RS02], [Verifica della catena degli #gl("hash") a ogni operazione], [Parziale],
     [RS03], [Identificativi univoci e non manipolabili tramite timestamp], [Assente],
     [RS04], [Documentazione esplicita delle limitazioni sull'ordine temporale], [Assente],
   )
@@ -537,24 +537,24 @@ RS01 è parziale perché l'hash viene calcolato e memorizzato ma non verificato 
 
 === Autenticità e non ripudio
 
-La firma #gl("ssh", capitalize: true) è il punto di maggiore maturità della versione iniziale. Il meccanismo è implementato e funzionante — ogni commit può essere firmato con una chiave #gl("ssh", capitalize: true) e la firma viene apposta al file `.sig`. Tuttavia la firma è opzionale: deve essere abilitata esplicitamente al momento del commit tramite un parametro della riga di comando. Il modello proposto la rende obbligatoria dal livello di sicurezza 1 in poi.
+La firma #gl("ssh", capitalize: true) è il punto di maggiore maturità della versione iniziale. Il meccanismo è implementato e funzionante — ogni #gl("commit") può essere firmato con una chiave #gl("ssh", capitalize: true) e la firma viene apposta al file `.sig`. Tuttavia la firma è opzionale: deve essere abilitata esplicitamente al momento del #gl("commit") tramite un parametro della riga di comando. Il modello proposto la rende obbligatoria dal livello di sicurezza 1 in poi.
 
-Non esiste invece nessun concetto di radice di fiducia o prima commit privilegiata. Tutte le commit sono trattate allo stesso modo dal motore — non c'è distinzione tra la commit iniziale che dovrebbe stabilire l'ancora di fiducia e le commit successive. Il progetto `_rvc_root` e l'intera gerarchia di fiducia sono assenti.
+Non esiste invece nessun concetto di radice di fiducia o prima #gl("commit") privilegiata. Tutte le #gl("commit") sono trattate allo stesso modo dal motore — non c'è distinzione tra la #gl("commit") iniziale che dovrebbe stabilire l'ancora di fiducia e le #gl("commit") successive. Il progetto `_rvc_root` e l'intera gerarchia di fiducia sono assenti.
 
 #figure(caption: "Analisi del divario — autenticità e non ripudio.")[
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS05], [Prima commit come radice di fiducia verificabile autonomamente], [Assente],
-    [RS06], [Firma digitale SSH supportata e imposta per i livelli di sicurezza maggiori o uguali a 1], [Parziale],
+    [RS05], [Prima #gl("commit") come radice di fiducia verificabile autonomamente], [Assente],
+    [RS06], [#gl("firma-digitale", capitalize: true) #gl("ssh", capitalize: true) supportata e imposta per i livelli di sicurezza maggiori o uguali a 1], [Parziale],
   )
 ]
 
-RS05 è assente perché non esiste il concetto di radice di fiducia né di commit privilegiata. RS06 è parziale perché la firma è implementata e funzionante ma opzionale — il modello richiede che sia imposta automaticamente in base al livello di sicurezza del progetto.
+RS05 è assente perché non esiste il concetto di radice di fiducia né di #gl("commit") privilegiata. RS06 è parziale perché la firma è implementata e funzionante ma opzionale — il modello richiede che sia imposta automaticamente in base al livello di sicurezza del progetto.
 
 === Gestione delle identità
 
-La gestione delle identità è l'area con il divario più ampio tra il modello proposto e la versione iniziale. Non esiste nessuna distinzione tra utenti — amministratore, responsabile e dipendente sono concetti assenti dal motore. Non esiste un file `allowed_Dipendenti` né nessun altro meccanismo per limitare chi può produrre commit validi su un progetto. Di conseguenza non esiste nemmeno il concetto di revoca — non c'è nulla da revocare se non c'è nessuna lista di autorizzati.
+La gestione delle identità è l'area con il divario più ampio tra il modello proposto e la versione iniziale. Non esiste nessuna distinzione tra utenti — amministratore, responsabile e dipendente sono concetti assenti dal motore. Non esiste un file `allowed_Dipendenti` né nessun altro meccanismo per limitare chi può produrre #gl("commit") validi su un progetto. Di conseguenza non esiste nemmeno il concetto di revoca — non c'è nulla da revocare se non c'è nessuna lista di autorizzati.
 
 La versione fornita per lo stage era deliberatamente sprovvista di questi meccanismi, con l'obiettivo di permettere uno studio autonomo delle vulnerabilità e la progettazione di soluzioni originali. L'assenza di questi controlli è il punto di partenza dell'intero modello proposto in questo capitolo.
 
@@ -564,7 +564,7 @@ La versione fornita per lo stage era deliberatamente sprovvista di questi meccan
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
     [RS07], [Gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [Assente],
     [RS08], [Permessi di scrittura configurabili per progetto tramite file di autorizzazione versionato], [Assente],
-    [RS09], [Revoca efficace dal commit successivo alla modifica del file di autorizzazione], [Assente],
+    [RS09], [Revoca efficace dal #gl("commit") successivo alla modifica del file di autorizzazione], [Assente],
     [RS10], [Successione del responsabile gestita esclusivamente dall'amministratore], [Assente],
   )
 ]
@@ -580,43 +580,43 @@ Non esiste nella versione iniziale nessun concetto di livello di sicurezza per p
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
     [RS11], [Livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [Assente],
-    [RS12], [Cifratura dei commit con AGE per progetti riservati], [Assente],
+    [RS12], [Cifratura dei #gl("commit") con #gl("age", capitalize: true) per progetti riservati], [Assente],
   )
 ]
 
 === Gestione dei branch e incidenti
 
-Non esiste nella versione iniziale nessun meccanismo formale per dichiarare lo stato di un branch. I branch sono sequenze di commit senza nessuna metainformazione sullo stato — non esiste il concetto di branch archiviato, compromesso o bloccato. Il file `.rvc_branch_status` e il campo `branch_status` nel `.sig` sono proposte del modello ideale, assenti nell'implementazione corrente. Il meccanismo di Redazione Trasparente, che permette di rendere inaccessibile il contenuto di commit problematici senza rompere la catena crittografica, è anch'esso una proposta originale di questa relazione e non ha nessuna corrispondenza nella versione iniziale.
+Non esiste nella versione iniziale nessun meccanismo formale per dichiarare lo stato di un #gl("branch"). I #gl("branch") sono sequenze di #gl("commit") senza nessuna metainformazione sullo stato — non esiste il concetto di #gl("branch") archiviato, compromesso o bloccato. Il file `.rvc_branch_status` e il campo `branch_status` nel `.sig` sono proposte del modello ideale, assenti nell'implementazione corrente. Il meccanismo di Redazione Trasparente, che permette di rendere inaccessibile il contenuto di #gl("commit") problematici senza rompere la catena crittografica, è anch'esso una proposta originale di questa relazione e non ha nessuna corrispondenza nella versione iniziale.
 
 #figure(caption: "Analisi del divario — gestione dei branch e incidenti.")[
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS13], [Branch compromessi chiudibili con commit firmato che ne attesti la compromissione], [Assente],
+    [RS13], [#gl("branch", capitalize: true) compromessi chiudibili con #gl("commit") firmato che ne attesti la compromissione], [Assente],
   )
 ]
 
 === Sintesi
 
-Il confronto tra il modello proposto e lo stato iniziale di #gl("rvc", capitalize: true) evidenzia un sistema con solide basi crittografiche — la struttura degli hash cumulativi e il meccanismo di firma #gl("ssh", capitalize: true) sono già presenti e funzionanti — ma privo dei meccanismi organizzativi e di controllo degli accessi necessari per un uso in contesti aziendali con requisiti di sicurezza non banali.
+Il confronto tra il modello proposto e lo stato iniziale di #gl("rvc", capitalize: true) evidenzia un sistema con solide basi crittografiche — la struttura degli #gl("hash") cumulativi e il meccanismo di firma #gl("ssh", capitalize: true) sono già presenti e funzionanti — ma privo dei meccanismi organizzativi e di controllo degli accessi necessari per un uso in contesti aziendali con requisiti di sicurezza non banali.
 
 #figure(caption: "Sintesi dell'analisi del divario.")[
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Requisito*], [*Stato*]),
-    [RS01], [Verificabilità tramite hash crittografico], [Parziale],
-    [RS02], [Verifica della catena degli hash], [Parziale],
+    [RS01], [Verificabilità tramite #gl("hash") crittografico], [Parziale],
+    [RS02], [Verifica della catena degli #gl("hash")], [Parziale],
     [RS03], [Identificativi univoci e non manipolabili], [Assente],
     [RS04], [Documentazione limitazioni ordine temporale], [Assente],
     [RS05], [Radice di fiducia verificabile autonomamente], [Assente],
-    [RS06], [Firma digitale SSH imposta per livello ≥ 1], [Parziale],
+    [RS06], [#gl("firma-digitale", capitalize: true) #gl("ssh", capitalize: true) imposta per livello ≥ 1], [Parziale],
     [RS07], [Gerarchia di fiducia a tre livelli], [Assente],
     [RS08], [Permessi configurabili per progetto], [Assente],
-    [RS09], [Revoca efficace dal commit successivo], [Assente],
+    [RS09], [Revoca efficace dal #gl("commit") successivo], [Assente],
     [RS10], [Successione del responsabile], [Assente],
     [RS11], [Livelli di sicurezza configurabili], [Assente],
-    [RS12], [Cifratura AGE per progetti riservati], [Assente],
-    [RS13], [Gestione branch compromessi], [Assente],
+    [RS12], [Cifratura #gl("age", capitalize: true) per progetti riservati], [Assente],
+    [RS13], [Gestione #gl("branch") compromessi], [Assente],
   )
 ]
 

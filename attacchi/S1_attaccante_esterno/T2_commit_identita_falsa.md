@@ -106,6 +106,31 @@ Un attaccante può inserire commit non firmati senza che il motore lo noti o seg
 Così facendo può modificare codice e aggiungere commit con nel campo author presente il nome di un autore autorizzato.
 E' rilevabile solo tramite verificatore.
 
+## Note
+Se nel campo author fosse presente un autore non presente nel file allowed_signers il risultato sarebbe il seguente.
+```bash
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
+
+Verifica integrita repository: tutti i progetti
+allowed_signers: C:\Users\stemic\stage\allowed_signers
+
+analyzing repository C:\Users\stemic\stage\repo\ ...
+[OK]  0Q6PHT7QCI  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHUAOSV  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHV1YTU  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHW0IJW  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHWPMPQ  hash:OK  catena:OK  firma:OK  (Michele)
+[ERR] 0Q6PJY3APF  hash:OK  catena:OK  firma:FALLITA  (Luigi)
+       ERRORE:  Firma SSH non valida
+[WARN] 0Q6PK0VOLQ  hash:OK  catena:OK  firma:ASSENTE  (Michele)
+
+Risultato: 1/7 commit con problemi.
+Risultato: 1/7 commit con warning.
+tot. exec time: 1.31 sec
+```
+
+Quindi non è possibile inserire un autore completamente arbitrario perchè in tal caso verrebbe identificato dal verificatore.
+
 ## Contromisura implementata
 [da compilare]
 

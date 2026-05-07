@@ -13,14 +13,14 @@ nella versione iniziale la firma è opzionale.
 - Nessuna chiave SSH
 
 ## Passi dell'attacco
-- Eseguire una modifica arbitraria
+1. Eseguire una modifica arbitraria
 ```bash
 C:\Users\stemic\stage\simulazione>echo Aggiunto testo malevolo >> fileSuperPrivato.txt
 C:\Users\stemic\stage\simulazione>type fileSuperPrivato.txt
 Aggiunto testo malevolo
 ```
 
-- Fare la commit senza specificare l'autore
+2. Fare un commit senza specificare l'autore
 ```bash
 C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Produzione -note=MoltoImportante
 Reading manifest, path:.\
@@ -33,7 +33,7 @@ copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6PI7VZWV.sig to C:\Users\ste
 tot. exec time: 0.23 sec
 ```
 
-- Controllare che la commit sia andata a buon fine
+3. Controllare che il commit sia andato a buon fine
 ```bash
 C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc history
 analyzing repository C:\Users\stemic\stage\repo\ ...
@@ -49,7 +49,7 @@ analyzing repository C:\Users\stemic\stage\repo\ ...
 tot. exec time: 0.01 sec
 ```
 
-Avviare il verificatore
+4. Avviare il verificatore
 ```bash
 C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
 
@@ -74,6 +74,7 @@ Il motore accetta il commit. Il verificatore segnala [WARN] firma:ASSENTE.
 Il contatore degli errori critici rimane a zero.
 
 ## Risultato osservato (versione iniziale)
+E' possibile effettuare qualunque commit.
 Il motore effettua la commit senza alcun avviso.
 Il verificatore segnala uno warning perchè manca la firma.
 Il contatore degli errori critici rimane a zero.

@@ -60,3 +60,10 @@ I rischi emersi durante lo stage sono riportati in @fig:rischi-occorsi.\
 )<fig:rischi-occorsi>
 #v(1em)
 == Valutazione personale
+
+== Sviluppi futuri
+=== Permessi per branch
+Il modello attuale definisce i permessi a livello di progetto tramite il file allowed_Dipendenti, valido su tutti i branch. Un'estensione naturale sarebbe permettere liste di autorizzati diverse per branch diversi, consentendo ad esempio di limitare i commit sul branch principale a un sottoinsieme dei dipendenti del progetto. Questa estensione introduce però complessità gestionale significativa — in particolare nella gestione delle merge tra branch con liste diverse — e richiederebbe una definizione formale di quale allowed_Dipendenti prevalga in caso di conflitto. Per questi motivi è stata identificata come sviluppo futuro piuttosto che requisito del modello corrente.
+
+=== Gestione fork
+Un'altra possibile estensione del modello è la gestione dei fork, che permetterebbe a sviluppatori esterni al progetto di creare una copia del repository per proporre modifiche tramite pull request. Questo richiederebbe l'introduzione di un nuovo tipo di entità (il fork) e di nuove regole per la gestione dei permessi e delle merge tra repository diversi. Anche questa estensione è stata identificata come sviluppo futuro a causa della complessità aggiuntiva che comporterebbe.

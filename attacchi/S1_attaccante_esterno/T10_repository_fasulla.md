@@ -19,9 +19,100 @@ non c'è modo di distinguere una repository legittima da una fasulla.
 1. Creare una nuova directory come repository fasulla
 2. Produrre una catena di commit con hash e cumulativeHash
    calcolati correttamente ma senza firme SSH
+```bash
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Documentazione -note=MoltoImportante -repo=C:\Users\stemic\stage\repo
+packing C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R82GADL..+Documentazione.zip
+Starting scanner and collector ...
+Scan excuted in 219 ms, collect in 0 ms tot:219 ms
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R82GADL..+Documentazione.zip to C:\Users\stemic\stage\repo\ ...
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R82GADL.sig to C:\Users\stemic\stage\repo\ ...
+tot. exec time: 0.25 sec
+
+C:\Users\stemic\stage\simulazione>echo aggiunto codice >> file.txt
+
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Documentazione -note=MoltoImportante -repo=C:\Users\stemic\stage\repo
+Reading manifest, path:.\
+Readed manifest, path:.\
+packing C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R832YWQ.0Q6R82GADL.+Documentazione.zip
+Starting scanner and collector ...
+Scan excuted in 156 ms, collect in 0 ms tot:156 ms
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R832YWQ.0Q6R82GADL.+Documentazione.zip to C:\Users\stemic\stage\repo\ ...
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R832YWQ.sig to C:\Users\stemic\stage\repo\ ...
+tot. exec time: 0.19 sec
+
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Documentazione -note=MoltoImportante
+Reading manifest, path:.\
+Readed manifest, path:.\
+packing C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83HVQD.0Q6R832YWQ.+Documentazione.zip
+Starting scanner and collector ...
+Scan excuted in 140 ms, collect in 0 ms tot:140 ms
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83HVQD.0Q6R832YWQ.+Documentazione.zip to C:\Users\stemic\stage\repo\ ...
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83HVQD.sig to C:\Users\stemic\stage\repo\ ...
+tot. exec time: 0.16 sec
+
+C:\Users\stemic\stage\simulazione>echo aggiunto codice >> fileNuovo.txt
+
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Documentazione -note=MoltoImportante
+Reading manifest, path:.\
+Readed manifest, path:.\
+packing C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83ULIB.0Q6R83HVQD.+Documentazione.zip
+Starting scanner and collector ...
+Scan excuted in 156 ms, collect in 0 ms tot:156 ms
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83ULIB.0Q6R83HVQD.+Documentazione.zip to C:\Users\stemic\stage\repo\ ...
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R83ULIB.sig to C:\Users\stemic\stage\repo\ ...
+tot. exec time: 0.16 sec
+
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc commit -project=simulazione -tag=Documentazione -note=MoltoImportante
+Reading manifest, path:.\
+Readed manifest, path:.\
+packing C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R844SKJ.0Q6R83ULIB.+Documentazione.zip
+Starting scanner and collector ...
+Scan excuted in 140 ms, collect in 0 ms tot:140 ms
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R844SKJ.0Q6R83ULIB.+Documentazione.zip to C:\Users\stemic\stage\repo\ ...
+copying C:\ProgramData\spr\STEMIC\rvc\simulazione.0Q6R844SKJ.sig to C:\Users\stemic\stage\repo\ ...
+tot. exec time: 0.17 sec
+```
+
 3. Distribuire la repository fasulla come se fosse legittima
+
 4. Eseguire il verificatore sulla repository fasulla
+
+```bash
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
+
+Verifica integrita repository: tutti i progetti
+allowed_signers: C:\Users\stemic\stage\allowed_signers
+
+analyzing repository C:\Users\stemic\stage\repo\ ...
+[WARN] 0Q6R82GADL  hash:OK  catena:OK  firma:ASSENTE  (?)
+[WARN] 0Q6R832YWQ  hash:OK  catena:OK  firma:ASSENTE  (?)
+[WARN] 0Q6R83HVQD  hash:OK  catena:OK  firma:ASSENTE  (?)
+[WARN] 0Q6R83ULIB  hash:OK  catena:OK  firma:ASSENTE  (?)
+[WARN] 0Q6R844SKJ  hash:OK  catena:OK  firma:ASSENTE  (?)
+
+Risultato: 0/5 commit con problemi.
+Risultato: 5/5 commit con warning.
+tot. exec time: 0.03 sec
+```
+C:\Users\stemic\stage\simulazione>
 5. Confrontare l'output con quello della repository legittima
+```bash
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
+
+Verifica integrita repository: tutti i progetti
+allowed_signers: C:\Users\stemic\stage\allowed_signers
+
+analyzing repository C:\Users\stemic\stage\repo\ ...
+[OK]  0Q6PHT7QCI  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHUAOSV  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHV1YTU  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHW0IJW  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHWPMPQ  hash:OK  catena:OK  firma:OK  (Michele)
+
+Risultato: 0/5 commit con problemi.
+Risultato: 0/5 commit con warning.
+tot. exec time: 1.30 sec
+```
 
 ## Risultato atteso
 Il verificatore segnala [WARN] firma:ASSENTE su tutti i commit
@@ -31,10 +122,11 @@ versione iniziale per distinguere questa repository da una
 legittima. Questo dimostra direttamente l'assenza di RS05.
 
 ## Risultato osservato (versione iniziale)
-[da compilare]
+Come era stato previsto il verificatore accetta la repository segnalando sempicemente dei warning.
+Questo comporta che in una repo dove nessuno firma, i suoi commit sarebbero irrintracciabili e non distinguibili da commit eseguiti da persone fidate.
 
 ## Analisi dell'impatto
-Impatto massimo — un attaccante può distribuire codice arbitrario
+Un attaccante può distribuire codice arbitrario
 in una repository che supera tutti i controlli strutturali del
 verificatore. Senza radice di fiducia verificabile, l'intera
 catena degli hash garantisce solo la coerenza interna della

@@ -24,8 +24,8 @@ Il lavoro ha previsto lo studio delle tecnologie crittografiche alla base del si
 / #link(<cap:introduzione>)[Il primo capitolo]: presenta l'azienda ospitante, introduce il progetto #gl("rvc", capitalize: true) e illustra le motivazioni che mi hanno portato a scegliere questo stage, con gli obiettivi definiti, la pianificazione e l'analisi dei rischi;
 / #link(<cap:descrizione-stage>)[Il secondo capitolo]: descrive l'organizzazione del lavoro durante il tirocinio, l'ambiente di sviluppo, gli strumenti utilizzati e l'approccio metodologico seguito;
 / #link(<cap:tecnologie>)[Il terzo capitolo]: illustra le tecnologie e i concetti teorici alla base del progetto, dalla crittografia-asimmetrica e #gl("ssh", capitalize: true) fino all'architettura di #gl("rvc", capitalize: true) e al confronto con #gl("git", capitalize: true);
-/ #link(<cap:modello-sicurezza>)[Il quarto capitolo]: definisce il modello di sicurezza che un sistema di versionamento distribuito moderno dovrebbe soddisfare, analizzando le proprietà fondamentali richieste, la distinzione tra #gl("commit") ordinari e amministrativi, la gerarchia di fiducia, i livelli di sicurezza configurabili, la gestione del ciclo di vita delle identità e il meccanismo di Redazione Trasparente, concludendo con un'analisi del divario rispetto allo stato iniziale di #gl("rvc", capitalize: true);
-/ #link(<cap:simulazione-scenari-di-attacco>)[Il quinto capitolo]: presenta gli scenari di attacco simulati in ambiente controllato, con diversi livelli di accesso — da attaccante esterno fino a compromissione della chiave del capo progetto — e analizza la propagazione degli errori nella catena degli #gl("hash");
+/ #link(<cap:modello-sicurezza>)[Il quarto capitolo]: definisce il modello di sicurezza che un sistema di versionamento distribuito moderno dovrebbe soddisfare analizzando i requisiti formali, gerarchia di fiducia, livelli di sicurezza configurabili e meccanismo di Redazione Trasparente — concludendo con l'analisi del divario rispetto alla versione iniziale iniziale di #gl("rvc", capitalize: true);
+/ #link(<cap:simulazione-scenari-di-attacco>)[Il quinto capitolo]: documenta gli scenari di attacco simulati in ambiente controllato, con livelli di accesso crescenti, distinguendo le vulnerabilità rilevabili solo tramite verifica esplicita da quelle bloccate preventivamente dal motore;
 / #link(<cap:miglioramenti-implementati>)[Il sesto capitolo]: descrive i miglioramenti implementati nel codice sorgente di #gl("rvc", capitalize: true), tra cui il sistema di configurazione dinamico, la firma #gl("ssh", capitalize: true) integrata, la verifica dell'integrità della catena e i meccanismi di controllo delle identità autorizzate;
 / #link(<cap:conclusioni>)[Il settimo capitolo]: riassume i risultati raggiunti, valuta il grado di soddisfacimento degli obiettivi prefissati e propone una riflessione personale sull'esperienza e sugli sviluppi futuri.
 
@@ -50,9 +50,6 @@ proc ReportInfo(FileManifestPersistent fm, bool files:=false)
   end
   if fm.prev <> nil
     ? '   prev:', fm.prev
-  end
-  if fm.merge <> nil
-    ? '  merge:', fm.merge
   end
 end
 ```

@@ -12,6 +12,3 @@
 | T8 troncamento catena         | ERR  | No | Nullo  | RS02 |
 | T9 cumulativeHash falsificato | ERR  | No | Basso  | RS02, RS03 |
 | T10 repository fasulla        | WARN | No | Alto   | RS05 |
-
-## Note generali
-[da compilare dopo i test]

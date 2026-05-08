@@ -1,0 +1,52 @@
+name: Nightly PDF Update
+
+on:
+  schedule:
+    # Esegue il workflow tutti i giorni alle 01:00 UTC (che corrispondono alle 02:00 in Italia con l'ora solare, o 03:00 con l'ora legale)
+    - cron: '0 1 * * *'
+  # Aggiungiamo workflow_dispatch così puoi avviare l'azione manualmente dal tab "Actions" per testarla
+  workflow_dispatch: 
+
+jobs:
+  update-pdf:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Controlla se ci sono stati commit recenti
+        id: check_commits
+        run: |
+          # Cerca commit nelle ultime 24 ore, ma esclude quelli dell'autore "github-actions"
+          # Il "|| true" serve per non far fallire lo step se grep non trova nulla
+          COMMITS=$(git log --since="24 hours ago" --format="%an: %s" | grep -v -i "github-actions" || true)
+          
+          if [ -z "$COMMITS" ]; then
+            echo "Nessun commit 'umano' nelle ultime 24 ore. Il workflow si ferma qui."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Trovati commit recenti validi:"
+            echo "$COMMITS"
+            echo "Procedo con la compilazione."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Typst
+        # Eseguiamo questo step solo se ci sono stati commit
+        if: steps.check_commits.outputs.has_changes == 'true'
+        uses: typst-community/setup-typst@v4
+
+      - name: Compile thesis
+        if: steps.check_commits.outputs.has_changes == 'true'
+        run: typst c thesis.typ --pdf-standard a-3b
+
+      - name: Commit and push PDF
+        if: steps.check_commits.outputs.has_changes == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: aggiornamento notturno del PDF della tesi"
+          file_pattern: thesis.pdf

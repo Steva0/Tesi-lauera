@@ -77,11 +77,11 @@ Il lavoro è stato organizzato su otto settimane per un totale di 304 ore, suddi
     table.header([*Settimana*], [*Ore*], [*Attività*]),
     [1], [32], [Studio di #gl("ssh", capitalize: true), crittografia-asimmetrica, firma-digitale e #gl("age", capitalize: true)],
     [2], [40], [Studio di #gl("rvc", capitalize: true): architettura, formato dei #gl("commit")],
-    [3], [40], [Analisi del codice sorgente #gl("cpl", capitalize: true) e individuazione delle vulnerabilità],
-    [4], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
-    [5], [40], [Implementazione miglioramenti: configurazione, firma #gl("ssh", capitalize: true), verifica integrità],
-    [6], [32], [Progettazione della gerarchia di fiducia, gestione delle identità e verifica della catena completa],
-    [7], [40], [Simulazione attacchi avanzati e progettazione del meccanismo di Redazione Trasparente],
+    [3], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
+    [4], [40], [to do: descrizione attività],
+    [5], [40], [to do: descrizione attività],
+    [6], [32], [to do: descrizione attività],
+    [7], [40], [to do: descrizione attività],
     [8], [40], [Completamento e revisione della relazione finale],
   )
 ]

@@ -39,10 +39,4 @@ la differenza tra il verificatore attuale e il modello proposto.
 - T1: commit fraudolento indistinguibile dal legittimo
 - T2: commit fraudolenti durante la finestra di rischio
 - T3: propagazione nella catena dopo la revoca
-
-## Stato complessivo
-| Tecnica | Rilevata pre-implementazione | Rilevata post-implementazione |
-|---------|------------------------------|-------------------------------|
-| T1      | -                            | -                             |
-| T2      | -                            | -                             |
-| T3      | -                            | -                             |
+- T4: recovery chiave compromessa

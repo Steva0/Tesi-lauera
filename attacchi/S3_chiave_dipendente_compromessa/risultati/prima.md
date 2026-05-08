@@ -5,6 +5,7 @@
 | T1 commit fraudolento indistinguibile | - | - | - | RS09 |
 | T2 commit durante finestra di rischio | - | - | - | RS09 |
 | T3 propagazione dopo revoca           | - | - | - | RS09 |
+| T4 recovery chiave compromessa           | - | - | - | RS09 |
 
 ## Limitazione documentata
 Il verificatore attuale usa un file allowed_signers esterno e

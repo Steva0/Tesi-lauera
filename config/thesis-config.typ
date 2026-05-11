@@ -206,3 +206,50 @@
 #let linkfn(url, body) = (
   link(url, text(style: "italic", fill: rgb(0, 80, 160), body)) + footnote(link(url))
 )
+
+#let terminal(content) = {
+  block(
+    width: 100%,
+    fill: rgb(240, 245, 255),
+    radius: 4pt,
+    inset: (x: 12pt, y: 10pt),
+    text(
+      font: "DejaVu Sans Mono",
+      size: 8.5pt,
+      fill: rgb(20, 40, 80),
+      content
+    )
+  )
+}
+
+#let terminal-io(cmd, output) = {
+  block(
+    width: 100%,
+    fill: rgb(240, 245, 255),
+    radius: 4pt,
+    inset: (x: 12pt, y: 10pt),
+    stack(
+      spacing: 0pt,
+      text(
+        font: "DejaVu Sans Mono",
+        size: 8.5pt,
+        fill: rgb("00a01b"),
+        [> ] + cmd
+      ),
+      if output != "" {
+        v(4pt)
+      },
+      if output != "" {
+        text(
+          font: "DejaVu Sans Mono",
+          size: 8.5pt,
+          fill: rgb(20, 40, 80),
+          output
+        )
+      }
+    )
+  )
+}
+
+#let cmd(content) = text(fill: rgb("#00a01b"), [> ] + content)
+#let out(content) = text(fill: rgb(20, 40, 80), content)

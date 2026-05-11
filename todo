@@ -1,8 +1,3 @@
-[] Da fare scenario 3 attacchi
-[] Da fare scenario 4 attacchi
-
-[] Scrivere il capitolo 5 della tesi con i risultati degli scenari
-
 [] Implementare i miglioramenti nel codice CPL
 
 [] Ritestare gli scenari con le modifiche implementate - compilare i campi "dopo implementazione" nei file markdown e il file risultati/dopo.md di ogni scenario
@@ -11,10 +6,10 @@
 
 [] Scrivere il capitolo 7 con conclusioni, obiettivi raggiunti e sviluppi futuri
 
-[] Produrre "Analisi sicurezza + scenari" → estratto principalmente da capitolo 4 e 5
-[] Produrre "Proposta miglioramenti" → estratto principalmente da capitolo 4 e 6
-[] Produrre "Relazione finale" → estratto da tutti i capitoli, più sintetico
-
 [] Completare tabella Pianificazione del periodo di stage Capitolo 1
 
 [] Ricontrollare e correggere tutta la tesi
+
+[] Produrre "Analisi sicurezza + scenari" → estratto principalmente da capitolo 4 e 5
+[] Produrre "Proposta miglioramenti" → estratto principalmente da capitolo 4 e 6
+[] Produrre "Relazione finale" → estratto da tutti i capitoli, più sintetico

@@ -28,6 +28,26 @@ nessun altro soggetto possiede.
    la chiave dell'amministratore
 2. Verificare che tutti i commit siano accettati dal motore
 3. Eseguire il verificatore
+```bash
+C:\Users\stemic\stage\simulazione>..\..\rvc\cpl rvc integrity -signers="C:\Users\stemic\stage\allowed_signers"
+
+Verifica integrita repository: tutti i progetti
+allowed_signers: C:\Users\stemic\stage\allowed_signers
+
+analyzing repository C:\Users\stemic\stage\repo\ ...
+[OK]  0Q6PHT7QCI  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHUAOSV  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHV1YTU  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHW0IJW  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6PHWPMPQ  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6WWOWTGV  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6WWP3QDM  hash:OK  catena:OK  firma:OK  (Michele)
+[OK]  0Q6WWP4TNH  hash:OK  catena:OK  firma:OK  (Michele)
+
+Risultato: 0/8 commit con problemi.
+Risultato: 0/8 commit con warning.
+tot. exec time: 1.78 sec
+```
 4. Documentare che tutti i commit risultano validi e
    indistinguibili da quelli legittimi dell'amministratore
 
@@ -39,7 +59,8 @@ Il risultato è identico allo scenario 3 — la versione iniziale
 non distingue tra ruoli.
 
 ## Risultato osservato (versione iniziale)
-[da compilare]
+La compromissione della chiave risulta nell'accettazione dei commit come con la compromissione
+di qualsiasi altra chiave. 
 
 ## Analisi dell'impatto — versione iniziale
 Nella versione iniziale l'impatto è identico alla compromissione

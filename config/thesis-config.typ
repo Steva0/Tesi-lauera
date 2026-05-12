@@ -19,6 +19,7 @@
     author: myAuthor,
     title: myTitle,
     keywords: ("RVC", "sicurezza", "crittografia", "versionamento", "SSH", "firma digitale"),
+    date: auto,
   )
 
   // Codly bootstrap and setup

@@ -1,6 +1,6 @@
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.8": *
-#import "../config/thesis-config.typ": gl, glpl, glossary-style, linkfn
+#import "../config/thesis-config.typ": gl, glpl, glossary-style, linkfn, terminal-io, terminal
 #import "../config/variables.typ": *
 
 #pagebreak(to:"odd")
@@ -117,12 +117,14 @@ I #gl("branch") sono uno strumento fondamentale nello sviluppo software parallel
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
     [RS13], [I #gl("branch") compromessi devono poter essere chiusi con un #gl("commit") firmato che ne attesti la compromissione], [D],
+    [RS14], [Il sistema deve supportare liste di autorizzati differenziate per #gl("branch"), con merge consentita ai soggetti autorizzati sul #gl("branch") di destinazione], [D],
   )
 ]
 
 I requisiti obbligatori definiscono le proprietà minime senza le quali il sistema non può essere considerato sicuro per il contesto d'uso descritto. I requisiti desiderabili estendono il modello con funzionalità che aumentano significativamente il livello di sicurezza, ma la cui assenza non compromette le garanzie fondamentali.
 
-I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS07, RS08, RS09 e RS10 definiscono il modello di gestione delle identità e dei permessi. RS11 e RS12 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS13 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui #gl("branch").
+I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS07, RS08, RS09 e RS10 definiscono il modello di gestione delle identità e dei permessi. RS11 e RS12 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS13 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui #gl("branch"). RS14 estende il modello con permessi configurabili per #gl("branch") e una regola formale per le merge.
+
 
 == Gerarchia di fiducia
 
@@ -163,7 +165,7 @@ Il responsabile può alzare il livello di sicurezza del proprio progetto in qual
 
 === Dipendente
 
-Il dipendente è autorizzato a produrre #gl("commit") ordinari su un progetto se e solo se la propria chiave-pubblica è presente nel campo `allowed_signers` del #gl("commit") più recente di quel progetto. I permessi sono definiti per progetto — un dipendente autorizzato su ProgettoA non ha accesso a ProgettoB, anche se entrambi appartengono alla stessa #gl("repository"). Non esistono permessi per #gl("branch"): un dipendente autorizzato su un progetto può committare su qualsiasi #gl("branch") di quel progetto.
+Il dipendente è autorizzato a produrre #gl("commit") ordinari su un progetto se e solo se la propria chiave-pubblica è presente nel campo `allowed_signers` del #gl("commit") più recente di quel progetto. I permessi sono definiti per progetto — un dipendente autorizzato su ProgettoA non ha accesso a ProgettoB, anche se entrambi appartengono alla stessa #gl("repository"). I permessi sono definiti per progetto e, opzionalmente, per #gl("branch"): per impostazione predefinita un dipendente autorizzato su un progetto può committare su qualsiasi #gl("branch") di quel progetto, ma il responsabile può creare #gl("branch") con liste di autorizzati ristrette, come descritto nella sezione dedicata ai permessi per #gl("branch").
 
 I dipendenti non possono produrre #gl("commit") amministrativi — qualsiasi tentativo di creare, modificare o eliminare un file speciale (`allowed_Dipendenti`, `.rvc_policy`, `.rvc_branch_status`) viene rifiutato dal motore indipendentemente dalla presenza della firma. Questa restrizione vale per tutti i livelli di sicurezza.
 
@@ -432,11 +434,33 @@ Nella seconda fase viene creato un nuovo #gl("branch") pulito a partire dall'ult
 
 Questa procedura garantisce che la risposta a una compromissione non introduca ambiguità nella storia del progetto. Un approccio alternativo — cancellare i #gl("commit") fraudolenti rompendo la catena crittografica — renderebbe impossibile distinguere una storia ripulita da una storia alterata da un attaccante. Il meccanismo di Redazione Trasparente (@sec:redazione-trasparente) offre una terza via: rendere inaccessibile il contenuto fraudolento senza rompere la catena, con una traccia formale firmata dalla chiave master.
 
-=== Branch e permessi
+=== Permessi per branch
 
-Come definito nella sezione sulla gerarchia di fiducia, i permessi sono per progetto e non per #gl("branch"). Un dipendente autorizzato su un progetto può committare su qualsiasi #gl("branch") di quel progetto. La disciplina sui #gl("branch") — lavorare su #gl("branch") di sviluppo e fare merge sul #gl("branch") principale solo quando il codice è verificato — è una convenzione operativa del team, non un vincolo tecnico imposto dal sistema.
+Il modello proposto estende il concetto di permessi per progetto introducendo la possibilità di definire liste di autorizzati differenziate per #gl("branch"). Per impostazione predefinita ogni #gl("branch") eredita il file `allowed_Dipendenti` del progetto — il comportamento è identico al modello base. Il responsabile può però creare #gl("branch") con restrizioni specifiche producendo un #gl("commit") amministrativo che inizializza un file `allowed_Dipendenti` dedicato a quel #gl("branch"). Da quel momento il motore verifica i permessi del #gl("commit") rispetto all'`allowed_Dipendenti` del #gl("branch") corrente, non quello globale del progetto.
 
-Questa scelta è deliberata: introdurre permessi per #gl("branch") aggiungerebbe complessità gestionale significativa senza un corrispondente aumento delle garanzie di sicurezza. La sicurezza del sistema si basa sull'autenticità dei #gl("commit"), non sulla restrizione dei #gl("branch") su cui è possibile scrivere. Un dipendente che produce un #gl("commit") non autorizzato — ad esempio direttamente sul #gl("branch") principale saltando il processo di verifica — è comunque identificabile tramite la firma crittografica e la sua azione è permanentemente tracciata nella storia del progetto.
+Il caso d'uso principale è la protezione del #gl("branch") principale: il responsabile mantiene in `allowed_Dipendenti` del branch principale solo i dipendenti autorizzati all'integrazione del codice, mentre i #gl("branch") di sviluppo hanno liste più ampie che includono tutti i collaboratori del progetto. Un dipendente presente solo nel #gl("branch") di sviluppo non può committare direttamente sul #gl("branch") principale — il motore rifiuta il #gl("commit") prima della generazione del `.sig`.
+
+I file speciali — `allowed_Dipendenti`, `.rvc_policy`, `.rvc_branch_status` — sono sempre esclusi dalla merge, indipendentemente dai permessi dei #gl("branch") coinvolti. Ogni #gl("branch") mantiene quindi il proprio `allowed_Dipendenti` immutato dopo una merge — i permessi non si contaminano tra #gl("branch") diversi e ogni #gl("branch") conserva il proprio livello di sicurezza configurato.
+
+==== Creazione di un branch con permessi ristretti
+
+La creazione di un #gl("branch") con permessi specifici segue questa procedura:
+
++ Il responsabile crea il nuovo #gl("branch") a partire da un #gl("commit") esistente.
++ Il primo #gl("commit") sul nuovo #gl("branch") è amministrativo e contiene il file `allowed_Dipendenti` con la lista degli autorizzati per quel #gl("branch") specifico. Il responsabile deve includere la propria chiave-pubblica in questa lista.
++ Dal #gl("commit") successivo il motore verifica i permessi rispetto all'`allowed_Dipendenti` del #gl("branch") corrente.
+
+Se il primo #gl("commit") su un nuovo #gl("branch") non è amministrativo, il motore eredita automaticamente l'`allowed_Dipendenti` del #gl("branch") di origine — il comportamento predefinito rimane invariato per i #gl("branch") senza restrizioni esplicite.
+
+==== Merge tra branch con permessi diversi
+
+La merge tra due #gl("branch") con `allowed_Dipendenti` diversi è un #gl("commit") ordinario — non richiede un #gl("commit") amministrativo — ma il firmatario deve soddisfare una condizione precisa: deve essere presente nell'`allowed_Dipendenti` del #gl("branch") di destinazione, ovvero il #gl("branch") su cui la merge viene prodotta.
+
+Questa regola ha due conseguenze dirette. La prima è che un dipendente presente solo nel #gl("branch") di sviluppo non può fare merge sul #gl("branch") principale — non è nell'`allowed_Dipendenti` di destinazione. La seconda è che il responsabile può sempre fare merge su qualsiasi #gl("branch") del proprio progetto, indipendentemente dalle liste — è il meccanismo standard dei #gl("commit") amministrativi che si applica anche alle merge.
+
+Esiste una terza figura che può fare merge: un dipendente presente nell'`allowed_Dipendenti` di entrambi i #gl("branch") coinvolti. Questo permette al responsabile di delegare esplicitamente la capacità di merge a un dipendente fidato includendolo nella lista ristretta del #gl("branch") di destinazione. Il contenuto della merge — ovvero i file non speciali — viene integrato normalmente. I file speciali del #gl("branch") di destinazione rimangono immutati: non vengono mai sovrascritti dal contenuto del #gl("branch") sorgente.
+
+Il risultato è un modello flessibile e coerente: i permessi per #gl("branch") sono una naturale estensione del modello esistente, usano gli stessi meccanismi di verifica già definiti e non introducono nuove regole architetturali. La complessità aggiuntiva è interamente gestita dal motore — per i team che non usano questa funzionalità il comportamento è identico al modello base.
 
 == Redazione Trasparente <sec:redazione-trasparente>
 
@@ -465,6 +489,7 @@ Un #gl("commit") redatto mantiene tutti i campi originali del `.sig` invariati e
 - `redaction_legal_ref`: riferimento al procedimento legale o alla motivazione organizzativa che ha giustificato la redazione. Campo libero.
 - `redaction_content`: dichiarazione del tipo di contenuto nel nuovo ZIP — `none`, `sanitized`, `encrypted_master` o `encrypted_authority`.
 - `redaction_signature`: firma della chiave master su tutti i campi del `.sig` inclusi quelli di redazione. Questa è la firma aggiuntiva che si affianca alla firma originale del dipendente, che rimane presente e verificabile.
+- `redaction_count`: contatore intero che parte da 1 alla prima redazione e si incrementa ad ogni redazione successiva dello stesso #gl("commit"). Permette a chiunque di verificare quante volte un #gl("commit") è stato redatto senza dover analizzare la storia completa della #gl("repository"). Una ri-redazione non cancella la traccia della redazione precedente — il `REDACTION_NOTICE.json` nel nuovo ZIP documenta la storia completa delle redazioni applicate al #gl("commit").
 
 La firma originale del dipendente sul #gl("commit") non viene rimossa — è prova forense di chi ha prodotto il contenuto originale e quando. La `redaction_signature` della chiave master certifica che l'autorità più alta del sistema ha autorizzato la modifica.
 
@@ -496,9 +521,21 @@ In tutti e tre i casi il motore produce automaticamente il file `REDACTION_NOTIC
 
 === Sincronizzazione con i client esistenti
 
-Quando un client che aveva già sincronizzato la #gl("repository") si aggiorna, riceve il nuovo `.sig` con `redacted: true` per il #gl("commit") interessato. Il motore riconosce questo campo, verifica la `redaction_signature` contro la chiave master, e accetta l'aggiornamento come autoritativo — sovrascrivendo il `.sig` locale.
+Quando un client che aveva già sincronizzato la #gl("repository") si aggiorna, riceve il nuovo `.sig` con `redacted: true` per il #gl("commit") interessato. Il motore riconosce questo campo, verifica la `redaction_signature` contro la chiave master e, se la firma è valida, avvia immediatamente la procedura di propagazione: elimina fisicamente il vecchio file ZIP dal dispositivo locale e lo sostituisce con il nuovo ZIP redatto ricevuto dall'aggiornamento. Il `.sig` locale viene sovrascritto con quello aggiornato. Questa operazione avviene prima di qualsiasi altra operazione successiva alla sincronizzazione — la priorità è garantire che il contenuto problematico non rimanga disponibile localmente più a lungo del necessario.
 
-Il vecchio file ZIP originale rimane sul dispositivo locale ma il motore non lo distribuisce mai ad altri client, poiché il `.sig` ora dichiara il #gl("commit") come redatto. Il sistema non può cancellare fisicamente i file già presenti sui dispositivi — questa è una limitazione strutturale di qualsiasi sistema di versionamento distribuito e non è specifica di #gl("rvc", capitalize: true). Nessun sistema distribuito esistente — inclusi #gl("git", capitalize: true) e i suoi derivati — può garantire la cancellazione fisica sui client che hanno già sincronizzato.
+Se il client non aveva ancora scaricato il file ZIP originale al momento della redazione, non è necessaria nessuna operazione di cancellazione — il client riceve direttamente il nuovo ZIP redatto come parte normale della sincronizzazione.
+
+Nel caso di una ri-redazione — ovvero una seconda o successiva redazione dello stesso #gl("commit") già redatto in precedenza — il meccanismo è identico. Il motore riceve un nuovo `.sig` con `redaction_count` incrementato, verifica la `redaction_signature` contro la chiave master e sostituisce il ZIP locale con quello aggiornato. Non è necessario nessun trattamento speciale per le ri-redazioni — il motore tratta ogni aggiornamento del `.sig` con `redacted: true` allo stesso modo, indipendentemente da quante redazioni precedenti siano già state applicate.
+
+Al termine di ogni sincronizzazione in cui è stata applicata almeno una redazione automatica, il motore produce un avviso esplicito all'utente:
+#terminal("Sincronizzazione completata.
+Avviso: N commit sono stati redatti dalla chiave master durante questa sincronizzazione.
+Per i dettagli consultare i file REDACTION_NOTICE.json corrispondenti.
+")
+
+Il messaggio indica il numero di redazioni applicate e rimanda ai file `REDACTION_NOTICE.json` per i dettagli. Non elenca i commit redatti nel testo del messaggio — l'utente trova tutte le informazioni nel `REDACTION_NOTICE.json` di ogni commit interessato. Questa scelta è deliberata: il motore non espone nel log standard più informazioni del necessario sulla natura del contenuto rimosso.
+
+Il sistema non può garantire la cancellazione fisica del contenuto sui dispositivi che avevano già scaricato il ZIP originale prima della sincronizzazione — copie manuali, backup personali o file estratti dalla #gl("repository") e conservati altrove sono fuori dallo scope del modello. La propagazione automatica garantisce che la #gl("repository") distribuita sia pulita dopo la sincronizzazione, non che ogni copia del contenuto esistente nel mondo sia stata eliminata. Questa è una limitazione strutturale di qualsiasi sistema distribuito e non è specifica di #gl("rvc", capitalize: true).
 
 === Garanzie e limitazioni
 
@@ -506,9 +543,13 @@ La Redazione Trasparente offre le seguenti garanzie.
 
 La catena crittografica non si rompe mai — i #gl("commit") precedenti e successivi al #gl("commit") redatto rimangono verificabili senza modifiche. Nessun nuovo client che riceve la #gl("repository") dopo la redazione può accedere al contenuto rimosso. La redazione è visibile a tutti — non esiste nessuna storia nascosta, solo una storia dichiarata come modificata con la firma della massima autorità. Esiste una traccia forense completa: firma originale del dipendente, timestamp originale, firma della chiave master, riferimento legale. L'abuso della funzione è rilevabile — ogni redazione è visibile nella #gl("repository") e non può essere nascosta, e ogni uso della chiave master lascia una traccia nel progetto `_rvc_root`.
 
+La propagazione della redazione è automatica e immediata — qualsiasi client che si sincronizza dopo una redazione riceve il nuovo ZIP redatto e il vecchio viene eliminato localmente senza necessità di intervento manuale. In caso di ri-redazione dello stesso #gl("commit"), il meccanismo si applica nuovamente con le stesse garanzie — il `redaction_count` nel `.sig` documenta quante redazioni sono state applicate.
+
 Le limitazioni residue sono le seguenti.
 
 I file già scaricati sui client locali prima della redazione non possono essere rimossi dal motore — questa è la limitazione strutturale del modello distribuito già discussa. La funzione richiede la chiave master — un attaccante che compromette la chiave master può produrre redazioni fraudolente. La mitigazione è che ogni redazione è pubblica e rilevabile, e che la chiave master è conservata offline.
+
+La propagazione automatica non elimina le copie del contenuto già estratte dalla #gl("repository") e conservate al di fuori di essa — backup personali, file copiati manualmente o contenuto già letto e salvato dall'utente prima della sincronizzazione sono fuori dallo scope del modello. La responsabilità della #gl("repository") termina al confine dei propri file.
 
 == Analisi del divario <sec:analisi-divario>
 
@@ -593,6 +634,7 @@ Non esiste nella versione iniziale nessun meccanismo formale per dichiarare lo s
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
     [RS13], [#gl("branch", capitalize: true) compromessi chiudibili con #gl("commit") firmato che ne attesti la compromissione], [Assente],
+    [RS14], [Permessi per #gl("branch") e regola formale per le merge], [Assente],
   )
 ]
 
@@ -617,6 +659,7 @@ Il confronto tra il modello proposto e lo stato iniziale di #gl("rvc", capitaliz
     [RS11], [Livelli di sicurezza configurabili], [Assente],
     [RS12], [Cifratura #gl("age", capitalize: true) per progetti riservati], [Assente],
     [RS13], [Gestione #gl("branch") compromessi], [Assente],
+    [RS14], [Permessi configurabili per #gl("branch")], [Assente],
   )
 ]
 

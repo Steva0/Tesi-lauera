@@ -62,11 +62,6 @@ I rischi emersi durante lo stage sono riportati in @fig:rischi-occorsi.\
 == Valutazione personale
 
 == Sviluppi futuri
-=== Permessi per branch
-Il modello attuale definisce i permessi a livello di progetto tramite il file allowed_Dipendenti, valido su tutti i branch. Un'estensione naturale sarebbe permettere liste di autorizzati diverse per branch diversi, consentendo ad esempio di limitare i commit sul branch principale a un sottoinsieme dei dipendenti del progetto. Questa estensione introduce però complessità gestionale significativa — in particolare nella gestione delle merge tra branch con liste diverse — e richiederebbe una definizione formale di quale allowed_Dipendenti prevalga in caso di conflitto. Per questi motivi è stata identificata come sviluppo futuro piuttosto che requisito del modello corrente.
 
 === Gestione fork
 Un'altra possibile estensione del modello è la gestione dei fork, che permetterebbe a sviluppatori esterni al progetto di creare una copia del repository per proporre modifiche tramite pull request. Questo richiederebbe l'introduzione di un nuovo tipo di entità (il fork) e di nuove regole per la gestione dei permessi e delle merge tra repository diversi. Anche questa estensione è stata identificata come sviluppo futuro a causa della complessità aggiuntiva che comporterebbe.
-
-=== Propagazione automatica della redazione
-Il meccanismo di Redazione Trasparente nella sua forma attuale rimuove il contenuto problematico dalla repository ma non può raggiungere le copie già scaricate sui dispositivi locali — limitazione strutturale di qualsiasi sistema distribuito. Un'estensione naturale è la propagazione automatica della redazione: quando il motore riceve un aggiornamento contenente un .sig con redacted: true firmato dalla chiave master, sostituisce ed elimina automaticamente il vecchio ZIP locale, diventando a sua volta vettore della redazione verso i client successivi. Il meccanismo si propaga con la normale sincronizzazione della repository, analogamente a un vaccino che si diffonde attraverso la rete di contatti. Questa estensione risolve la limitazione residua ma introduce questioni di governance — in particolare la dipendenza dalla correttezza del motore su ogni client e l'irrevocabilità della propagazione in caso di redazione errata — che richiedono riflessione ulteriore prima dell'adozione.

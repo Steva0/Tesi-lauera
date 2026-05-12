@@ -182,7 +182,7 @@ Il cliente opera in sola lettura e non ha permessi di scrittura sulla #gl("repos
 La creazione di una nuova #gl("repository") segue questa procedura:
 
 + L'amministratore genera la singola coppia di chiavi master con `ssh-keygen -t ed25519` e conserva la chiave-privata master su un dispositivo offline.
-+ Gli amministratori generano le proprie coppie di chiavi operative sui rispettivi computer di lavoro. Usando la chiave-privata master, vengono firmate tutte le chiavi pubbliche operative autorizzate.
++ Gli amministratori generano le proprie coppie di chiavi operative sui rispettivi computer di lavoro.
 + Viene creato il primo #gl("commit") del progetto `_rvc_root`. Questo #gl("commit") è fondamentale perché inizializza lo stato del motore e deve contenere:
   - Il file `master.pub` (la chiave-pubblica master in chiaro).
   - I file di certificato `.sig` (le firme crittografiche della master sulle chiavi operative).
@@ -196,7 +196,7 @@ La creazione di una nuova #gl("repository") segue questa procedura:
 La compromissione di una chiave operativa è lo scenario critico del modello. Si utilizza la chiave master — conservata offline — per revocare esclusivamente la chiave operativa compromessa, lasciando intatte le eventuali altre chiavi operative valide. La procedura è la seguente:
 
 + Viene recuperato il dispositivo offline contenente la chiave-privata master.
-+ Se necessario, il soggetto compromesso genera una nuova coppia di chiavi operativa, la cui parte pubblica viene firmata con la chiave master per creare un nuovo certificato di delega.
++ Se necessario, il soggetto compromesso genera una nuova coppia di chiavi operativa.
 + Viene prodotto uno speciale #gl("commit") amministrativo su `_rvc_root` che aggiorna il file `allowed_Dipendenti` (inserendo la nuova chiave e/o rimuovendo la vecchia compromessa) e aggiorna i certificati.
 + Questo #gl("commit") di revoca viene firmato eccezionalmente con la *chiave-privata master*.
 + Il motore di #gl("rvc", capitalize: true) riceve il #gl("commit"). Poiché la chiave master non è elencata in `allowed_Dipendenti`, il motore procederebbe a rifiutarlo. Tuttavia, prima di emettere il rifiuto definitivo, il motore verifica la firma del #gl("commit") contro il file `master.pub` registrato in modo immutabile nel #gl("commit") iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master e accetta il #gl("commit"); altrimenti lo rifiuta.

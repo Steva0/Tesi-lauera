@@ -83,3 +83,14 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-13] rvc2/ProjectImage.cpl — SignAndSaveToRepository(): popola securityLevel da .rvc_policy (working dir o history), branchStatus da .rvc_branch_status (working dir o history, default "active"), allowedSigners da allowed_Dipendenti (solo level >= 2)
 [2026-05-13] rvc2/ProjectImage.cpl — NewProject(): blocca creazione di progetto con nome "_rvc_root" (nome riservato al sistema)
 [2026-05-13] rvc2/ProjectImage.cpl — Redact(): dopo redazione controlla branch_status; se non è già "compromised" stampa [WARN] con istruzione per aggiornarlo manualmente
+[2026-05-13] rvc2/Init.cpl — createRvcRootFiles(): aggiunto parametro opKeysPath per file multi-admin in formato allowed_signers; ha precedenza su opKeyPath se entrambi forniti
+[2026-05-13] rvc2/ProjectImage.cpl — InitRepo(): aggiunto parametro opKeysPath passato a createRvcRootFiles; fallback su default_key solo se né opKeyPath né opKeysPath forniti
+[2026-05-13] rvc.cpl — dispatch "init": aggiunto -op-keys=<path>; usage aggiornato con [-op-key=<path> | -op-keys=<path>]
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): biforcazione admin/responsabile per level 0/1 vs 2+; level<2 richiede chiave in _rvc_root/allowed_Dipendenti (solo admin); level>=2 richiede chiave in allowed_Responsabili (comportamento precedente)
+[2026-05-13] rvc2/ProjectImage.cpl — CommitValidation: aggiunto campo uniqueId (RS03); formato timestamp_base36 + '_' + prime 8 cifre SHA256 ZIP (es. 0Q6ZML7LYA_A3F2B1C4); content-dependent, non manipolabile via timestamp arbitrario
+[2026-05-13] rvc2/ProjectImage.cpl — SignAndSaveToRepository(): popola cv.uniqueId := cv.id + '_' + Left(cv.hash, 8) dopo il calcolo dell'hash ZIP
+[2026-05-13] rvc2/ProjectImage.cpl — SignAndSaveToRepository(): aggiunto default '0' per securityLevel se .rvc_policy non trovato (evita IntVal(nil))
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): mostra uniqueId nell'output invece del solo timestamp; verifica che uniqueId == id + '_' + hash[:8]; uniqueId:FAIL se manomesso
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per commit redatti, aggiorna lastKnownDipendenti da cv.allowedSigners (il ZIP redatto non ha piu` allowed_Dipendenti)
+[2026-05-13] rvc2/ProjectImage.cpl — fileIdFromCommitId(): nuova funzione helper; estrae il timestamp dal formato esteso RS03 per i file lookup nella repo
+[2026-05-13] rvc2/ProjectImage.cpl — Redact(): usa fileIdFromCommitId per tutti i file lookup; aggiunto parametro dir per auto-commit branch_status=compromised con chiave operativa del responsabile

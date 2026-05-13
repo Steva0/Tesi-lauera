@@ -15,7 +15,7 @@
 
 La crittografia è la disciplina che studia le tecniche per proteggere le informazioni rendendole illeggibili a chi non è autorizzato. Nella sua forma classica, detta _crittografia simmetrica_, mittente e destinatario condividono una stessa chiave segreta per cifrare e decifrare i messaggi. Questo approccio presenta un problema fondamentale: come si trasmette la chiave in modo sicuro prima ancora di poter comunicare in modo sicuro?
 
-La risposta a questo problema arrivò negli anni '70 con la _crittografia asimmetrica_, detta anche _crittografia a chiave pubblica_. L'idea è elegante: ogni utente genera una coppia di chiavi matematicamente collegate tra loro. La *chiave-pubblica* può essere distribuita liberamente a chiunque. La *chiave-privata* deve rimanere segreta e non lasciare mai il dispositivo del proprietario. Le due chiavi sono collegate da una relazione matematica tale per cui ciò che viene cifrato con una può essere decifrato solo con l'altra, ma è computazionalmente impossibile ricavare la chiave-privata a partire da quella pubblica.
+La risposta a questo problema arrivò negli anni '70 con la _crittografia asimmetrica_, detta anche _crittografia a chiave pubblica_. Ogni utente genera una coppia di chiavi matematicamente collegate tra loro. La *chiave-pubblica* può essere distribuita liberamente a chiunque. La *chiave-privata* deve rimanere segreta e non lasciare mai il dispositivo del proprietario. Le due chiavi sono collegate da una relazione matematica tale per cui ciò che viene cifrato con una può essere decifrato solo con l\'altra, ma è computazionalmente impossibile ricavare la chiave-privata a partire da quella pubblica.
 
 Questo meccanismo permette due operazioni fondamentali:
 
@@ -23,7 +23,7 @@ Questo meccanismo permette due operazioni fondamentali:
 - *Firma-digitale*: il mittente cifra un messaggio con la propria chiave-privata. Chiunque, usando la chiave-pubblica del mittente, può verificare che il messaggio provenga effettivamente da lui e non sia stato alterato.
 
 #figure(
-  image("../images/flusso_crittografia_chiave_asimmetrica.png", width: 60%),
+  image("../images/flusso_crittografia_chiave_asimmetrica.png", width: 68%),
   caption: "Flusso trasferimento messaggio con uso di chiave pubblica e privata"
 )
 
@@ -50,7 +50,7 @@ Gli algoritmi crittografici moderni si basano su problemi matematici computazion
 *#gl("ed25519", capitalize: true)* è un algoritmo di firma-digitale basato sulla curva ellittica Curve25519 @rfc8032. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma #gl("ssh", capitalize: true) @rfc8709 ed è quello utilizzato in questo progetto.
 
 #figure(
-  image("../images/dimensione_chiave.png", width: 65%),
+  image("../images/dimensione_chiave.png", width: 70%),
   caption: "Comparazione dimensione tra tipologie di chiavi"
 )
 
@@ -127,7 +127,7 @@ Entrambi questi sistemi operavano però a livello di singolo file e su singola m
 
 ==== Sistemi centralizzati
 
-*CVS* (_Concurrent Versions System_), negli anni '90, portò il controllo versione in rete. Per la prima volta più sviluppatori potevano lavorare contemporaneamente sullo stesso progetto, con un server centrale che coordinava le modifiche. Il modello era semplice: il server custodisce l'intera storia del progetto; i client effettuano _checkout_ (scaricano una versione) e _commit_ (inviano le modifiche).
+*CVS* (_Concurrent Versions System_), negli anni '90, portò il controllo versione in rete. Per la prima volta più sviluppatori potevano lavorare contemporaneamente sullo stesso progetto, con un server centrale che coordinava le modifiche. Il modello era semplice: il server custodisce l\'intera storia del progetto; i client effettuano _checkout_ (scaricano una versione) e _commit_ (inviano le modifiche).
 
 *Subversion* (SVN), rilasciato nel 2000, nacque esplicitamente come sostituto migliorato di CVS, correggendo molte delle sue limitazioni tecniche. SVN trattava l'intera struttura del progetto come un'unità atomica: un commit poteva riguardare più file contemporaneamente, con la garanzia che o tutte le modifiche venivano salvate o nessuna.
 
@@ -172,7 +172,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
   )
 ]
 
-La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni commit produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un commit invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
+La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni commit produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un commit invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nella @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
 
 == RVC: architettura e funzionamento
 
@@ -222,7 +222,7 @@ Dopo i metadati, il file `.sig` contiene una firma #gl("ssh", capitalize: true) 
 
 Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il commit, rendendo ogni modifica crittograficamente attribuibile.
 
-Questi sono i campi presenti nella versione attuale di #gl("rvc", capitalize: true). Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi — tra cui `security_level`, `allowed_signers`, `branch_status`, `recipients` e `redacted` — necessari per supportare la gerarchia di fiducia e i livelli di sicurezza configurabili.
+Questi sono i campi presenti nella versione attuale di #gl("rvc", capitalize: true). Il modello di sicurezza proposto nella @cap:modello-sicurezza estende questa struttura con campi aggiuntivi — tra cui `security_level`, `allowed_signers`, `branch_status`, `recipients` e `redacted` — necessari per supportare la gerarchia di fiducia e i livelli di sicurezza configurabili.
 
 === Il linguaggio CPL
 

@@ -13,4 +13,4 @@ Hayagriva format:   https://github.com/typst/hayagriva/blob/main/docs/file-forma
 Ci sono vari stili per fare le citazioni, come riportato nella documentazione. 
 Quello di default è IEEE ma alla fine è preferenza tua o del relatore
 */
-#bibliography("bibliography.yml") <bibliography>
+#bibliography("bibliography.yml", full: true) <bibliography>

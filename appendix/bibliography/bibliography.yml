@@ -1,14 +1,73 @@
-'models-and-fair-use':
-  type: article
-  title: Foundation Models and Fair Use
+rfc8032:
+  type: misc
+  title: "Edwards-Curve Digital Signature Algorithm (EdDSA)"
   author:
-  - Henderson, Peter
-  - Li, Xuechen
-  - Jurafsky, Dan
-  - Hashimoto, Tatsunori
-  - Lemley, Mark A.
-  - Liang, Percy
-  date: 2023
-  url: https://arxiv.org/abs/2303.15715
+  - Josefsson, Simon
+  - Liusvaara, Ilari
+  date: 2017-01
+  url: https://datatracker.ietf.org/doc/html/rfc8032
   serial-number:
-    arxiv: '2303.15715'
+    rfc: '8032'
+
+rfc8709:
+  type: misc
+  title: "Edwards-Curve Digital Signature Algorithm (EdDSA) for Secure Shell (SSH)"
+  author:
+  - Harris, Ben
+  - Velvindron, Loganaden
+  date: 2020-02
+  url: https://datatracker.ietf.org/doc/html/rfc8709
+  serial-number:
+    rfc: '8709'
+
+age-spec:
+  type: misc
+  title: "age: simple, modern and secure file encryption"
+  author:
+  - Valsorda, Filippo
+  date: 2021
+  url: https://age-encryption.org/v1
+
+openssh-signing:
+  type: misc
+  title: "ssh-keygen: authentication key generation, management and conversion"
+  author:
+  - OpenBSD Project
+  date: 2024
+  url: https://man.openbsd.org/ssh-keygen
+
+mitre-attack:
+  type: misc
+  title: "MITRE ATT&CK: Adversarial Tactics, Techniques, and Common Knowledge"
+  author:
+  - MITRE Corporation
+  date: 2024
+  url: https://attack.mitre.org/
+
+git-scm:
+  type: misc
+  title: "Git: Distributed Version Control System"
+  author:
+  - Torvalds, Linus
+  date: 2005
+  url: https://git-scm.com/
+
+pro-git:
+  type: book
+  title: "Pro Git"
+  author:
+  - Chacon, Scott
+  - Straub, Ben
+  date: 2014
+  edition: '2'
+  publisher: Apress
+  url: https://git-scm.com/book/en/v2
+
+typst:
+  type: misc
+  title: "Typst: A new markup-based typesetting system"
+  author:
+  - Haug, Martin
+  - Mädje, Laurenz
+  date: 2023
+  url: https://typst.app/

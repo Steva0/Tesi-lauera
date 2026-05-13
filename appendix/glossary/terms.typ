@@ -162,4 +162,19 @@
     short: "black-box",
     description: [Approccio di analisi della sicurezza condotto senza accesso al codice sorgente, osservando esclusivamente il comportamento esterno del sistema in risposta agli input forniti.]
   ),
+  (
+    key: "redazione-trasparente",
+    short: "redazione trasparente",
+    description: [Meccanismo che permette di rimuovere dalla storia di una repository il contenuto di un commit illegale o sensibile, sostituendolo con un avviso firmato dalla chiave master, senza interrompere la catena crittografica. I commit successivi rimangono validi e la firma originale del dipendente viene preservata come evidenza forense.]
+  ),
+  (
+    key: "air-gapped",
+    short: "air-gapped",
+    description: [Isolamento fisico di un dispositivo da qualsiasi rete. Utilizzato per conservare chiavi crittografiche ad alta sensibilità, come la chiave master di un sistema di versionamento: un dispositivo air-gapped non può essere compromesso da remoto.]
+  ),
+  (
+    key: "base36",
+    short: "base36",
+    description: [Sistema di numerazione in base 36 che utilizza le cifre 0--9 e le lettere A--Z. In RVC è usato per codificare i timestamp degli identificativi dei commit, garantendo che l'ordinamento lessicografico dei nomi file coincida con l'ordine cronologico.]
+  ),
 )

@@ -47,7 +47,7 @@ La sicurezza di questo meccanismo si basa su due proprietà: la resistenza alle 
 
 Gli algoritmi crittografici moderni si basano su problemi matematici computazionalmente difficili. RSA, il primo algoritmo a chiave-pubblica diffuso, si basa sulla difficoltà di fattorizzare numeri molto grandi. Gli algoritmi moderni basati su _curve ellittiche_ offrono lo stesso livello di sicurezza con chiavi molto più corte, risultando più veloci ed efficienti.
 
-*#gl("ed25519", capitalize: true)* è un algoritmo di firma-digitale basato sulla curva ellittica Curve25519. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma #gl("ssh", capitalize: true) ed è quello utilizzato in questo progetto.
+*#gl("ed25519", capitalize: true)* è un algoritmo di firma-digitale basato sulla curva ellittica Curve25519 @rfc8032. Produce chiavi di 256 bit e firme di 512 bit, con un livello di sicurezza equivalente a RSA con chiavi da 3000 bit. È l'algoritmo raccomandato oggi per la firma #gl("ssh", capitalize: true) @rfc8709 ed è quello utilizzato in questo progetto.
 
 #figure(
   image("../images/dimensione_chiave.png", width: 65%),
@@ -70,7 +70,7 @@ Gli algoritmi crittografici moderni si basano su problemi matematici computazion
 
 === ssh-keygen per la firma di file
 
-Oltre alla gestione delle chiavi #gl("ssh", capitalize: true), `ssh-keygen` offre una funzionalità meno nota ma molto utile: la firma e verifica di file arbitrari. Questo è il meccanismo che #gl("rvc", capitalize: true) utilizza per firmare crittograficamente i _commit_.
+Oltre alla gestione delle chiavi #gl("ssh", capitalize: true), `ssh-keygen` offre una funzionalità meno nota ma molto utile: la firma e verifica di file arbitrari @openssh-signing. Questo è il meccanismo che #gl("rvc", capitalize: true) utilizza per firmare crittograficamente i _commit_.
 
 Il comando per firmare un file è:
 
@@ -96,7 +96,7 @@ Se la firma è valida e l'identità è presente nel file, il comando restituisce
 
 == AGE
 
-*#gl("age", capitalize: true)* (_Actually Good Encryption_) è uno strumento moderno per la cifratura di file, progettato con l'obiettivo di essere semplice, sicuro e componibile. A differenza di PGP, che nel corso degli anni ha accumulato una complessità notevole, #gl("age", capitalize: true) offre un'interfaccia minimale con poche opzioni ben definite.
+*#gl("age", capitalize: true)* (_Actually Good Encryption_) è uno strumento moderno per la cifratura di file, progettato con l'obiettivo di essere semplice, sicuro e componibile @age-spec. A differenza di PGP, che nel corso degli anni ha accumulato una complessità notevole, #gl("age", capitalize: true) offre un'interfaccia minimale con poche opzioni ben definite.
 
 #gl("age", capitalize: true) supporta tre modalità di cifratura:
 
@@ -140,7 +140,7 @@ Il limite fondamentale dei sistemi centralizzati era però strutturale: la prese
 
 ==== Sistemi distribuiti
 
-*#gl("git", capitalize: true)*, sviluppato da Linus Torvalds nel 2005 per gestire lo sviluppo del kernel Linux, rivoluzionò il campo introducendo un modello completamente distribuito. In #gl("git", capitalize: true) non esiste un server centrale: ogni sviluppatore possiede una copia completa dell'intera storia del progetto. I commit avvengono localmente e possono essere sincronizzati con altri #gl("repository") in un secondo momento.
+*#gl("git", capitalize: true)* @git-scm @pro-git, sviluppato da Linus Torvalds nel 2005 per gestire lo sviluppo del kernel Linux, rivoluzionò il campo introducendo un modello completamente distribuito. In #gl("git", capitalize: true) non esiste un server centrale: ogni sviluppatore possiede una copia completa dell'intera storia del progetto. I commit avvengono localmente e possono essere sincronizzati con altri #gl("repository") in un secondo momento.
 
 Questa architettura offre vantaggi significativi: si può lavorare offline, la storia del progetto è replicata su ogni macchina riducendo il rischio di perdita dei dati, e il _branching_ è diventato un'operazione economica e centrale nel flusso di lavoro.
 
@@ -164,7 +164,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
     align: (left, left, left),
     table.header([*Caratteristica*], [*#gl("git", capitalize: true)*], [*#gl("rvc", capitalize: true)*]),
     [Struttura], [_Repository_ con oggetti indicizzati], [File ZIP navigabili su filesystem],
-    [Identificazione commit], [#gl("hash", capitalize: true) SHA dell'oggetto commit], [Timestamp codificato in base36],
+    [Identificazione commit], [#gl("hash", capitalize: true) SHA dell'oggetto commit], [Timestamp codificato in #gl("base36")],
     [Firma commit], [Opzionale (GPG o #gl("ssh", capitalize: true))], [Integrata nell'architettura],
     [Server centrale], [Non richiesto ma comune], [Non richiesto per design],
     [#gl("repository", capitalize: true) multiple], [Un remote alla volta tipicamente], [Più #gl("repository") sincronizzate nativamente],
@@ -190,7 +190,7 @@ I file seguono una convenzione di denominazione che codifica la struttura della 
 <progetto>.<id>.sig
 ```
 
-L'`id` è un timestamp codificato in base36 (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
+L'`id` è un timestamp codificato in #gl("base36") (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
 
 === Il file .sig e la blockchain degli hash
 

@@ -17,7 +17,7 @@
 #set page(numbering: none)
 #pagebreak(to: "odd")
 #counter(page).update(1)
-#set page(numbering: "1.")
+#set page(numbering: "1")
 #include "chapters/1_Introduzione.typ"
 #include "chapters/2_Descrizione dello stage.typ"
 #include "chapters/3_Tecnologie e fondamenti teorici.typ"

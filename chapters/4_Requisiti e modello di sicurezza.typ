@@ -586,7 +586,7 @@ Non esiste invece nessun concetto di radice di fiducia o prima commit privilegia
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS05], [Prima commit come radice di fiducia verificabile autonomamente], [Assente],
+    [RS05], [Primo commit come radice di fiducia verificabile autonomamente], [Assente],
     [RS06], [Firma-digitale #gl("ssh", capitalize: true) supportata e imposta per i livelli di sicurezza maggiori o uguali a 1], [Parziale],
   )
 ]

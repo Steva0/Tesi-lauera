@@ -24,7 +24,8 @@
 #include "chapters/4_Requisiti e modello di sicurezza.typ"
 #include "chapters/5_Simulazione scenari di attacco.typ"
 #include "chapters/6_Miglioramenti implementati.typ"
-#include "chapters/7_Conclusioni.typ"
+#include "chapters/7_Simulazione scenari di attacco post.typ"
+#include "chapters/8_Conclusioni.typ"
 
 // Backmatter
 #include "appendix/glossary/glossary.typ"
@@ -70,7 +71,11 @@ Capitolo 6 — Miglioramenti implementati
   - Verifica integrità della catena
   - Allowed signers
 
-Capitolo 7 — Conclusioni
+Capitolo 7 — Simulazione scenari di attacco post-implementazione
+  - Ripetizione scenari 1-4 con versione aggiornata di RVC
+  - Confronto risultati prima/dopo
+
+Capitolo 8 — Conclusioni
   - Obiettivi raggiunti
   - Riflessione personale
   - Sviluppi futuri

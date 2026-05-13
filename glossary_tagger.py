@@ -126,15 +126,12 @@ def is_inside_figure_or_import(text: str, match_start: int) -> bool:
     return False
 
 def is_inside_string(text: str, match_start: int) -> bool:
-    """Controlla se il match è dentro una stringa delimitata da doppi apici."""
-    line_start = text.rfind('\n', 0, match_start) + 1
-    before_on_line = text[line_start:match_start]
-    
-    # Rimuoviamo eventuali virgolette escapate (\") per non falsare il conteggio
-    clean_before = before_on_line.replace('\\"', '')
-    
-    # Se c'è un numero dispari di virgolette prima del termine sulla stessa riga, 
-    # significa che la stringa è stata aperta ma non ancora chiusa.
+    """Controlla se il match è dentro una stringa delimitata da doppi apici (anche multilinea)."""
+    before = text[:match_start]
+    # Rimuove le virgolette escapate per non falsare il conteggio
+    clean_before = before.replace('\\"', '')
+    # Se il numero totale di virgolette nel testo precedente è dispari,
+    # significa che una stringa è aperta ma non ancora chiusa.
     return clean_before.count('"') % 2 == 1
 
 def is_inside_heading(text: str, match_start: int) -> bool:

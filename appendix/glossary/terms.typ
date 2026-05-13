@@ -22,11 +22,6 @@
     description: [Funzione matematica che trasforma un dato di dimensione arbitraria in una stringa di lunghezza fissa. Una minima modifica dell'input produce un output completamente diverso, garantendo l'integrità dei dati.]
   ),
   (
-    key: "commit",
-    short: "commit",
-    description: [Unità atomica di modifica in un sistema di versionamento. Rappresenta uno snapshot dello stato dei file in un determinato momento, accompagnato da metadati quali autore, data e messaggio descrittivo.]
-  ),
-  (
     key: "firma-digitale",
     short: "firma digitale",
     description: [Meccanismo crittografico che garantisce autenticità e integrità di un documento. Prodotta con la chiave privata del firmatario, può essere verificata da chiunque possieda la chiave pubblica corrispondente.]

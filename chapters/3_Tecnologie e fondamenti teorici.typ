@@ -129,9 +129,9 @@ Entrambi questi sistemi operavano però a livello di singolo file e su singola m
 
 *CVS* (_Concurrent Versions System_), negli anni '90, portò il controllo versione in rete. Per la prima volta più sviluppatori potevano lavorare contemporaneamente sullo stesso progetto, con un server centrale che coordinava le modifiche. Il modello era semplice: il server custodisce l'intera storia del progetto; i client effettuano _checkout_ (scaricano una versione) e _commit_ (inviano le modifiche).
 
-*Subversion* (SVN), rilasciato nel 2000, nacque esplicitamente come sostituto migliorato di CVS, correggendo molte delle sue limitazioni tecniche. SVN trattava l'intera struttura del progetto come un'unità atomica: un #gl("commit") poteva riguardare più file contemporaneamente, con la garanzia che o tutte le modifiche venivano salvate o nessuna.
+*Subversion* (SVN), rilasciato nel 2000, nacque esplicitamente come sostituto migliorato di CVS, correggendo molte delle sue limitazioni tecniche. SVN trattava l'intera struttura del progetto come un'unità atomica: un commit poteva riguardare più file contemporaneamente, con la garanzia che o tutte le modifiche venivano salvate o nessuna.
 
-Il limite fondamentale dei sistemi centralizzati era però strutturale: la presenza di un singolo punto di fallimento. Se il server non era raggiungibile, nessuno poteva fare #gl("commit"). Se il server veniva perso, si perdeva l'intera storia del progetto.
+Il limite fondamentale dei sistemi centralizzati era però strutturale: la presenza di un singolo punto di fallimento. Se il server non era raggiungibile, nessuno poteva fare commit. Se il server veniva perso, si perdeva l'intera storia del progetto.
 
 #figure(
   image("../images/Differenza-tra-controllo-delle-versioni-centralizzato-e-distribuito.png", width: 70%),
@@ -140,7 +140,7 @@ Il limite fondamentale dei sistemi centralizzati era però strutturale: la prese
 
 ==== Sistemi distribuiti
 
-*#gl("git", capitalize: true)*, sviluppato da Linus Torvalds nel 2005 per gestire lo sviluppo del kernel Linux, rivoluzionò il campo introducendo un modello completamente distribuito. In #gl("git", capitalize: true) non esiste un server centrale: ogni sviluppatore possiede una copia completa dell'intera storia del progetto. I #gl("commit") avvengono localmente e possono essere sincronizzati con altri #gl("repository") in un secondo momento.
+*#gl("git", capitalize: true)*, sviluppato da Linus Torvalds nel 2005 per gestire lo sviluppo del kernel Linux, rivoluzionò il campo introducendo un modello completamente distribuito. In #gl("git", capitalize: true) non esiste un server centrale: ogni sviluppatore possiede una copia completa dell'intera storia del progetto. I commit avvengono localmente e possono essere sincronizzati con altri #gl("repository") in un secondo momento.
 
 Questa architettura offre vantaggi significativi: si può lavorare offline, la storia del progetto è replicata su ogni macchina riducendo il rischio di perdita dei dati, e il _branching_ è diventato un'operazione economica e centrale nel flusso di lavoro.
 
@@ -150,9 +150,9 @@ Questa architettura offre vantaggi significativi: si può lavorare offline, la s
 
 In #gl("git", capitalize: true) ogni oggetto — _blob_ (contenuto di un file), _tree_ (struttura di una directory), _commit_, _tag_ — è identificato da un #gl("hash") SHA del suo contenuto. Questo significa che l'identità di ogni oggetto è determinata dal suo contenuto: due oggetti con lo stesso contenuto hanno lo stesso #gl("hash"), e qualsiasi modifica produce un #gl("hash") diverso.
 
-Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei file in quello stato, il riferimento al #gl("commit") precedente (_parent_), i metadati dell'autore e del committer, il messaggio di #gl("commit"). Questa struttura crea una catena crittograficamente collegata: modificare un #gl("commit") invalida tutti i #gl("commit") successivi, poiché i loro #gl("hash") dipendono dal #gl("hash") del precedente.
+Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei file in quello stato, il riferimento al commit precedente (_parent_), i metadati dell'autore e del committer, il messaggio di commit. Questa struttura crea una catena crittograficamente collegata: modificare un commit invalida tutti i commit successivi, poiché i loro #gl("hash") dipendono dal #gl("hash") del precedente.
 
-#gl("git", capitalize: true) supporta la firma crittografica dei #gl("commit") tramite GPG o #gl("ssh", capitalize: true). Tuttavia questa funzionalità è opzionale e deve essere abilitata esplicitamente — non fa parte del flusso di lavoro standard.
+#gl("git", capitalize: true) supporta la firma crittografica dei commit tramite GPG o #gl("ssh", capitalize: true). Tuttavia questa funzionalità è opzionale e deve essere abilitata esplicitamente — non fa parte del flusso di lavoro standard.
 
 === RVC a confronto con Git
 
@@ -164,15 +164,15 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
     align: (left, left, left),
     table.header([*Caratteristica*], [*#gl("git", capitalize: true)*], [*#gl("rvc", capitalize: true)*]),
     [Struttura], [_Repository_ con oggetti indicizzati], [File ZIP navigabili su filesystem],
-    [Identificazione #gl("commit")], [#gl("hash", capitalize: true) SHA dell'oggetto #gl("commit")], [Timestamp codificato in base36],
-    [Firma #gl("commit")], [Opzionale (GPG o #gl("ssh", capitalize: true))], [Integrata nell'architettura],
+    [Identificazione commit], [#gl("hash", capitalize: true) SHA dell'oggetto commit], [Timestamp codificato in base36],
+    [Firma commit], [Opzionale (GPG o #gl("ssh", capitalize: true))], [Integrata nell'architettura],
     [Server centrale], [Non richiesto ma comune], [Non richiesto per design],
     [#gl("repository", capitalize: true) multiple], [Un remote alla volta tipicamente], [Più #gl("repository") sincronizzate nativamente],
     [Linguaggio], [C], [#gl("cpl", capitalize: true)],
   )
 ]
 
-La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni #gl("commit") produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un #gl("commit") invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
+La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni commit produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un commit invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
 
 == RVC: architettura e funzionamento
 
@@ -181,7 +181,7 @@ La differenza più significativa riguarda la sicurezza: mentre in #gl("git", cap
 Una _repository_ #gl("rvc", capitalize: true) è una semplice cartella sul filesystem, senza strutture dati complesse o indici da mantenere. Ogni _commit_ è rappresentato da due file:
 
 - Un archivio *ZIP* contenente il _commit_ del progetto nella versione corrispondente, incluso il file `.FileManifest` che descrive lo stato di tutti i file tracciati.
-- Un file *.sig* contenente i metadati del #gl("commit") e la firma #gl("ssh", capitalize: true), la cui apposizione è opzionale nella versione iniziale del sistema.
+- Un file *.sig* contenente i metadati del commit e la firma #gl("ssh", capitalize: true), la cui apposizione è opzionale nella versione iniziale del sistema.
 
 I file seguono una convenzione di denominazione che codifica la struttura della storia:
 
@@ -190,22 +190,22 @@ I file seguono una convenzione di denominazione che codifica la struttura della 
 <progetto>.<id>.sig
 ```
 
-L'`id` è un timestamp codificato in base36 (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei #gl("commit") semplicemente confrontando i nomi dei file. Il riferimento al #gl("commit") precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
+L'`id` è un timestamp codificato in base36 (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
 
 === Il file .sig e la blockchain degli hash
 
 Il file `.sig` è il cuore del sistema di sicurezza di #gl("rvc", capitalize: true). Contiene in formato binario proprietario i seguenti campi:
 
-- `author`: il nome dell'autore del #gl("commit")
-- `comment`: il messaggio del #gl("commit")
+- `author`: il nome dell'autore del commit
+- `comment`: il messaggio del commit
 - `fn`: il nome del file ZIP corrispondente
-- `id`: l'identificativo del #gl("commit")
-- `prevId`: l'identificativo del #gl("commit") precedente
-- `hash`: lo SHA256 del file ZIP di questo #gl("commit")
-- `prevHash`: lo SHA256 del file ZIP del #gl("commit") precedente
-- `cumulativeHash`: lo SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del #gl("commit") precedente
+- `id`: l'identificativo del commit
+- `prevId`: l'identificativo del commit precedente
+- `hash`: lo SHA256 del file ZIP di questo commit
+- `prevHash`: lo SHA256 del file ZIP del commit precedente
+- `cumulativeHash`: lo SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del commit precedente
 
-Il `cumulativeHash` è la chiave della sicurezza: ogni #gl("commit") incorpora crittograficamente l'intera storia precedente. Verificare che il `cumulativeHash` di un #gl("commit") sia corretto significa verificare implicitamente che tutti i #gl("commit") precedenti siano integri.
+Il `cumulativeHash` è la chiave della sicurezza: ogni commit incorpora crittograficamente l'intera storia precedente. Verificare che il `cumulativeHash` di un commit sia corretto significa verificare implicitamente che tutti i commit precedenti siano integri.
 
 #figure(
   image("../images/cumulative_hash.png", width: 80%),
@@ -220,7 +220,7 @@ Dopo i metadati, il file `.sig` contiene una firma #gl("ssh", capitalize: true) 
 -----END SSH SIGNATURE-----
 ```
 
-Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il #gl("commit"), rendendo ogni modifica crittograficamente attribuibile.
+Questa firma attesta che l'autore dichiarato ha effettivamente prodotto il commit, rendendo ogni modifica crittograficamente attribuibile.
 
 Questi sono i campi presenti nella versione attuale di #gl("rvc", capitalize: true). Il modello di sicurezza proposto nel @cap:modello-sicurezza estende questa struttura con campi aggiuntivi — tra cui `security_level`, `allowed_signers`, `branch_status`, `recipients` e `redacted` — necessari per supportare la gerarchia di fiducia e i livelli di sicurezza configurabili.
 
@@ -245,7 +245,7 @@ Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 + Scansiona la directory e calcola le differenze rispetto allo stato precedente.
 + Crea un archivio ZIP con i file modificati e il nuovo `.FileManifest`.
 + Calcola lo SHA256 dell'archivio ZIP.
-+ Recupera l'hash e il `cumulativeHash` del #gl("commit") precedente dal suo file `.sig`.
++ Recupera l'hash e il `cumulativeHash` del commit precedente dal suo file `.sig`.
 + Calcola il nuovo `cumulativeHash` come SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` precedente.
 + Crea il file `.sig` con tutti i metadati.
 + Esegue `ssh-keygen -Y sign` per firmare il file `.sig` e accoda la firma al file.

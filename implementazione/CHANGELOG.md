@@ -68,3 +68,12 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-13] rvc2/ProjectImage.cpl — NewProject(): se -signers non fornito, usa la chiave dell'author (da config) come sorgente per allowed_Dipendenti; auto-inclusione garantita
 [2026-05-13] rvc2/ProjectImage.cpl — NewProject(): se chiave author non è in allowed_Dipendenti del file -signers fornito, viene aggiunta automaticamente
 [2026-05-13] rvc2/ProjectImage.cpl — InitRepo(): se -op-key non fornito, usa default_key dal config + ".pub" come chiave operativa per allowed_Dipendenti di _rvc_root
+[2026-05-13] rvc2/ProjectImage.cpl — CommitValidation: aggiunti campi F01 (redacted, redactionZipHash, redactionLegalRef, redactionContent, redactionCount, redactionTimestamp, redactionOriginalSig)
+[2026-05-13] rvc2/ProjectImage.cpl — ReadSigText(): nuova funzione; estrae il blocco SSH signature dal .sig per preservarlo come evidenza nella redazione
+[2026-05-13] rvc2/ProjectImage.cpl — Redact(): nuovo metodo F01; sostituisce ZIP con REDACTION_NOTICE.json, aggiunge campi di redazione al .sig, ri-firma con master key; preserva firma originale dipendente in redactionOriginalSig
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per commit redatti mostra riga [REDACTED] con redact_zip:OK/FAIL, redact_sig:OK(master)/FAIL, count, legal_ref
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): skip hash e catena per commit redatti; verifica firma master key invece di firma dipendente
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): catena post-redazione corretta; se commit precedente è redatto il suo ZIP è cambiato, prevHash non verificabile via ZIP ma è corretto per costruzione (skip)
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): primo commit di _rvc_root mostrato con label [BOOTSTRAP] (verifica self-contained: master.pub estratta dallo stesso ZIP)
+[2026-05-13] rvc.cpl — dispatch "redact" aggiunto; usage() aggiornato con sintassi del comando
+[2026-05-13] C:\Users\stemic\stage\test_rvc\test_bootstrap_redact.cmd — script test: [BOOTSTRAP] su _rvc_root, redazione commit con GDPR ref, integrity post-redazione (catena integra)

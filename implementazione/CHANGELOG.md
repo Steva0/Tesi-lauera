@@ -57,3 +57,14 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-12] rvc2/ProjectImage.cpl — CheckValidity(): "if specialFileChanged and result" — evita sovrascrittura errormsg quando branch check ha già bloccato
 [2026-05-12] rvc.cpl — dispatch "integrity": ok:=true per evitare doppio messaggio di errore (VerifyIntegrity stampa già il resoconto)
 [2026-05-12] C:\Users\stemic\stage\test_rvc\ — cartella con file .cmd per test di tutti i comandi: 01_reset_e_init, 02_commit_workflow, 03_protezione_file_speciali, 04_scenari_attacco, 05_rvcroot_e_master_key, 06_verifica_livelli, 07_branch_status
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): aggiunto parametro opzionale masterPubPath; se fornito estrae master.pub dall'ultimo commit di _rvc_root e confronta con chiave esterna; OK prosegue, FAIL blocca tutto (catena non verificabile)
+[2026-05-13] rvc.cpl — dispatch "integrity": passa -master-pub=<path> a VerifyIntegrity come masterPubPath
+[2026-05-13] rvc.cpl — usage(): aggiornato con [-master-pub=<path>] per integrity
+[2026-05-13] C:\Users\stemic\stage\test_rvc\test_masterpub_auto.cmd — script test per verifica -master-pub (OK con chiave corretta, FAIL con chiave sbagliata)
+[2026-05-13] rvc2/ProjectImage.cpl — SecurityInfo(): aggiunto branch status corrente del progetto (legge .rvc_branch_status da history, default "active")
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per ogni commit che contiene .rvc_branch_status, mostra "branch:<valore>" nella riga di output
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): check Responsabile ora obbligatorio; blocca se allowed_Responsabili è vuoto (prima saltava il controllo)
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): fallback su default_key da config per leggere la chiave pubblica dell'author (non solo identities/<author>.pub)
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): se -signers non fornito, usa la chiave dell'author (da config) come sorgente per allowed_Dipendenti; auto-inclusione garantita
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): se chiave author non è in allowed_Dipendenti del file -signers fornito, viene aggiunta automaticamente
+[2026-05-13] rvc2/ProjectImage.cpl — InitRepo(): se -op-key non fornito, usa default_key dal config + ".pub" come chiave operativa per allowed_Dipendenti di _rvc_root

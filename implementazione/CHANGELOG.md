@@ -77,3 +77,9 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): primo commit di _rvc_root mostrato con label [BOOTSTRAP] (verifica self-contained: master.pub estratta dallo stesso ZIP)
 [2026-05-13] rvc.cpl — dispatch "redact" aggiunto; usage() aggiornato con sintassi del comando
 [2026-05-13] C:\Users\stemic\stage\test_rvc\test_bootstrap_redact.cmd — script test: [BOOTSTRAP] su _rvc_root, redazione commit con GDPR ref, integrity post-redazione (catena integra)
+[2026-05-13] rvc2/Init.cpl — aggiunta funzione sshKeygenExe(): centralizza path ssh-keygen (era hardcodato in 3 punti); signWithKey aggiornato a usarla
+[2026-05-13] rvc2/ProjectImage.cpl — SaveAndSignCommitSignature() e VerifySignature(): sostituito path ssh-keygen hardcodato con Init.sshKeygenExe()
+[2026-05-13] rvc2/ProjectImage.cpl — CommitValidation: aggiunti campi securityLevel, branchStatus, allowedSigners (estratti dallo ZIP e scritti nel .sig; permettono verifica senza aprire lo ZIP, necessario per level 4 cifrato)
+[2026-05-13] rvc2/ProjectImage.cpl — SignAndSaveToRepository(): popola securityLevel da .rvc_policy (working dir o history), branchStatus da .rvc_branch_status (working dir o history, default "active"), allowedSigners da allowed_Dipendenti (solo level >= 2)
+[2026-05-13] rvc2/ProjectImage.cpl — NewProject(): blocca creazione di progetto con nome "_rvc_root" (nome riservato al sistema)
+[2026-05-13] rvc2/ProjectImage.cpl — Redact(): dopo redazione controlla branch_status; se non è già "compromised" stampa [WARN] con istruzione per aggiornarlo manualmente

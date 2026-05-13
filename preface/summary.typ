@@ -32,7 +32,7 @@ Il lavoro include la simulazione di quattro scenari di attacco con livelli cresc
 / #link(<cap:simulazione-scenari-post>)[Il settimo capitolo]: ripete i quattro scenari di attacco del quinto capitolo sulla versione aggiornata di #gl("rvc", capitalize: true), documentando per ogni tecnica il comportamento dei nuovi controlli preventivi — firma obbligatoria, verifica dell'autorizzazione per progetto, protezione dei file speciali — e confrontando i risultati con quelli della versione iniziale per valutare l'efficacia dei miglioramenti;
 / #link(<cap:conclusioni>)[L'ottavo capitolo]: riassume i risultati raggiunti, valuta il grado di soddisfacimento degli obiettivi prefissati e propone una riflessione personale sull'esperienza e sugli sviluppi futuri.
 
-#linebreak()
+#pagebreak()
 #text(24pt, weight: "semibold", "Convenzioni tipografiche")
 #linebreak()
 #v(1em)

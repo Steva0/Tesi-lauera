@@ -78,10 +78,10 @@ Il lavoro è stato organizzato su otto settimane per un totale di 304 ore, suddi
     [1], [32], [Studio di #gl("ssh", capitalize: true), crittografia-asimmetrica, firma-digitale e #gl("age", capitalize: true)],
     [2], [40], [Studio di #gl("rvc", capitalize: true): architettura, formato dei commit],
     [3], [40], [Simulazione scenari di attacco senza credenziali e con chiave compromessa],
-    [4], [40], [to do: descrizione attività],
-    [5], [40], [to do: descrizione attività],
-    [6], [32], [to do: descrizione attività],
-    [7], [40], [to do: descrizione attività],
+    [4], [40], [Stesura documentazione e analisi dei possibili miglioramenti],
+    [5], [40], [Implementazione dei miglioramenti prioritari],
+    [6], [32], [Testing e validazione, implementazione di miglioramenti secondari],
+    [7], [40], [Testing, simulazione scenari di attacco post-miglioramenti, stesura documentazione tecnica],
     [8], [40], [Completamento e revisione della relazione finale],
   )
 ]
@@ -101,7 +101,7 @@ Prima dell'avvio del progetto è stata condotta un'analisi preventiva dei rischi
     ),
     [Codice sorgente di #gl("rvc", capitalize: true) non disponibile nella fase iniziale, con impossibilità di analisi #gl("white-box")],
     [Analisi #gl("black-box") tramite osservazione del comportamento esterno e dei file prodotti],
-    [Alta \ Alto],
+    [Alta \ Medio],
     [Linguaggio #gl("cpl", capitalize: true) proprietario senza documentazione pubblica, con curva di apprendimento elevata],
     [Studio della documentazione interna fornita dall'azienda e confronto diretto col tutor],
     [Alta \ Medio],
@@ -110,6 +110,6 @@ Prima dell'avvio del progetto è stata condotta un'analisi preventiva dei rischi
     [Media \ Alto],
     [Vulnerabilità individuate già risolte nella versione interna, rendendo il lavoro ridondante],
     [Verifica periodica col tutor aziendale sull'allineamento tra la versione di test e quella interna],
-    [Media \ Medio],
+    [Bassa \ Medio],
   )
 ]

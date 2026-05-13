@@ -117,7 +117,7 @@ I #gl("branch") sono uno strumento fondamentale nello sviluppo software parallel
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
     [RS13], [I #gl("branch") compromessi devono poter essere chiusi con un commit firmato che ne attesti la compromissione], [D],
-    [RS14], [Il sistema deve supportare liste di autorizzati differenziate per #gl("branch"), con merge consentita ai soggetti autorizzati sul #gl("branch") di destinazione], [D],
+    [RS14], [Il sistema deve supportare liste di autorizzati differenziate per #gl("branch")], [D],
   )
 ]
 
@@ -185,7 +185,7 @@ La creazione di una nuova #gl("repository") segue questa procedura:
 + Gli amministratori generano le proprie coppie di chiavi operative sui rispettivi computer di lavoro.
 + Viene creato il primo commit del progetto `_rvc_root`. Questo commit è fondamentale perché inizializza lo stato del motore e deve contenere:
   - Il file `master.pub` (la chiave-pubblica master in chiaro).
-  - I file di certificato `.sig` (le firme crittografiche della master sulle chiavi operative).
+  - Il file di certificato `.sig`.
   - Il file `allowed_Dipendenti` contenente l'elenco di tutte le chiavi pubbliche operative.
   - Il file `allowed_Responsabili` (inizialmente vuoto o con i primi nominati).
 + Questo primo commit viene firmato con la chiave master stessa, stabilendo l'ancora di fiducia interna al sistema. 
@@ -199,7 +199,7 @@ La compromissione di una chiave operativa è lo scenario critico del modello. Si
 + Se necessario, il soggetto compromesso genera una nuova coppia di chiavi operativa.
 + Viene prodotto uno speciale commit amministrativo su `_rvc_root` che aggiorna il file `allowed_Dipendenti` (inserendo la nuova chiave e/o rimuovendo la vecchia compromessa) e aggiorna i certificati.
 + Questo commit di revoca viene firmato eccezionalmente con la *chiave-privata master*.
-+ Il motore di #gl("rvc", capitalize: true) riceve il commit. Poiché la chiave master non è elencata in `allowed_Dipendenti`, il motore procederebbe a rifiutarlo. Tuttavia, prima di emettere il rifiuto definitivo, il motore verifica la firma del commit contro il file `master.pub` registrato in modo immutabile nel commit iniziale di `_rvc_root`. Se la firma combacia, il motore riconosce l'autorità suprema della chiave master e accetta il commit; altrimenti lo rifiuta.
++ Il motore di #gl("rvc", capitalize: true) riceve il commit.
 
 === Inizializzazione di un progetto
 

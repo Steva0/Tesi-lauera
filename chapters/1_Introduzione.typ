@@ -59,7 +59,7 @@ Gli obiettivi dello stage sono stati definiti in accordo con il tutor aziendale 
     [D01], [Progettazione della gerarchia di fiducia e dei livelli di sicurezza configurabili per #gl("repository") distribuite],
     [D02], [Simulazione di scenari di attacco con diversi livelli di accesso e analisi delle vulnerabilità individuate],
     [D03], [Implementazione dei miglioramenti prioritari nel codice sorgente #gl("cpl", capitalize: true) di #gl("rvc", capitalize: true)],
-    [F01], [Progettazione del meccanismo di #gl("redazione-trasparente", capitalize: true) per la gestione di contenuto illegale o sensibile nella #gl("repository")],
+    [F01], [Progettazione del meccanismo di Redazione-trasparente per la gestione di contenuto illegale o sensibile nella #gl("repository")],
     [F02], [Analisi delle possibilità di adozione di una struttura monorepo o polirepo in #gl("rvc", capitalize: true)],
   )
 ]

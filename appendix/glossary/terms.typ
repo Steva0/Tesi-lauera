@@ -177,4 +177,14 @@
     short: "base36",
     description: [Sistema di numerazione in base 36 che utilizza le cifre 0--9 e le lettere A--Z. In RVC è usato per codificare i timestamp degli identificativi dei commit, garantendo che l'ordinamento lessicografico dei nomi file coincida con l'ordine cronologico.]
   ),
+  (
+    key: "social-engineering",
+    short: "social engineering",
+    description: [Tecnica di manipolazione psicologica utilizzata dagli attaccanti per indurre le vittime a divulgare informazioni riservate o a compiere azioni che compromettono la sicurezza, come cliccare su link malevoli o fornire credenziali. Spesso sfrutta la fiducia, l'urgenza o la curiosità delle persone.]
+  ),
+  (
+    key: "spear-phishing",
+    short: "spear phishing",
+    description: [Variante di phishing mirata a un individuo o a un gruppo specifico, in cui l'attaccante personalizza i messaggi per aumentare le probabilità di successo. Può essere utilizzato per ottenere credenziali di accesso o indurre la vittima a eseguire azioni dannose.]
+  )
 )

@@ -17,6 +17,11 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-14] Limitazione NOTA: Commit con "Nothing to do!" non salvati in repository (RVC architecture), non possono essere redatti — soluzione: assicurarsi che commit abbiano modifiche reali
 [2026-05-14] rvc2/ProjectImage.cpl — Blocco commit vuoti: Commit() ora verifica che ZIP non sia vuoto (0 file) usando ArchiverByExt + Dir(); blocca con "Nothing to commit (no changes detected)" ✓
 [2026-05-14] test_rvc/test_empty_block.cmd (NEW) — verifica blocco commit vuoti: Test 1 empty (bloccato) + Test 2 with changes (successo)
+[2026-05-14] rvc2/FileManifest.cpl — Conversione al maschile: "una commit" → "un commit", "la commit" → "il commit", etc. (10+ occorrenze)
+[2026-05-14] rvc2/ProjectImage.cpl — Conversione al maschile: tutte le stampe relative a commit convertite da femminile a maschile (20+ occorrenze)
+[2026-05-14] rvc2/RvcEngine.cpl — Conversione al maschile: "la commit" → "il commit", etc. (8+ occorrenze)
+[2026-05-14] test_rvc/test_email.cmd (NEW) — verifica email come nomi utente: init, new-project, commit con mario@company.com ✓ FUNZIONA
+[2026-05-14] NOTA: Email addresses come nomi utente funzionano correttamente; parser già robusto grazie a `{email}` nei filenames
 
 [2026-05-12] rvc2/Init.cpl (nuovo) — helper puri per init repo e new-project: signWithKey, copyTextFile, readFileFromCommit, isKeyInFile, createRvcRootFiles, createProjectFiles, cleanupRvcRootDir, cleanupProjectDir
 [2026-05-12] rvc2/Init.cpl — aggiunto import os,file,RvcEngine,FileManifest,genericPacker,scanDir,MsgReporter + var str errormsg

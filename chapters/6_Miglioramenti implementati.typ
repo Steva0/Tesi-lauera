@@ -6,6 +6,6 @@
 = Miglioramenti implementati<cap:miglioramenti-implementati>
 
 #text(style: "italic", [
-    In questo capitolo effettuo l'analisi degli utenti, sviluppo le user stories e compongo la lista dei requisiti dividendoli per tipologia e necessità.
+    Miglioramenti implementati rispetto alla versione precedente del software, come richiesto dai requisiti funzionali e non funzionali, sono elencati di seguito.
 ])
 #v(1em)

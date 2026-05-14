@@ -161,3 +161,40 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
   - Ogni comando con descrizione breve
   - Parametri ben formattati e leggibili
   - Terminal-friendly (non affatica su schermi stretti)
+[2026-05-14] rvc2/ProjectImage.cpl — CommitValidation: aggiunti 9 campi F01 Redazione Trasparente:
+  - redacted (bool): true se commit redatto dalla master key
+  - redactionZipHash (str): SHA256 del nuovo ZIP sostitutivo
+  - redactionAuthority (str): impronta (SHA256) della master key che ha autorizzato redazione
+  - redactionTimestamp (str): quando redazione è stata eseguita
+  - redactionLegalRef (str): riferimento legale/organizzativo della redazione
+  - redactionContent (str): tipo contenuto (none/sanitized/encrypted_master/encrypted_authority)
+  - redactionSignature (str): firma master key su REDACTION_NOTICE.json (evidenza della decisione)
+  - redactionCount (str): contatore redazioni (parte da '1', incrementa per ri-redazioni)
+  - redactionOriginalSig (str): firma SSH originale del dipendente (evidenza forense preservata)
+[2026-05-14] rvc2/ProjectImage.cpl — Redact() singolo: implementazione completa F01
+  - Lettura commit originale dal .sig
+  - Preservazione firma SSH originale in redactionOriginalSig
+  - Creazione REDACTION_NOTICE.json con metadati completi
+  - Firma REDACTION_NOTICE con master key → redactionSignature
+  - Creazione ZIP sostitutivo contenente solo REDACTION_NOTICE
+  - Calcolo SHA256(nuovo ZIP) → redactionZipHash
+  - Salvataggio cv aggiornato (redacted:true) e firma con master key
+  - Sostituzione ZIP e .sig originali nel repository
+  - Auto-commit branch_status=compromised con master key
+  - Proprietà critica: hash originale e cumulativeHash NON vengono modificati (preserva catena)
+[2026-05-14] rvc2/ProjectImage.cpl — VerifyIntegrity() modificato per redacted commits:
+  - Rileva redacted:true e mostra [REDACTED] nello stato del commit
+  - Salta verificazione hash ordinaria (il ZIP è sostituito)
+  - Verifica redactionZipHash (hash del nuovo ZIP sostitutivo) — fallisce se ZIP modificato
+  - Verifica firma master key (non firma dipendente originale) usando master.pub da _rvc_root
+  - Verifica redactionSignature è presente (altrimenti commit invalido)
+  - Preserva catena anche per commit redatti: cumulativeHash originale non modificato
+  - Commit successivi: prevHash non verificabile per commit redatti (ZIP sostituito), ma OK per costruzione
+  - Output mostra: redact_zip:OK/FAIL e redact_sig:OK(master)/FAIL
+[2026-05-14] rvc2/Integrity.cpl — verifyRvcRootId() già presente per non-decreasing lexicographic check
+[2026-05-14] Test F01: test_redact_singolo.cmd creato per validazione redazione singolo
+  - Verifica commit redatto mostra [REDACTED]
+  - Verifica redact_zip_hash corrisponde
+  - Verifica redact_sig:OK(master) — firma master key valida
+  - Verifica commit successivi verificano correctamente (prevHash OK per commit redatti)
+  - STATUS: ✓ FUNZIONANTE — redacted commits mostrano [REDACTED] e verificano con redact_zip:OK + redact_sig:OK(master)

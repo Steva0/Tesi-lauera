@@ -391,7 +391,7 @@ Questo comportamento è accettabile nel contesto d'uso di #gl("rvc", capitalize:
 
 === Verifica della monotonicità della radice
 
-Per garantire la coerenza della storia, il motore di #gl("rvc") applica una regola di validazione sulla catena: $ C_n."rvc_root" >= C_(n-1)."rvc_root" $. Questo vincolo impedisce a un utente malintenzionato di produrre un commit referenziando una versione vecchia di `_rvc_root` (magari precedente a una revoca) per tentare di bypassare i nuovi permessi. La radice di fiducia può solo avanzare o restare stabile, mai tornare indietro.
+Per garantire la coerenza della storia, il motore di #gl("rvc") applica una regola di validazione sulla catena: $ C_n."rvc_root" >= C_(n-1)."rvc_root" $Questo vincolo impedisce a un utente malintenzionato di produrre un commit referenziando una versione vecchia di `_rvc_root` (magari precedente a una revoca) per tentare di bypassare i nuovi permessi. La radice di fiducia può solo avanzare o restare stabile, mai tornare indietro.
 
 === Successione del responsabile
 

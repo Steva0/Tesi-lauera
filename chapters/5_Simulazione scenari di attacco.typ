@@ -99,7 +99,7 @@ L'attaccante produce un commit senza firma dichiarando nel campo `author` il nom
 Reading manifest, path:.\\
 packing simulazione.0Q6PK4VQQR.0Q6PHWPMPQ.{Michele}+Produzione.zip
 ERRORE: chiave-privata non trovata ne in rvc.config ne in identities\\
-La commit e stata salvata senza firma Ssh.
+Il commit e stato salvato senza firma Ssh.
 copying simulazione.0Q6PK4VQQR.sig to repo\\ ...
 tot. exec time: 0.14 sec"
 )

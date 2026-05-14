@@ -34,7 +34,7 @@ Un sistema di versionamento distribuito è considerato sicuro quando garantisce,
 In #gl("git", capitalize: true) l'integrità è garantita dalla catena di #gl("hash") SHA256 — modificare un commit invalida tutti quelli successivi. Autenticità e non ripudio sono invece opzionali: la firma crittografica tramite #gl("ssh", capitalize: true) o GPG deve essere abilitata esplicitamente e non fa parte del flusso di lavoro standard. L'ordine temporale non è verificabile in senso assoluto — #gl("git", capitalize: true) non verifica i timestamp e permette la creazione di commit con date arbitrarie:
 
 ```bash
-GIT_AUTHOR_DATE="2020-01-01T00:00:00" git commit -m "commit retrodatata"
+GIT_AUTHOR_DATE="2020-01-01T00:00:00" git commit -m "commit retrodatato"
 ```
 
 Il risultato è un commit inserito nella storia con una data arbitraria, indistinguibile da un commit legittimo. Questa non è una vulnerabilità ma una scelta progettuale documentata — #gl("git", capitalize: true) garantisce l'ordine relativo tramite la catena di #gl("hash"), non l'ordine temporale assoluto.
@@ -278,7 +278,7 @@ A differenza dei sistemi tradizionali, il modello proposto collega crittografica
 La verifica completa di un commit di un qualsiasi progetto segue questa catena:
 
 + La firma del commit viene verificata crittograficamente contro le chiavi pubbliche presenti nel campo `allowed_signers` del `.sig` di quel commit. Il campo `allowed_signers` è fidato perché il verificatore controlla che solo il responsabile o l'amministratore possano produrre i commit amministrativi che lo modificano — qualsiasi altra modifica viene rifiutata. Di conseguenza, se un commit esiste ed è crittograficamente valido, il suo campo `allowed_signers` riflette una lista di autorizzati approvata da chi ne aveva il potere.
-+ La firma del commit di `_rvc_root` che ha prodotto la versione corrente di `allowed_Responsabili` viene verificata contro la chiave-pubblica operativa dell'amministratore, presente nel campo `allowed_signers` del `.sig` di `_rvc_root`. A differenza degli altri progetti, il campo `allowed_signers` di `_rvc_root` contiene esclusivamente le chiavi-pubbliccje operative degli amministratori — i responsabili sono il contenuto di `_rvc_root`, non i suoi firmatari.
++ La firma del commit di `_rvc_root` che ha prodotto la versione corrente di `allowed_Responsabili` viene verificata contro la chiave-pubblica operativa dell'amministratore, presente nel campo `allowed_signers` del `.sig` di `_rvc_root`. A differenza degli altri progetti, il campo `allowed_signers` di `_rvc_root` contiene esclusivamente le chiavi-pubbliche operative degli amministratori — i responsabili sono il contenuto di `_rvc_root`, non i suoi firmatari.
 + La legittimità della chiave-pubblica operativa viene verificata tramite il certificato firmato con la chiave master, presente nel primo commit di `_rvc_root`.
 + La chiave-pubblica master viene verificata tramite il canale indipendente dalla #gl("repository").
 
@@ -649,7 +649,7 @@ RS01 è parziale perché l'hash viene calcolato e memorizzato ma non verificato 
 
 La firma #gl("ssh", capitalize: true) è il punto di maggiore maturità della versione iniziale. Il meccanismo è implementato e funzionante — ogni commit può essere firmato con una chiave #gl("ssh", capitalize: true) e la firma viene apposta al file `.sig`. Tuttavia la firma è opzionale: deve essere abilitata esplicitamente al momento del commit tramite un parametro della riga di comando. Il modello proposto la rende obbligatoria dal livello di sicurezza 1 in poi.
 
-Non esiste invece nessun concetto di radice di fiducia o prima commit privilegiata. Tutte le commit sono trattate allo stesso modo dal motore — non c'è distinzione tra la commit iniziale che dovrebbe stabilire l'ancora di fiducia e le commit successive. Il progetto `_rvc_root` e l'intera gerarchia di fiducia sono assenti.
+Non esiste invece nessun concetto di radice di fiducia o prima commit privilegiata. Tutti i commit sono trattat allo stesso modo dal motore — non c'è distinzione tra il commit iniziale che dovrebbe stabilire l'ancora di fiducia e i commit successivi. Il progetto `_rvc_root` e l'intera gerarchia di fiducia sono assenti.
 
 #figure(caption: "Analisi del divario — autenticità e non ripudio.")[
   #table(

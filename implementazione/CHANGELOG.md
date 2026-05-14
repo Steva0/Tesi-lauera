@@ -5,6 +5,19 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 
 ---
 
+[2026-05-14] rvc2/ProjectImage.cpl — F01 Branch Redaction (COMPLETATA): SignAndSaveToRepository() aggiunto param branch:=nil; propaga branchName a CommitValidation per .sig
+[2026-05-14] rvc2/ProjectImage.cpl — CommitValidation: aggiunto campo var str branchName (riga 199)
+[2026-05-14] rvc2/ProjectImage.cpl — Commit(): passa branch param a SignAndSaveToRepository (riga 305)
+[2026-05-14] rvc2/ProjectImage.cpl — Recording() e NewProject(): passano branch:=nil a SignAndSaveToRepository
+[2026-05-14] rvc2/ProjectImage.cpl — GetBranchCommits() (NEW): helper per cercare commit per branch, legge sia da .sig (campo branchName) che da filename pattern [branchName]
+[2026-05-14] rvc2/ProjectImage.cpl — RedactBranch(): usa GetBranchCommits() per trovare tutti i commit del branch, itera e chiama Redact() per ognuno
+[2026-05-14] rvc2/ProjectImage.cpl — byStrDescending() (NEW): helper di sort per string array in ordine discendente
+[2026-05-14] test_rvc/test_branch_with_changes.cmd (NEW) — test completo F01 Branch Redaction: init → 2 commit main + 2 commit branch → redact branch → integrity
+[2026-05-14] Risultati test: Redatti 2/2 commit del branch feature_work; entrambi [REDACTED] con redact_zip:OK + redact_sig:OK(master); auto-marked branch_status=compromised ✓
+[2026-05-14] Limitazione NOTA: Commit con "Nothing to do!" non salvati in repository (RVC architecture), non possono essere redatti — soluzione: assicurarsi che commit abbiano modifiche reali
+[2026-05-14] rvc2/ProjectImage.cpl — Blocco commit vuoti: Commit() ora verifica che ZIP non sia vuoto (0 file) usando ArchiverByExt + Dir(); blocca con "Nothing to commit (no changes detected)" ✓
+[2026-05-14] test_rvc/test_empty_block.cmd (NEW) — verifica blocco commit vuoti: Test 1 empty (bloccato) + Test 2 with changes (successo)
+
 [2026-05-12] rvc2/Init.cpl (nuovo) — helper puri per init repo e new-project: signWithKey, copyTextFile, readFileFromCommit, isKeyInFile, createRvcRootFiles, createProjectFiles, cleanupRvcRootDir, cleanupProjectDir
 [2026-05-12] rvc2/Init.cpl — aggiunto import os,file,RvcEngine,FileManifest,genericPacker,scanDir,MsgReporter + var str errormsg
 [2026-05-12] rvc2/Init.cpl — fix signWithKey: path con spazi ora quotati nel comando ssh-keygen

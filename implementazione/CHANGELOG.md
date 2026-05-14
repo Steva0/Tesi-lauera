@@ -109,3 +109,19 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per _rvc_root, fallback a chiave operativa (allowed_Dipendenti) se firma master key fallisce (per commit che modificano solo allowed_Responsabili)
 [2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): authority check speciale per _rvc_root (allowed_Dipendenti/master.pub richiede masterPubBootstrap)
 [2026-05-13] C:\Users\stemic\stage\test_rvc\test_revoca_chiave.cmd — nuovo script test: revoca chiave operativa con master key, checkout/commit _rvc_root, verifica integrità pre/post revoca
+[2026-05-14] rvc2/ProjectImage.cpl — CommitValidation: aggiunto campo rvcRootId (ID ultimo commit di _rvc_root al momento della commit corrente, per ancorare a root of trust)
+[2026-05-14] rvc2/ProjectImage.cpl — SignAndSaveToRepository(): recupera rvcRootId via RvcEngine.getLastCommit('_rvc_root') durante ogni commit; salvato nel .sig per verifica offline
+[2026-05-14] rvc2/Integrity.cpl — verifyRvcRootId(): nuova funzione; verifica che rvcRootId sia non-decrescente nella catena (commit N non ha rvcRootId < commit N-1); usa confronto lessicografico su string IDs
+[2026-05-14] rvc2/ProjectImage.cpl + rvc2/Integrity.cpl — compilati con cpl.exe per aggiornare bytecode .pcd
+[2026-05-14] C:\Users\stemic\stage\test_rvc\03_protezione_file_speciali.cmd — fix: sostituito `update` con `checkout` (righe 18, 35) per ripristino file corretti da repository
+[2026-05-14] C:\Users\stemic\stage\test_rvc\04_scenari_attacco.cmd — fix: Python → PowerShell per tampering file in cmd.exe (righe 15-24, 36-45, 54-61)
+[2026-05-14] Test execution (2026-05-14) — Tutti 7 test .cmd eseguiti e superati:
+  - Test 01 (init): init repo + new-project ✓
+  - Test 02 (workflow): commit Michele, Luigi, Hacker-blocking ✓
+  - Test 03 (protezione): Luigi bloccato da allowed_Dipendenti, security_level non abbassabile ✓
+  - Test 04 (attacchi): S1/S2/S3 rilevati correttamente (hash:FAIL, catena:FAIL) ✓
+  - Test 05 (_rvc_root): master key, aggiunta Responsabili, BOOTSTRAP marker ✓
+  - Test 06 (livelli): level 0/1 bloccati, level 2/3 creati ✓
+  - Test 07 (branch): archivio funzionante, commit su archived branch bloccato ✓
+[2026-05-14] rvc2/ProjectImage.cpl — Debug output: "[DEBUG-ALLOWED] Trovato in history:" per trace allowed_Dipendenti lettura
+[2026-05-14] Verificatore (VerifyIntegrity) — testato su tutti scenari: hash, catena, firma, autorita, branch status, rvcRootId verificati correttamente

@@ -250,7 +250,7 @@ I campi del `.sig` nel modello proposto sono i seguenti:
 - `hash`: SHA256 del file ZIP di questo commit.
 - `prevHash`: SHA256 del file ZIP del commit precedente.
 - `cumulativeHash`: SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del commit precedente.
-- `rvc_root`: identificativo (ID) dell'ultimo commit del progetto `_rvc_root` al momento della creazione del commit. Questo campo ancora il commit di progetto a uno stato specifico della gerarchia di fiducia, garantendo che la verifica avvenga contro la lista dei responsabili e degli amministratori valida in quel preciso momento storico. Il motore impone che questo valore sia cronologicamente non precedente a quello del commit genitore.
+- `rvc_root`: identificativo (ID) dello stato di `_rvc_root` valido al momento della creazione del commit — ovvero l'ultimo commit disponibile di `_rvc_root` oppure un commit precedente se nel frattempo non c'è stato alcun avanzamento. Questo campo ancora il commit di progetto a uno stato specifico della gerarchia di fiducia, garantendo che la verifica avvenga contro la lista dei responsabili e degli amministratori valida in quel preciso istante. Il motore impone che questo valore sia *cronologicamente non precedente* a quello del commit genitore dello stesso progetto — formalmente: $ C_n."rvc_root" >= C_(n-1)."rvc_root" $, dove l'uguaglianza corrisponde al caso in cui `_rvc_root` non sia avanzato fra i due commit.
 - `security_level`: livello di sicurezza del progetto — da 0 a 4. Estratto dal file `.rvc_policy` dello ZIP e riportato in chiaro nel `.sig` per permettere al motore di applicare le regole corrette senza dover decifrare il contenuto. Questo è necessario in particolare per i progetti a livello 4 — il motore deve sapere che il contenuto è cifrato prima ancora di tentare di leggerlo. La conseguenza è che il livello di sicurezza di un progetto è visibile a chiunque possa leggere il `.sig`, incluso il fatto che un progetto sia riservato. Questo è considerato accettabile perché l'esistenza di un progetto è già visibile dalla struttura dei file nella #gl("repository").
 - `allowed_signers`: elenco delle chiavi pubbliche #gl("ssh", capitalize: true) degli identificativi autorizzati a committare al momento di questo commit. Presente solo nei progetti a livello 2, 3 e 4 — estratto dal file `allowed_Dipendenti` dello ZIP prima di qualsiasi cifratura e riportato in chiaro nel `.sig`. Questo garantisce che il campo sia sempre leggibile indipendentemente dal livello di sicurezza del progetto: anche al livello 4, dove lo ZIP viene cifrato dopo l'estrazione, `allowed_signers` rimane in chiaro nel `.sig` e permette la verifica delle firme senza dover decifrare il contenuto. Per il progetto `_rvc_root` contiene esclusivamente la chiave-pubblica operativa dell'amministratore. Nei commit ordinari ai livelli 0 e 1 questo campo è assente. Nei commit amministrativi ai livelli 0 e 1, dove solo l'amministratore può operare, il campo è presente e contiene esclusivamente la chiave-pubblica operativa dell'amministratore.
 - `branch_status`: stato corrente del #gl("branch") — `active`, `archived` o `compromised`. È presente in ogni commit e riflette il contenuto del file `.rvc_branch_status` dentro lo ZIP. Il motore legge sempre questo campo direttamente dal `.sig` — senza dover accedere allo ZIP — indipendentemente dal livello di sicurezza del progetto. Questo garantisce che la gestione dei #gl("branch") funzioni correttamente anche per i progetti a livello 4 dove lo ZIP è cifrato. Il file `.rvc_branch_status` dentro lo ZIP rimane la fonte di verità completa e può contenere informazioni aggiuntive — motivazione, riferimenti, note — accessibili a chi ha i permessi di lettura.
@@ -356,6 +356,69 @@ La gestione dei destinatari segue le stesse regole degli `allowed_signers`: l'am
 ]
 
 Il livello di sicurezza è definito nel primo commit del progetto tramite il file `.rvc_policy` e non può essere abbassato nei commit successivi. Al primo commit il motore accetta il livello dichiarato nel `.rvc_policy` senza confronto con commit precedenti — non esistendone. Per ogni commit successivo il motore verifica che il campo `security_level` del `.sig` sia maggiore o uguale a quello del commit precedente. Qualsiasi tentativo di abbassare il livello viene rifiutato indipendentemente dall'identità del firmatario.
+
+=== Sequenza temporale per la creazione e l'aggiornamento di un progetto al Livello 4
+
+Un progetto a Livello 4 passa attraverso una sequenza di operazioni ben definita che garantisce l'integrità crittografica e l'applicazione corretta dei permessi di cifratura. La sequenza è la seguente:
+
+*Primo commit (inizializzazione):*
+
+1. Il responsabile prepara il contenuto sorgente del progetto e crea il file `.rvc_policy` che specifica:
+   - `security_level: 4`
+   - `recipients`: lista di identità che includono la chiave-pubblica #gl("age", capitalize: true) del responsabile stesso, e opzionalmente altre identità autorizzate a leggere (guest, auditor, ecc.)
+   - Opzionalmente, il file `allowed_Dipendenti` con gli sviluppatori autorizzati a committare (la cui lista può contenere o meno il responsabile stesso)
+
+2. Il responsabile firma il commit con la propria chiave-privata #gl("ssh", capitalize: true).
+
+3. Il motore riceve la richiesta di commit e esegue le verifiche preventive (prima di qualsiasi cifratura):
+   - Verifica che il firmatario sia un responsabile presente in `allowed_Responsabili` di `_rvc_root`
+   - Verifica che la firma sia crittograficamente valida
+   - Verifica che il responsabile sia incluso nella lista `recipients` specificata nel `.rvc_policy` — altrimenti il responsabile stesso non avrebbe i permessi per decifrare e leggere i propri contenuti in futuro
+
+4. Il motore estrae la lista `recipients` dal file `.rvc_policy` in chiaro — a questo punto il contenuto ZIP è ancora in chiaro.
+
+5. Il motore calcola l'hash SHA256 del file ZIP non cifrato (questo hash viene memorizzato come riferimento interno ma non è esposto nel `.sig` — il `.sig` contiene l'hash del ZIP cifrato).
+
+6. Il motore cifra l'intero ZIP tramite #gl("age", capitalize: true) utilizzando la lista di destinatari estratta: il contenuto viene cifrato una volta sola con una chiave di sessione, e la chiave di sessione viene cifrata separatamente per ogni destinatario.
+
+7. Il motore calcola l'hash SHA256 del ZIP cifrato e lo memorizza nel campo `hash` del `.sig`.
+
+8. Il motore genera il file `.sig` contenente:
+   - `hash`: SHA256 del ZIP cifrato
+   - `cumulativeHash`: calcolato sulla base dello stato vuoto (primo commit)
+   - `firma`: firma #gl("ssh", capitalize: true) sui campi di cui sopra
+   - `recipients`: copia della lista di destinatari in chiaro (parte del contenuto firmato, quindi la sua integrità è garantita dalla firma)
+   - `security_level: 4`
+
+9. Il motore salva il file ZIP cifrato e il file `.sig` nella #gl("repository").
+
+*Commit successivi (aggiornamenti):*
+
+Per ogni nuovo commit al progetto Livello 4:
+
+1. Il motore riceve il commit e verifica preliminarmente la firma e l'autorizzazione come per gli altri livelli (verificando `allowed_Dipendenti` dal commit precedente).
+
+2. Se il commit è *ordinario* (non modifica file speciali):
+   - Il motore procede con le operazioni di hashing e cifratura come descritto sopra
+   - La lista dei destinatari rimane quella del commit precedente — il motore legge `recipients` dal `.sig` del commit precedente e la utilizza per la cifratura
+
+3. Se il commit è *amministrativo* (modifica `.rvc_policy`, aggiungendo/rimuovendo destinatari):
+   - Il motore estrae la nuova lista `recipients` dal nuovo file `.rvc_policy`
+   - Il motore verifica ancora che il responsabile sia incluso nella nuova lista (non può escludere sé stesso)
+   - Il contenuto ZIP viene cifrato con la *nuova lista di destinatari*
+   - L'header #gl("age", capitalize: true) viene rigenerato per riflettere i nuovi destinatari, ma il contenuto cifrato internamente non deve essere nuovamente decomposto e cifrato — #gl("age", capitalize: true) supporta il re-wrapping della chiave di sessione per una nuova lista di destinatari senza toccare il contenuto
+
+4. Il file `.sig` viene generato con il nuovo valore di `recipients`.
+
+5. Lo ZIP cifrato e il nuovo `.sig` vengono salvati — i `.sig` dei commit precedenti rimangono immutati, continuando a riflettere la lista dei destinatari valida al momento della loro produzione.
+
+*Proprietà di consistenza garantite:*
+
+Questa sequenza garantisce che:
+- Chiunque possieda una chiave privata #gl("age", capitalize: true) corrispondente a una chiave-pubblica in `recipients` può decifrare gli ZIP di qualsiasi commit in cui compare nella lista.
+- La cronologia dei destinatari è completamente tracciabile leggendo sequenzialmente i campi `recipients` nei `.sig` dei commit
+- La verifica della catena crittografica rimane possibile per chiunque, indipendentemente dai permessi di lettura, poiché gli hash e le firme sono sempre in chiaro nel `.sig`
+- Se un destinatario viene rimosso dalla lista, perde automaticamente la capacità di decifrare i nuovi commit, ma continua a mantenere la capacità di decifrare i commit precedenti in cui era incluso (la chiave di sessione non viene modificata retroattivamente)
 
 L'innalzamento del livello di sicurezza può essere effettuato in qualsiasi momento tramite un commit firmato dal responsabile del progetto o dall'amministratore. Una volta alzato, il nuovo livello diventa il minimo accettabile per tutti i commit successivi — il sistema non permette di tornare al livello precedente.
 

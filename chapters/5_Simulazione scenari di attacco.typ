@@ -615,6 +615,8 @@ Con allowed_signers_senza_chiave:
 
 *Impatto: Alto.* L'identificazione dei commit fraudolenti richiede un'analisi manuale della history nel periodo sospetto. Nel modello proposto con `allowed_Dipendenti` interno questa distinzione sarebbe automatica — i commit legittimi prodotti prima della revoca rimarrebbero validi mentre quelli fraudolenti prodotti con la stessa chiave sarebbero distinguibili per contenuto. Questa limitazione è la motivazione principale della scelta architetturale dell'`allowed_Dipendenti` versionato nel modello proposto.
 
+*Nota sulla finestra di rischio.* È importante sottolineare che la revoca minimizza ma *non elimina* la finestra di rischio durante l'intervallo fra la compromissione della chiave e il momento in cui il commit di revoca viene ricevuto e processato. Durante questa finestra, l'attaccante rimane crittograficamente indistinguibile dal proprietario legittimo della chiave — nessun meccanismo automatico può identificare i commit fraudolenti prodotti in questo intervallo. La revoca "dal commit successivo" significa che il sistema operativo riceve il comando di revoca e lo implementa immediatamente, non che il sistema possa retroattivamente distinguere i commit fraudolenti già creati. Questa è una limitazione strutturale di qualsiasi sistema basato su crittografia asimmetrica e revoca distribuita — la finestra può essere ridotta minimizzando i tempi di sincronizzazione e rilevamento della compromissione, ma non può essere azzerata.
+
 *Requisiti coinvolti:* RS09 — revoca efficace delle identità.
 
 === T4 — Recovery dopo compromissione della chiave

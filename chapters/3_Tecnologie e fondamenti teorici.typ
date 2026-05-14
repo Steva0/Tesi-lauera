@@ -106,7 +106,7 @@ Se la firma è valida e l'identità è presente nel file, il comando restituisce
 
 Un file cifrato con #gl("age", capitalize: true) contiene nell'intestazione le informazioni necessarie per la decifratura (il tipo di chiave usata e la chiave di sessione cifrata), seguite dal contenuto cifrato con ChaCha20-Poly1305, un algoritmo moderno che garantisce sia riservatezza che integrità.
 
-Nel contesto di questo progetto, #gl("age", capitalize: true) è stato studiato come tecnologia di riferimento per la fase successiva del lavoro, che prevede la progettazione di _repository_ cifrate con distribuzione dei permessi di accesso. In questa fase #gl("age", capitalize: true) permette di cifrare il contenuto di una _repository_ in modo che solo gli utenti autorizzati — identificati dalle loro chiavi pubbliche — possano decifrarla, senza dover condividere nessuna chiave segreta.
+Nel contesto di questo progetto, #gl("age", capitalize: true) è stato studiato come tecnologia di riferimento per la fase successiva del lavoro, che prevede la progettazione di _progetti cifrati_ con distribuzione dei permessi di accesso. In questa fase #gl("age", capitalize: true) permette di cifrare il contenuto di un _progetto_ in modo che solo gli utenti autorizzati — identificati dalle loro chiavi pubbliche — possano decifrarla, senza dover condividere nessuna chiave segreta.
 
 #figure(
   image("../images/file_age.png", width: 100%),
@@ -241,7 +241,7 @@ Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi mod
 
 Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 
-+ Legge il file `.FileManifest` nella directory di lavoro per conoscere lo stato corrente del progetto.
++ Legge il file `.FileManifest` nella cartella di lavoro per conoscere lo stato corrente del progetto.
 + Scansiona la directory e calcola le differenze rispetto allo stato precedente.
 + Crea un archivio ZIP con i file modificati e il nuovo `.FileManifest`.
 + Calcola lo SHA256 dell'archivio ZIP.

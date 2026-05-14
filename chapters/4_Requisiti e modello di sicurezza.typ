@@ -377,7 +377,7 @@ Un progetto a Livello 4 passa attraverso una sequenza di operazioni ben definita
 
 4. Il motore estrae la lista `recipients` dal file `.rvc_policy` in chiaro — a questo punto il contenuto ZIP è ancora in chiaro.
 
-5. Il motore calcola l'hash SHA256 del file ZIP non cifrato (questo hash viene memorizzato come riferimento interno ma non è esposto nel `.sig` — il `.sig` contiene l'hash del ZIP cifrato).
+5. Il motore calcola l'hash SHA256 del file ZIP non cifrato (questo #gl("hash") viene memorizzato come riferimento interno ma non è esposto nel `.sig` — il `.sig` contiene l'hash del ZIP cifrato).
 
 6. Il motore cifra l'intero ZIP tramite #gl("age", capitalize: true) utilizzando la lista di destinatari estratta: il contenuto viene cifrato una volta sola con una chiave di sessione, e la chiave di sessione viene cifrata separatamente per ogni destinatario.
 
@@ -415,9 +415,9 @@ Per ogni nuovo commit al progetto Livello 4:
 *Proprietà di consistenza garantite:*
 
 Questa sequenza garantisce che:
-- Chiunque possieda una chiave privata #gl("age", capitalize: true) corrispondente a una chiave-pubblica in `recipients` può decifrare gli ZIP di qualsiasi commit in cui compare nella lista.
+- Chiunque possieda una chiave-privata #gl("age", capitalize: true) corrispondente a una chiave-pubblica in `recipients` può decifrare gli ZIP di qualsiasi commit in cui compare nella lista.
 - La cronologia dei destinatari è completamente tracciabile leggendo sequenzialmente i campi `recipients` nei `.sig` dei commit
-- La verifica della catena crittografica rimane possibile per chiunque, indipendentemente dai permessi di lettura, poiché gli hash e le firme sono sempre in chiaro nel `.sig`
+- La verifica della catena crittografica rimane possibile per chiunque, indipendentemente dai permessi di lettura, poiché gli #gl("hash") e le firme sono sempre in chiaro nel `.sig`
 - Se un destinatario viene rimosso dalla lista, perde automaticamente la capacità di decifrare i nuovi commit, ma continua a mantenere la capacità di decifrare i commit precedenti in cui era incluso (la chiave di sessione non viene modificata retroattivamente)
 
 L'innalzamento del livello di sicurezza può essere effettuato in qualsiasi momento tramite un commit firmato dal responsabile del progetto o dall'amministratore. Una volta alzato, il nuovo livello diventa il minimo accettabile per tutti i commit successivi — il sistema non permette di tornare al livello precedente.

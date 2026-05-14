@@ -94,3 +94,18 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per commit redatti, aggiorna lastKnownDipendenti da cv.allowedSigners (il ZIP redatto non ha piu` allowed_Dipendenti)
 [2026-05-13] rvc2/ProjectImage.cpl — fileIdFromCommitId(): nuova funzione helper; estrae il timestamp dal formato esteso RS03 per i file lookup nella repo
 [2026-05-13] rvc2/ProjectImage.cpl — Redact(): usa fileIdFromCommitId per tutti i file lookup; aggiunto parametro dir per auto-commit branch_status=compromised con chiave operativa del responsabile
+[2026-05-13] rvc2/ProjectImage.cpl — commitHashPrefixLen(): nuova funzione; centralizza il numero di caratteri hash nel uniqueId (default 8, testato anche 16); modificare qui per cambiare la lunghezza
+[2026-05-13] rvc2/ProjectImage.cpl — RS03 nei nomi file: ZIP e .sig rinominati con formato timestamp_hash8 (es. simulazione.0Q70OBCWUV_A3F2B1C4.zip); hash nel nome rende il file content-dependent e non sostituibile silenziosamente
+[2026-05-13] rvc2/RvcEngine.cpl — getFileName(): aggiunto fallback RS03 per ricerca file con suffisso hash nel nome (pattern commit* oltre a commit.*)
+[2026-05-13] rvc2/RvcEngine.cpl — getCommitFileNameInPath(): aggiunto fallback RS03 (pattern commit*)
+[2026-05-13] rvc2/RvcEngine.cpl — getSignatureFileNameForExtraction(): aggiunto fallback RS03 con os.Dir per trovare .sig con suffisso hash
+[2026-05-13] rvc2/RvcEngine.cpl — updateCacheEntry(): nuova procedura pubblica; aggiorna cache SQLite dopo rename RS03 (os.Delete non funziona su SQLite aperto)
+[2026-05-13] rvc2/Init.cpl — createRvcRootFiles(): aggiunge .rvc_policy con security_level=2 a _rvc_root (come da tesi: _rvc_root opera sempre a level 2+)
+[2026-05-13] rvc2/Init.cpl — cleanupRvcRootDir(): aggiunto os.Delete per .rvc_policy
+[2026-05-13] rvc2/ProjectImage.cpl — CheckValidity(): aggiunto parametro masterKey:=nil; bypass check allowed_Dipendenti se masterKey != nil (chiave master ha autorità suprema)
+[2026-05-13] rvc2/ProjectImage.cpl — CheckValidity(): regole speciali per _rvc_root: allowed_Dipendenti/master.pub richiedono master key; allowed_Responsabili ammette chiave operativa admin
+[2026-05-13] rvc2/ProjectImage.cpl — Commit(): passa masterKey a CheckValidity
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): refactoring verifica _rvc_root: usa masterPubBootstrap (primo commit) per TUTTI i commit successivi; previene attacco di sostituzione master.pub
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): per _rvc_root, fallback a chiave operativa (allowed_Dipendenti) se firma master key fallisce (per commit che modificano solo allowed_Responsabili)
+[2026-05-13] rvc2/ProjectImage.cpl — VerifyIntegrity(): authority check speciale per _rvc_root (allowed_Dipendenti/master.pub richiede masterPubBootstrap)
+[2026-05-13] C:\Users\stemic\stage\test_rvc\test_revoca_chiave.cmd — nuovo script test: revoca chiave operativa con master key, checkout/commit _rvc_root, verifica integrità pre/post revoca

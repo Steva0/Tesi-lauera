@@ -125,3 +125,39 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
   - Test 07 (branch): archivio funzionante, commit su archived branch bloccato ✓
 [2026-05-14] rvc2/ProjectImage.cpl — Debug output: "[DEBUG-ALLOWED] Trovato in history:" per trace allowed_Dipendenti lettura
 [2026-05-14] Verificatore (VerifyIntegrity) — testato su tutti scenari: hash, catena, firma, autorita, branch status, rvcRootId verificati correttamente
+[2026-05-14] rvc/rvc.cpl — Completamente riscritto funzione usage() (linee 57-94):
+  - Aggiunta 6 categorie logiche: ADMIN, WORKFLOW, INFORMATION, MERGE, VERIFICATION, CONFIGURATION
+  - Una riga di descrizione per ogni comando (non solo sintassi)
+  - Parametri indentati per leggibilità
+  - Abbreviazioni consistenti (p=project, b=branch, t=tag, a=author)
+  - Sezione GLOBAL PARAMETERS per parametri comuni
+  - 6 esempi pratici di utilizzo
+  - Output migliorato da ~32 a ~94 righe, ma molto più leggibile
+[2026-05-14] C:\Users\stemic\rvc\README.md — Creato documentazione completa (~2500 righe):
+  - Quick Start (5 linee per setup iniziale)
+  - Commands Overview (tabella con tutti i 17 comandi)
+  - Documentazione dettagliata per ogni comando:
+    * Sintassi con tipo di parametri (REQUIRED, optional, default)
+    * Descrizione cosa fa il comando
+    * Parametri spiegati singolarmente
+    * Security checks applicati (se presenti)
+    * Output format e esempio
+    * 2-3 esempi di utilizzo per comando
+  - Sezione GLOBAL PARAMETERS (validi per tutti)
+  - Configuration section per config command
+  - Complete workflow examples (init → commit → verify)
+  - Security enforcement examples con error messages
+  - Merge conflict resolution example
+  - Integrity verification example (simula attacco)
+  - Common errors & solutions table (8 casi comuni)
+  - File formats documentation (.sig CommitValidation, .FileManifest)
+  - Architecture notes (RS03, rvcRootId, cumulative hash)
+[2026-05-14] C:\Users\stemic\stage\test_rvc\test_all_commands.cmd — Creato script test completo:
+  - Testa tutti i 17 comandi RVC
+  - Testa combinazioni di parametri
+  - Verificate categorie: admin, workflow, info, diff, merge, verification, special
+[2026-05-14] Help output validation — Nuovo output visualizzato e verificato:
+  - Output ordinato per categoria
+  - Ogni comando con descrizione breve
+  - Parametri ben formattati e leggibili
+  - Terminal-friendly (non affatica su schermi stretti)

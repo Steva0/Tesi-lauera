@@ -40,6 +40,8 @@ Durante la stesura del testo sono state adottate le seguenti convenzioni tipogra
 
 - Gli acronimi, le abbreviazioni e i termini di uso non comune vengono definiti nel #link(<glossary>)[glossario], situato alla fine del documento (#link(<glossary>)[p. #context counter(page).at(<glossary>).at(0)]);
 - I termini presenti nel glossario sono indicati con la notazione: #gl("rvc", capitalize: true)\;
+- Le citazioni ad un libro o ad una risorsa presente nella #link(<bibliography>)[bibliografia] (#link(<bibliography>)[p. #context counter(page).at(<bibliography>).at(0)]) saranno affiancate dal rispettivo numero identificativo, es. $[1]$;
+
 - I termini in lingua straniera non di uso comune o appartenenti al gergo tecnico sono evidenziati in _corsivo_;
 - I nomi di funzioni, variabili o comandi sono scritti con carattere `monospaziato`;
 - I riferimenti bibliografici sono indicati con il numero identificativo della fonte, es. $[1]$;

@@ -296,10 +296,24 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
   - VerifyIntegrity(): mostra [MERGE from:branchName] per commit di merge
   - Test (2026-05-15): merge feature→main ✓; [MERGE from:feature] in integrity ✓; allowed_Dipendenti main preservato dopo merge ✓; tutti commit [OK]
 
-[2026-05-15] rvc2/ProjectImage.cpl — RS12 cifratura age level 4 (IN CORSO - Passi 1-3+5parz completati):
-  - CommitValidation: aggiunto campo `recipients` (chiavi age separate da ';', solo level 4)
-  - Init.cpl: ageExe() gia presente (bundled in rvc\bin\age.exe)
-  - SignAndSaveToRepository(): parsing .rvc_policy esteso a tutte le righe (security_level + recipients)
-  - SignAndSaveToRepository(): se level 4, cifra ZIP con age PRIMA del calcolo hash; hash calcolato sul file cifrato
-  - SignAndSaveToRepository(): cv.recipients popolato solo se securityLevel=4
-  - TODO: Passo 4 (CheckValidity level 4), Passo 6 (Checkout decifratura), Passo 7 (VerifyIntegrity), Passo 8 (rvc.cpl -age-key), Passo 9 (test)
+[2026-05-15] rvc2/ProjectImage.cpl — RS12 cifratura age level 4 (IN CORSO - debug checkout):
+  - CommitValidation: campo `recipients` aggiunto (solo level 4, separatore ';')
+  - Init.cpl: ageExe() gia' presente (bundled in rvc\bin\age.exe)
+  - SignAndSaveToRepository(): policyPath come variabile procedura (usa workDir); parsing .rvc_policy multiriga; cifratura ZIP con age prima dell'hash; hash su file cifrato; cv.recipients solo se level=4; workDir passato da Commit()
+  - CheckValidity(): parsing policy multiriga; per level 4 verifica che author sia in recipients
+  - Checkout(): aggiunto ageKey:=nil; se level 4 senza ageKey: errore chiaro; se level 4 con ageKey: decifra tutti i commit nella tmpDir (decifrati level4 + copiati plain level<4); checkoutRepos=[tmpRepo]+repos originali; cleanup tmpDir dopo checkout
+  - VerifyIntegrity(): parsing policy multiriga; fallback securityLevel/recipients da .sig se ZIP cifrati; mostra [level=4](contenuto cifrato) e recipients; mostra [cifrato] per ogni commit level 4
+  - rvc.cpl: -age-key aggiunto a checkout; usage aggiornato
+  - STATO FINALE RS12 (COMPLETATA 2026-05-15):
+    * Commit level 4: ZIP cifrato con age (recipients = chiavi SSH pub) ✓
+    * Hash calcolato su file cifrato; .sig ha campo recipients (solo level 4) ✓
+    * Integrity: mostra [level=4](contenuto cifrato) + recipients + [cifrato] per ogni commit ✓
+    * Checkout CON -age-key: swap temporaneo in-place nella repo (decifra, checkout, ripristina) ✓
+    * Checkout SENZA -age-key: errore chiaro "specificare -age-key=<path>" ✓
+    * CheckValidity: legge secLevel dal .sig se ZIP cifrati; verifica author in recipients per level 4 ✓
+    * age.exe accetta chiavi SSH come recipients (ssh-ed25519 AAAA...) - non serve age-keygen separato
+    * Nota: allowed_Dipendenti nello ZIP cifrato — verifica pre-commit usa allowedSigners dal .sig precedente come fallback
+    * Limitazione risolta: rvc new-project -level=4 -recipients=<path> ora crea il primo commit gia' cifrato
+    * VerifyIntegrity: fallback cv.allowedSigners dal .sig per verificare firma su ZIP cifrati (level 4)
+    * NewProject(): aggiunto parametro recipientsPath; se level=4 aggiunge recipients= al .rvc_policy prima del commit
+    * SignAndSaveToRepository(): allowed_Dipendenti letto da policyPath (workDir) invece di new_version.path

@@ -77,7 +77,7 @@ Garantire l'integrità del contenuto non è sufficiente se non è possibile stab
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
     [RS05], [Il primo commit di ogni #gl("repository") deve costituire una radice di fiducia verificabile autonomamente], [O],
     [RS06], [Il sistema deve supportare e imporre la firma-digitale tramite chiave #gl("ssh", capitalize: true) per ogni commit nei progetti configurati con livello di sicurezza maggiore o uguale a 1], [O],
-    [RS15], [Ogni commit di progetto deve referenziare crittograficamente lo stato di `_rvc_root` valido al momento della firma, garantendo la verificabilità storica delle autorizzazioni], [O],
+    [RS07], [Ogni commit di progetto deve referenziare crittograficamente lo stato di `_rvc_root` valido al momento della firma, garantendo la verificabilità storica delle autorizzazioni], [O],
   )
 ]
 
@@ -89,10 +89,10 @@ In un sistema multi-utente la gestione delle identità è il meccanismo che trad
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
-    [RS07], [Il sistema deve supportare una gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [O],
-    [RS08], [I permessi di scrittura devono essere configurabili per progetto tramite un file di autorizzazione versionato], [O],
-    [RS09], [La revoca di un'identità deve essere efficace dal commit successivo alla modifica del file di autorizzazione], [O],
-    [RS10], [La successione di un responsabile deve essere gestita esclusivamente dall'amministratore del sistema], [D],
+    [RS08], [Il sistema deve supportare una gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [O],
+    [RS09], [I permessi di scrittura devono essere configurabili per progetto tramite un file di autorizzazione versionato], [O],
+    [RS10], [La revoca di un'identità deve essere efficace dal commit successivo alla modifica del file di autorizzazione], [O],
+    [RS11], [La successione di un responsabile deve essere gestita esclusivamente dall'amministratore del sistema], [D],
   )
 ]
 
@@ -104,8 +104,8 @@ Non tutti i progetti richiedono lo stesso livello di protezione. Un prototipo in
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
-    [RS11], [Il sistema deve supportare livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [D],
-    [RS12], [Il contenuto dei commit deve poter essere cifrato con #gl("age", capitalize: true) per progetti riservati], [D],
+    [RS12], [Il sistema deve supportare livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [D],
+    [RS13], [Il contenuto dei commit deve poter essere cifrato con #gl("age", capitalize: true) per progetti riservati], [D],
   )
 ]
 
@@ -117,14 +117,14 @@ I #gl("branch") sono uno strumento fondamentale nello sviluppo software parallel
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Priorità*]),
-    [RS13], [I #gl("branch") compromessi devono poter essere chiusi con un commit firmato che ne attesti la compromissione], [D],
-    [RS14], [Il sistema deve supportare liste di autorizzati differenziate per #gl("branch")], [D],
+    [RS14], [I #gl("branch") compromessi devono poter essere chiusi con un commit firmato che ne attesti la compromissione], [D],
+    [RS15], [Il sistema deve supportare liste di autorizzati differenziate per #gl("branch")], [D],
   )
 ]
 
 I requisiti obbligatori definiscono le proprietà minime senza le quali il sistema non può essere considerato sicuro per il contesto d'uso descritto. I requisiti desiderabili estendono il modello con funzionalità che aumentano significativamente il livello di sicurezza, ma la cui assenza non compromette le garanzie fondamentali.
 
-I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS07, RS08, RS09 e RS10 definiscono il modello di gestione delle identità e dei permessi. RS11 e RS12 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS13 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui #gl("branch"). RS14 estende il modello con permessi configurabili per #gl("branch") e una regola formale per le merge. RS15 garantisce la verificabilità storica delle autorizzazioni ancorando ogni commit allo stato di `_rvc_root` valido al momento della firma.
+I requisiti RS01, RS02 e RS03 corrispondono alla proprietà di integrità e alla gestione dell'ordine verificabile. RS05 e RS06 garantiscono le proprietà di autenticità e non ripudio. RS08, RS09, RS10 e RS11 definiscono il modello di gestione delle identità e dei permessi. RS12 e RS13 estendono il modello con funzionalità di sicurezza configurabile. RS04 e RS14 affrontano rispettivamente la documentazione delle limitazioni note e la gestione degli incidenti sui #gl("branch"). RS15 estende il modello con permessi configurabili per #gl("branch") e una regola formale per le merge. RS07 garantisce la verificabilità storica delle autorizzazioni ancorando ogni commit allo stato di `_rvc_root` valido al momento della firma.
 
 
 == Gerarchia di fiducia
@@ -685,11 +685,11 @@ Non esiste invece nessun concetto di radice di fiducia o prima commit privilegia
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
     [RS05], [Primo commit come radice di fiducia verificabile autonomamente], [Assente],
     [RS06], [Firma-digitale #gl("ssh", capitalize: true) supportata e imposta per i livelli di sicurezza maggiori o uguali a 1], [Parziale],
-    [RS15], [Riferimento crittografico a `_rvc_root` in ogni commit], [Assente],
+    [RS07], [Riferimento crittografico a `_rvc_root` in ogni commit], [Assente],
   )
 ]
 
-RS05 è assente perché non esiste il concetto di radice di fiducia né di commit privilegiata. RS06 è parziale perché la firma è implementata e funzionante ma opzionale — il modello richiede che sia imposta automaticamente in base al livello di sicurezza del progetto. RS15 è assente perché il campo `rvc_root` nel `.sig` non esiste nella versione iniziale — ogni commit è completamente scollegato dalla radice di fiducia e non esiste nessun meccanismo per verificare le autorizzazioni storiche.
+RS05 è assente perché non esiste il concetto di radice di fiducia né di commit privilegiata. RS06 è parziale perché la firma è implementata e funzionante ma opzionale — il modello richiede che sia imposta automaticamente in base al livello di sicurezza del progetto. RS07 è assente perché il campo `rvc_root` nel `.sig` non esiste nella versione iniziale — ogni commit è completamente scollegato dalla radice di fiducia e non esiste nessun meccanismo per verificare le autorizzazioni storiche.
 
 === Gestione delle identità
 
@@ -701,10 +701,10 @@ La versione fornita per lo stage era deliberatamente sprovvista di questi meccan
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS07], [Gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [Assente],
-    [RS08], [Permessi di scrittura configurabili per progetto tramite file di autorizzazione versionato], [Assente],
-    [RS09], [Revoca efficace dal commit successivo alla modifica del file di autorizzazione], [Assente],
-    [RS10], [Successione del responsabile gestita esclusivamente dall'amministratore], [Assente],
+    [RS08], [Gerarchia di fiducia a tre livelli: amministratore, responsabile e dipendente], [Assente],
+    [RS09], [Permessi di scrittura configurabili per progetto tramite file di autorizzazione versionato], [Assente],
+    [RS10], [Revoca efficace dal commit successivo alla modifica del file di autorizzazione], [Assente],
+    [RS11], [Successione del responsabile gestita esclusivamente dall'amministratore], [Assente],
   )
 ]
 
@@ -718,8 +718,8 @@ Non esiste nella versione iniziale nessun concetto di livello di sicurezza per p
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS11], [Livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [Assente],
-    [RS12], [Cifratura dei commit con #gl("age", capitalize: true) per progetti riservati], [Assente],
+    [RS12], [Livelli di sicurezza configurabili per progetto, non abbassabili nel tempo], [Assente],
+    [RS13], [Cifratura dei commit con #gl("age", capitalize: true) per progetti riservati], [Assente],
   )
 ]
 
@@ -731,8 +731,8 @@ Non esiste nella versione iniziale nessun meccanismo formale per dichiarare lo s
   #table(
     columns: (auto, 1fr, auto),
     table.header([*Codice*], [*Descrizione*], [*Stato*]),
-    [RS13], [#gl("branch", capitalize: true) compromessi chiudibili con commit firmato che ne attesti la compromissione], [Assente],
-    [RS14], [Permessi per #gl("branch") e regola formale per le merge], [Assente]
+    [RS14], [#gl("branch", capitalize: true) compromessi chiudibili con commit firmato che ne attesti la compromissione], [Assente],
+    [RS15], [Permessi per #gl("branch") e regola formale per le merge], [Assente]
   )
 ]
 
@@ -750,15 +750,15 @@ Il confronto tra il modello proposto e lo stato iniziale di #gl("rvc", capitaliz
     [RS04], [Documentazione limitazioni ordine temporale], [Assente],
     [RS05], [Radice di fiducia verificabile autonomamente], [Assente],
     [RS06], [Firma-digitale #gl("ssh", capitalize: true) imposta per livello ≥ 1], [Parziale],
-    [RS07], [Gerarchia di fiducia a tre livelli], [Assente],
-    [RS08], [Permessi configurabili per progetto], [Assente],
-    [RS09], [Revoca efficace dal commit successivo], [Assente],
-    [RS10], [Successione del responsabile], [Assente],
-    [RS11], [Livelli di sicurezza configurabili], [Assente],
-    [RS12], [Cifratura #gl("age", capitalize: true) per progetti riservati], [Assente],
-    [RS13], [Gestione #gl("branch") compromessi], [Assente],
-    [RS14], [Permessi configurabili per #gl("branch")], [Assente],
-    [RS15], [Riferimento crittografico a `_rvc_root` in ogni commit], [Assente]
+    [RS08], [Gerarchia di fiducia a tre livelli], [Assente],
+    [RS09], [Permessi configurabili per progetto], [Assente],
+    [RS10], [Revoca efficace dal commit successivo], [Assente],
+    [RS11], [Successione del responsabile], [Assente],
+    [RS12], [Livelli di sicurezza configurabili], [Assente],
+    [RS13], [Cifratura #gl("age", capitalize: true) per progetti riservati], [Assente],
+    [RS14], [Gestione #gl("branch") compromessi], [Assente],
+    [RS15], [Permessi configurabili per #gl("branch")], [Assente],
+    [RS07], [Riferimento crittografico a `_rvc_root` in ogni commit], [Assente]
   )
 ]
 

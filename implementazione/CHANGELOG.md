@@ -285,7 +285,16 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 
 [2026-05-15] STATUS CHECKPOINT — Stato stabile delle implementazioni:
   - **COMPLETATE**: RS01, RS02, RS03 (uniqueId nei file), RS04 (doc limitazioni timestamp), RS05, RS06, RS07, RS08, RS09/F01 (Redazione Trasparente singolo/range/branch), RS10 (master key succession), RS11 (non-downgradable levels), RS13 (branch status), RS15 (rvcRootId)
-  - **IN SOSPESO**: RS12 (age encryption level 4), RS14 (merge permissions per branch)
+  - **IN SOSPESO**: RS12 (age encryption level 4)
+
+[2026-05-15] rvc2/ProjectImage.cpl — RS14 (COMPLETATA): Permessi merge e allowed_Dipendenti per branch
+  - CommitValidation: aggiunto campo `mergeFrom` (branch sorgente nei commit di merge)
+  - getFileFromHistory(): aggiunto parametro opzionale `branch:=nil` per filtrare per branch specifico
+  - CheckValidity(): aggiunto parametro `branch:=nil`; rileva primo commit di nuovo branch (solo Responsabile o Admin); legge allowed_Dipendenti dal branch specifico (non dalla storia globale)
+  - Commit(): calcola mergeFrom da PendingMerge() leggendo branchName dal .sig del commit mergiato; ripristina file speciali del branch destinazione (allowed_Dipendenti, .rvc_policy, .rvc_branch_status) prima di CreateNewVersion() per evitare che il branch sorgente li sovrascriva
+  - SignAndSaveToRepository(): aggiunto parametro mergeFrom propagato a cv.mergeFrom nel .sig
+  - VerifyIntegrity(): mostra [MERGE from:branchName] per commit di merge
+  - Test (2026-05-15): merge feature→main ✓; [MERGE from:feature] in integrity ✓; allowed_Dipendenti main preservato dopo merge ✓; tutti commit [OK]
   - **TEST**: Tutti 7 test .cmd superati ✓; Verificatore integrity funzionante ✓; Helper functions centralizzate ✓
   - **TESI**: Capitoli 1-5 completati; Capitolo 6-8 scheletri vuoti, pronti per documentazione implementazioni e retest scenari
   - **AMBIENTE**: rvc callable globalmente, ssh-keygen e age bundled in C:\Users\stemic\rvc\, config supporta default_author e default_key

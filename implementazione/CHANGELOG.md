@@ -282,3 +282,10 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
     * redactionCount traccia numero di redazioni per commit
     * Branch status aggiornato a compromised dopo redazioni
     * Tutti i commit successivi a redazioni verificano correttamente
+
+[2026-05-15] STATUS CHECKPOINT — Stato stabile delle implementazioni:
+  - **COMPLETATE**: RS01, RS02, RS03 (uniqueId nei file), RS04 (doc limitazioni timestamp), RS05, RS06, RS07, RS08, RS09/F01 (Redazione Trasparente singolo/range/branch), RS10 (master key succession), RS11 (non-downgradable levels), RS13 (branch status), RS15 (rvcRootId)
+  - **IN SOSPESO**: RS12 (age encryption level 4), RS14 (merge permissions per branch)
+  - **TEST**: Tutti 7 test .cmd superati ✓; Verificatore integrity funzionante ✓; Helper functions centralizzate ✓
+  - **TESI**: Capitoli 1-5 completati; Capitolo 6-8 scheletri vuoti, pronti per documentazione implementazioni e retest scenari
+  - **AMBIENTE**: rvc callable globalmente, ssh-keygen e age bundled in C:\Users\stemic\rvc\, config supporta default_author e default_key

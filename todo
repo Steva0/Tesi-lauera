@@ -15,3 +15,5 @@
 [] Produrre "Analisi sicurezza + scenari" → estratto principalmente da capitolo 4 e 5
 [] Produrre "Proposta miglioramenti" → estratto principalmente da capitolo 4 e 6
 [] Produrre "Relazione finale" → estratto da tutti i capitoli, più sintetico
+
+[] problema che dopo i #gl() se c'è subito attaccato un ";" il ";" non si vede

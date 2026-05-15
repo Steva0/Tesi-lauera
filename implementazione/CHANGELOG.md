@@ -295,6 +295,11 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
   - SignAndSaveToRepository(): aggiunto parametro mergeFrom propagato a cv.mergeFrom nel .sig
   - VerifyIntegrity(): mostra [MERGE from:branchName] per commit di merge
   - Test (2026-05-15): merge feature→main ✓; [MERGE from:feature] in integrity ✓; allowed_Dipendenti main preservato dopo merge ✓; tutti commit [OK]
-  - **TEST**: Tutti 7 test .cmd superati ✓; Verificatore integrity funzionante ✓; Helper functions centralizzate ✓
-  - **TESI**: Capitoli 1-5 completati; Capitolo 6-8 scheletri vuoti, pronti per documentazione implementazioni e retest scenari
-  - **AMBIENTE**: rvc callable globalmente, ssh-keygen e age bundled in C:\Users\stemic\rvc\, config supporta default_author e default_key
+
+[2026-05-15] rvc2/ProjectImage.cpl — RS12 cifratura age level 4 (IN CORSO - Passi 1-3+5parz completati):
+  - CommitValidation: aggiunto campo `recipients` (chiavi age separate da ';', solo level 4)
+  - Init.cpl: ageExe() gia presente (bundled in rvc\bin\age.exe)
+  - SignAndSaveToRepository(): parsing .rvc_policy esteso a tutte le righe (security_level + recipients)
+  - SignAndSaveToRepository(): se level 4, cifra ZIP con age PRIMA del calcolo hash; hash calcolato sul file cifrato
+  - SignAndSaveToRepository(): cv.recipients popolato solo se securityLevel=4
+  - TODO: Passo 4 (CheckValidity level 4), Passo 6 (Checkout decifratura), Passo 7 (VerifyIntegrity), Passo 8 (rvc.cpl -age-key), Passo 9 (test)

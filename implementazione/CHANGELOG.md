@@ -3,6 +3,25 @@
 Formato: `[DATA] FILE — descrizione sintetica della modifica`
 Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: estrazione keytype SSH per age: cerca posizione di 'ssh-'/'ecdsa-'/'sk-' nel recipient invece di assumere nome=un token; supporta nomi con spazi (es. "Alice Foo-Bar")
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: dichiarazioni variabili (rcpNameEnd, ageRcpKey) spostate fuori dal while per rispettare scoping CPL
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: checkout con chiave errata/non autorizzata ora dà messaggio pulito invece di crash "Load on nil" (controlla swappedFiles.Len=0)
+[2026-05-18] Test RS12 multi-recipients: 4 utenti (Michele, Alice Foo-Bar, Bob_123, Carlo.Verdi@esempio.it) — cifratura OK, checkout OK per tutti e 4, hacker rifiutato, integrity 0 problemi
+[2026-05-18] rvc2/ProjectImage.cpl — VerifyIntegrity: recipients level 4 mostrati uno per riga con "- nome" invece di stringa semicolon-separata
+[2026-05-18] rvc2/Init.cpl — copyPubKeyAsAllowedSigners: usa il commento della chiave come principal (invece di sempre l'autore del progetto); se la riga è già in formato allowed_signers la copia as-is
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 fix cifratura: recipient con nomi multi-parola ora gestiti correttamente (cerca ssh-/ecdsa-/sk- invece di primo spazio)
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 fix allowedSigners nel .sig: lettura con ';' come separatore (Read() non restituisce newline); earlyDipContent letto all'inizio di SignAndSaveToRepository prima di cifratura
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 VerifySignature: normalizza allowedSigners da ';'-separato a newline; rimpiazza principal di ogni riga con cv.author per verifica firma corretta
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 CheckValidity: fix policyContent=nil per level 4 (ZIP cifrato); secLevel letto da .sig; dipContent fallback da allowedSigners del .sig (';' → newline)
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 CheckValidity: fix comparazione allowed_Dipendenti per level 4 (wdPolicy comparato a sé stessa se policyContent=nil; dipContent normalizzato)
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 NewProject: auto-aggiunta chiavi admin (_rvc_root/allowed_Dipendenti) ai recipients se mancanti al momento della creazione del progetto
+[2026-05-18] rvc2/ProjectImage.cpl — RS12 CheckValidity: verifica che tutti gli admin siano nei recipients per progetti level 4
+[2026-05-18] rvc2/ProjectImage.cpl — CheckValidity file speciali: Responsabile ora deve essere in ENTRAMBI allowed_Responsabili E project allowed_Dipendenti (non solo allowed_Responsabili)
+[2026-05-18] rvc2/ProjectImage.cpl — CheckValidity struttura: policyContent=nil non salta più i check (secLevel sempre letto da .sig come fallback)
+[2026-05-18] rvc.cpl — tutti i parametri posizionali ora accettano anche forma nominata: -ver= (versione), -name= (progetto), -file= (filepath), -ancestor= (merge base), -to-ver= (diff seconda versione), -ancestor-ver= (diff3)
+[2026-05-18] rvc.cpl — usage(): aggiornata stampa comandi con nuova sintassi nominata per tutti i parametri
+[2026-05-18] README.md — aggiornati tutti gli esempi e le sintassi con parametri nominati (-name=, -ver=, -file=, -ancestor=, -to-ver=, -ancestor-ver=)
+
 ---
 
 [2026-05-14] rvc2/ProjectImage.cpl — F01 Branch Redaction (COMPLETATA): SignAndSaveToRepository() aggiunto param branch:=nil; propaga branchName a CommitValidation per .sig
@@ -322,8 +341,18 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-15] rvc.cpl — Fix: rvc init ora crea la directory repo se non esiste (os.Md prima di InitRepo)
 [2026-05-15] rvc2/ProjectImage.cpl — Fix: new-project -level=4 senza -recipients aggiunge automaticamente la chiave SSH dell'author come recipient di default (invece di WARN e procedere senza cifratura)
 [2026-05-15] rvc2/ProjectImage.cpl — Fix: checkout su progetto level 4 senza -age-key ora mostra messaggio chiaro "Progetto cifrato (level 4). Usare -age-key=<path>" invece di ERROR:???
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: variabile prjRecipients dichiarata dentro loop for-each in VerifyIntegrity causava crash "Unable to add name" alla seconda iterazione; spostata a livello di funzione
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: autorita:FAIL su commit di progetti level 4 e su commit firmati dall'admin (non responsabile); authority check ora accetta responsabile OPPURE admin (_rvc_root/allowed_Dipendenti); per ZIP cifrati (level 4) skippa il check via archiver
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: checkout su path con directory intermedie inesistenti ora usa cmd mkdir ricorsivo come fallback a os.Md
+[2026-05-15] rvc2/ProjectImage.cpl — Riduzione stampe "analyzing repository": getFileFromHistory, branchHistory (CheckValidity), swap checkout usano reporter:=nil
 [2026-05-15] rvc2/ProjectImage.cpl + FileManifest.cpl + scanDir.cpl — Cleanup codice:
     * Rimossi 3 debug ? print da ProjectImage.cpl (convertiti in rp.Error con messaggi utili)
     * Rimossa stampa debug da scanDir.cpl (diffScanDir C version)
     * Rimossi 3 debug + commento obsoleto da FileManifest.cpl (makeConflictOp)
     * Rimosse 3 righe DEBUG-ALLOWED da ProjectImage.cpl
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: variabili lastCkId/lastCkSig/lastCkCv/adminDipForAuth/lvlLabel/masterCheck spostate fuori dal loop for-each in VerifyIntegrity; crash 'Unable to add name' su repo con 2+ commit risolto
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: InitRepo() ora popola cv.allowedSigners dal file allowed_Dipendenti nella tmpDir; senza questo campo il .sig di _rvc_root era privo di allowedSigners e la verifica admin falliva
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: CheckValidity() per file speciali di progetti normali ora accetta Responsabile OPPURE Admin (chiave in _rvc_root/allowed_Dipendenti); prima accettava solo il Responsabile, bloccando l'admin dall'aggiornare allowed_Dipendenti dei propri progetti
+[2026-05-18] rvc2/RvcEngine.cpl — Fix: isVersionId() ora accetta '@' come ultimo carattere per supportare id dei recording (es. 0Q79V7MYO_HASH8@)
+[2026-05-18] rvc2/ProjectImage.cpl — Fix: recording ZIP ora viene salvato nella repo (putCommitFile abilitato dopo fix isVersionId); @ posizionato DOPO l'hash RS03 (timestamp_HASH8@ invece di timestamp@_HASH8)
+[2026-05-18] rvc2/ProjectImage.cpl — Fix: prevId nei .sig e nei filename era solo il timestamp senza hash RS03; aggiunto aggiornamento .FileManifest con full RS03 id in NewProject() e Checkout() (come gia fatto in Commit())

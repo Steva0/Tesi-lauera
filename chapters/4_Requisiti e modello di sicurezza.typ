@@ -225,7 +225,7 @@ Il nome `_rvc_root` è riservato per convenzione del modello. Per prevenire conf
 
 Questa scelta è preferita all'alternativa di file speciali nella radice della #gl("repository") perché non richiede modifiche architetturali al motore e mantiene la coerenza del modello — la verifica della radice di fiducia usa esattamente la stessa logica della verifica di qualsiasi altro progetto.
 
-Il progetto `_rvc_root` opera al livello di sicurezza 2 o 3 — ogni commit deve essere firmato dall'amministratore e la firma viene verificata contro il campo `allowed_signers` del `.sig`, che contiene esclusivamente la chiave-pubblica operativa dell'amministratore. Il livello 2 è il minimo che garantisce la verifica dell'identità del firmatario senza richiedere la cifratura del contenuto — `_rvc_root` deve rimanere leggibile da qualsiasi soggetto che voglia verificare la catena di fiducia.
+Il progetto `_rvc_root` opera al livello di sicurezza 3 — ogni commit deve essere firmato dall'amministratore e la firma viene verificata contro il campo `allowed_signers` del `.sig`, che contiene esclusivamente la chiave-pubblica operativa dell'amministratore. Il livello 3 garantisce la verifica dell'identità del firmatario senza richiedere la cifratura del contenuto — `_rvc_root` deve rimanere leggibile da qualsiasi soggetto che voglia verificare la catena di fiducia.
 
 === Il file .rvc_policy
 

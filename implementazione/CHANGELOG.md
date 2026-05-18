@@ -317,3 +317,13 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
     * VerifyIntegrity: fallback cv.allowedSigners dal .sig per verificare firma su ZIP cifrati (level 4)
     * NewProject(): aggiunto parametro recipientsPath; se level=4 aggiunge recipients= al .rvc_policy prima del commit
     * SignAndSaveToRepository(): allowed_Dipendenti letto da policyPath (workDir) invece di new_version.path
+    * SecurityInfo(): aggiunto fallback dal .sig per mostrare correttamente security level su ZIP cifrati
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: InitRepo() ora scrive securityLevel='3' nel .sig di _rvc_root (prima era hardcodato a '2' nonostante .rvc_policy dica security_level=3)
+[2026-05-15] rvc.cpl — Fix: rvc init ora crea la directory repo se non esiste (os.Md prima di InitRepo)
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: new-project -level=4 senza -recipients aggiunge automaticamente la chiave SSH dell'author come recipient di default (invece di WARN e procedere senza cifratura)
+[2026-05-15] rvc2/ProjectImage.cpl — Fix: checkout su progetto level 4 senza -age-key ora mostra messaggio chiaro "Progetto cifrato (level 4). Usare -age-key=<path>" invece di ERROR:???
+[2026-05-15] rvc2/ProjectImage.cpl + FileManifest.cpl + scanDir.cpl — Cleanup codice:
+    * Rimossi 3 debug ? print da ProjectImage.cpl (convertiti in rp.Error con messaggi utili)
+    * Rimossa stampa debug da scanDir.cpl (diffScanDir C version)
+    * Rimossi 3 debug + commento obsoleto da FileManifest.cpl (makeConflictOp)
+    * Rimosse 3 righe DEBUG-ALLOWED da ProjectImage.cpl

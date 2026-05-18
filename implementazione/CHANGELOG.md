@@ -7,6 +7,15 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: dichiarazioni variabili (rcpNameEnd, ageRcpKey) spostate fuori dal while per rispettare scoping CPL
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: checkout con chiave errata/non autorizzata ora dà messaggio pulito invece di crash "Load on nil" (controlla swappedFiles.Len=0)
 [2026-05-18] Test RS12 multi-recipients: 4 utenti (Michele, Alice Foo-Bar, Bob_123, Carlo.Verdi@esempio.it) — cifratura OK, checkout OK per tutti e 4, hacker rifiutato, integrity 0 problemi
+[2026-05-18] rvc2/ProjectImage.cpl — getManifest: gestione level 4 ZIP cifrato; project name derivato da cvGm.fn se non passato esplicitamente; costruisce pmf minimale da .sig (project, ver, prev, author, note) senza aprire lo ZIP
+[2026-05-18] rvc.cpl — ReportInfo: mostra author e note; per level 4 (content=nil) mostra messaggio cifrato e salta lista file senza crash
+[2026-05-18] rvc2/ProjectImage.cpl — integrity e history: data commit (YYYY-MM-DD HH:MM) mostrata sempre affianco all'ID, decodificata dal timestamp base36
+[2026-05-18] rvc.cpl — history: author non usa più il default da config (solo filtro esplicito con -author=); fix bug che mostrava solo i commit dell'ultimo autore usato
+[2026-05-18] rvc.cpl — ReportInfo: aggiunta data/ora (YYYY-MM-DD HH:MM) accanto all'ID versione; tag sempre mostrato se presente
+[2026-05-18] rvc2/ProjectImage.cpl — Recording level 4: rimosso !isRecording dalla condizione di cifratura; recording cifrati con age come i commit normali
+[2026-05-18] rvc2/ProjectImage.cpl — Update: aggiunto ageKey:=nil; per recording level 4 decifra in-place prima del checkout e ripristina dopo; errore esplicito se manca -age-key=
+[2026-05-18] rvc.cpl — update dispatch: passa ageKey:=param.Val('age-key') a Update
+[2026-05-18] README.md — update: documentato -age-key= per recording level 4
 [2026-05-18] rvc2/ProjectImage.cpl — VerifyIntegrity: recipients level 4 mostrati uno per riga con "- nome" invece di stringa semicolon-separata
 [2026-05-18] rvc2/Init.cpl — copyPubKeyAsAllowedSigners: usa il commento della chiave come principal (invece di sempre l'autore del progetto); se la riga è già in formato allowed_signers la copia as-is
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix cifratura: recipient con nomi multi-parola ora gestiti correttamente (cerca ssh-/ecdsa-/sk- invece di primo spazio)

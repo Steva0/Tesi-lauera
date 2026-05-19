@@ -53,7 +53,7 @@ end
 
 La scelta di includere allowedSigners nel .sig — che è già firmato — garantisce che le chiavi autorizzate usate in fase di verifica siano esattamente quelle vigenti al momento del commit, e che non possano essere alterate successivamente. Questo risolve il problema della verifica storica: la revoca di un dipendente non invalida i commit prodotti prima della revoca, poiché le chiavi registrate nel loro .sig riflettono lo stato delle autorizzazioni vigente quando furono prodotti. Il campo recipients, analogo, serve alla cifratura al livello 4: elenca le chiavi SSH pubbliche dei destinatari autorizzati, consentendo al verificatore di controllarne la lista senza decifrare il file.
 
-== Integrità e ordine verificabile (RS01–RS04)
+== Integrità e ordine verificabile (RS01-RS04)
 
 I requisiti RS01 e RS02 erano già soddisfatti nella versione iniziale mediante la catena di hash cumulativi. L'intervento in questa categoria ha riguardato RS03 (unicità degli identificativi content-dependent) e RS04 (documentazione delle limitazioni).
 
@@ -95,7 +95,7 @@ os.Rename(zipPath, Strtran(zipPath, oldId, newId))
 
 È importante precisare cosa questa modifica garantisce e cosa no. Il suffisso content-dependent rende la sostituzione silenziosa rilevabile meccanicamente, ma la garanzia dell'ordine temporale assoluto rimane affidata al cumulativeHash: un sistema con orologio alterato può produrre timestamp arbitrari.
 
-== Autenticità e non ripudio (RS05–RS07)
+== Autenticità e non ripudio (RS05-RS07)
 
 #figure(caption: "Requisiti di autenticità")[
   #table(
@@ -192,7 +192,7 @@ Anche con la firma obbligatoria, un verificatore che riceve una #gl("repository"
 
 La soluzione è il campo rvcRootId in CommitValidation: al momento di ogni commit il motore recupera l'ID dell'ultimo commit di \_rvc_root e lo scrive nel .sig. Questo crea un legame crittografico tra ogni commit e lo stato delle autorizzazioni vigente in quel momento, rendendo la verifica storica accurata anche dopo cambi di personale o revoche di chiave.
 
-== Gestione delle identità (RS08–RS11)
+== Gestione delle identità (RS08-RS11)
 
 #figure(caption: "Requisiti di gestione identità")[
   #table(
@@ -299,9 +299,20 @@ rvc commit -master-key=C:\chiavi\master_key -dir=C:\stage\_rvc_root -repo=C:\sta
 
 La revoca di un'identità avviene tramite un commit amministrativo che rimuove la riga corrispondente da allowed_Dipendenti. A partire dal commit successivo, la chiave rimossa non è più autorizzata. I commit prodotti prima della revoca continuano a risultare validi perché il campo allowedSigners del loro .sig registra lo stato delle chiavi vigente al momento della firma.
 
-La successione di un responsabile segue lo stesso meccanismo, con il vincolo aggiuntivo che la modifica di allowed_Responsabili in \_rvc_root deve essere firmata con la chiave master. Il flusso prevede: checkout di \_rvc_root, modifica di allowed_Responsabili, commit con chiave master. Il nuovo responsabile diventa operativo a partire dal commit successivo.
+Un commit firmato con una chiave appena rimossa da `allowed_Dipendenti` viene rifiutato preventivamente da `CheckValidity` prima ancora di produrre il file ZIP:
 
-== Sicurezza configurabile (RS12–RS13)
+#terminal-io(
+  [rvc commit -author=ExDipendente -note="ultima modifica" \
+   -dir=C:\stage\work -repo=C:\stage\repo],
+  [ERROR:Autore "ExDipendente" non autorizzato: chiave non presente in allowed_Dipendenti.\
+   Commit annullato.]
+)
+
+I commit prodotti prima della revoca continuano invece a risultare validi in `VerifyIntegrity`: il campo `allowedSigners` nel `.sig` di ciascuno registra lo stato delle chiavi vigente al momento della firma, non quello attuale. La revoca non è retroattiva — è efficace dal commit successivo all'aggiornamento di `allowed_Dipendenti`, come richiesto da RS10.
+
+La successione di un responsabile segue lo stesso meccanismo, con il vincolo aggiuntivo che la modifica di `allowed_Responsabili` in `_rvc_root` deve essere firmata con la chiave master. Il flusso prevede: checkout di `_rvc_root`, modifica di `allowed_Responsabili`, commit con chiave master. Il nuovo responsabile diventa operativo a partire dal commit successivo.
+
+== Sicurezza configurabile (RS12-RS13)
 
 #figure(caption: "Requisiti di sicurezza configurabile")[
   #table(
@@ -354,7 +365,7 @@ La monotonicità del livello è implementata in `CheckValidity`: prima di accett
   [rvc commit -author=Michele -note="porto a livello 0" \
    -dir=C:\stage\test_work -repo=C:\stage\repo],
   [ERROR:Impossibile abbassare il livello di sicurezza da 2 a 0\
-   (RS11: livello non riducibile).]
+   (RS12: livello non riducibile).]
 )
 
 Questa scelta progettuale previene attacchi che tentano di degradare temporaneamente le garanzie di sicurezza per inserire commit senza firma.
@@ -420,7 +431,7 @@ Il verificatore `rvc integrity` può operare su progetti al livello 4 senza deci
    Risultato: 0 commit con problemi.]
 )
 
-== Gestione dei branch (RS14–RS15)
+== Gestione dei branch (RS14-RS15)
 
 #figure(caption: "Requisiti di gestione branch")[
   #table(
@@ -431,13 +442,81 @@ Il verificatore `rvc integrity` può operare su progetti al livello 4 senza deci
   )
 ]
 
-RS14 è stato soddisfatto tramite il campo branchStatus nel .sig e il file .rvc_branch_status nella directory di lavoro: un commit firmato da un Responsabile può marcare il branch come archived o compromised, impedendo qualsiasi commit ordinario successivo. RS15 è stato soddisfatto estendendo `CheckValidity` al confronto del file allowed_Dipendenti specifico per ogni branch.
+RS14 è stato soddisfatto tramite il campo branchStatus nel .sig e il file .rvc_branch_status nella directory di lavoro: un commit firmato da un Responsabile può marcare il branch come archived o compromised, impedendo qualsiasi commit ordinario successivo. RS15 è stato soddisfatto estendendo CheckValidity al confronto del file allowed_Dipendenti specifico per ogni branch, distinto da quello globale del progetto.
 
-Lo stato di un branch è tracciato nel campo branchStatus di ogni `CommitValidation` e nel file .rvc_branch_status. I valori possibili sono active, archived e compromised. Un branch marcato come archived o compromised non può ricevere nuovi commit ordinari. Il campo mergeFrom nel .sig registra il nome del branch sorgente nei commit di merge, permettendo al verificatore di controllare l'autorizzazione del merge.
+=== Controllo dello stato del branch in CheckValidity
 
-== Verificatore di integrità della catena (RS02, RS11)
+Il campo branchStatus viene letto direttamente dal .sig dell'ultimo commit del branch. CheckValidity controlla questo valore prima di qualsiasi altra verifica: se il branch risulta archived o compromised, il commit viene bloccato immediatamente, indipendentemente dall'identità del firmatario e dal livello di sicurezza del progetto.
 
-Il verificatore `rvc integrity` è il controllo post-hoc che completa il sistema: mentre `CheckValidity` agisce prima del commit come guardia preventiva, `VerifyIntegrity` può essere eseguito in qualsiasi momento — anche su una #gl("repository") ricevuta da un canale non fidato — per accertare l'integrità della catena dall'inizio alla fine.
+#figure(caption: "Controllo branchStatus in CheckValidity")[
+```cpl
+func bool CheckValidity(str path, str project,
+                        str author, str masterKey:=nil, str branch:=nil)
+  -- ...
+  -- Recupera l'ultimo commit del branch corrente e ne legge il .sig.
+  var str lastId  := RvcEngine.getLastCommit(project, branch, nil, repos, rp)
+  var str lastSig := getSignatureFileNameForExtraction(project, lastId, repos)
+  var CommitValidation lastCv := ReadCommitSignature(lastSig)
+
+  -- Blocca commit ordinari su branch non attivi.
+  -- Solo un commit firmato con chiave master puo' riaprire
+  -- un branch compromised (per documentare la chiusura dell'incidente).
+  if lastCv.branchStatus = 'archived'
+    rp.Error('Branch "' + branch + '" archiviato: nessun commit consentito.')
+    result := false
+    return
+  end
+  if lastCv.branchStatus = 'compromised'
+    rp.Error('Branch "' + branch + '" compromesso: solo la chiave master '
+           + 'puo'' produrre commit su questo branch.')
+    if masterKey = nil
+      result := false
+      return
+    end
+  end
+  -- ...
+```
+]
+
+Un tentativo di commit ordinario su un branch archiviato o compromesso produce un errore esplicito prima ancora che il file ZIP venga creato:
+
+#terminal-io(
+  [rvc commit -author=Michele -note="fix" \
+   -dir=C:\stage\work_feature -repo=C:\stage\repo],
+  [ERROR:Branch "feature-xyz" archiviato: nessun commit consentito.\
+   Commit annullato.]
+)
+
+#terminal-io(
+  [rvc commit -author=Michele -note="hotfix urgente" \
+   -dir=C:\stage\work_main -repo=C:\stage\repo],
+  [ERROR:Branch "main" compromesso: solo la chiave master puo' produrre commit su questo branch.\
+   Commit annullato.]
+)
+
+=== Autorizzazioni differenziate per branch (RS15)
+
+Per i branch con lista ristretta di autorizzati, CheckValidity cerca il file allowed_Dipendenti specifico del branch — archiviato con nome `allowed_Dipendenti.<branchName>` — prima di ricorrere a quello globale del progetto. Se esiste una lista branch-specifica, solo gli autori in quella lista possono fare commit su quel branch, anche se sono presenti nel file globale.
+
+Un dipendente autorizzato sul progetto ma escluso dalla lista ristretta del branch ottiene:
+
+#terminal-io(
+  [rvc commit -author=Ospite -note="contributo" \
+   -dir=C:\stage\work_main -repo=C:\stage\repo],
+  [ERROR:Autore "Ospite" non autorizzato sul branch "main".\
+   (allowed_Dipendenti.main non contiene questa identita')\
+   Commit annullato.]
+)
+
+=== Protezione dei file speciali durante il merge
+
+Il campo mergeFrom nel .sig registra il nome del branch sorgente nei commit di merge, consentendo al verificatore di controllare che il merge fosse autorizzato. La situazione più delicata riguarda però il contenuto del merge stesso: un utente che controlla il branch sorgente potrebbe costruire un commit che, integrato nel branch di destinazione, sovrascrive allowed_Dipendenti o .rvc_policy con valori a lui favorevoli — un'escalation di permessi mascherata da operazione di merge.
+
+Il motore risolve questo con un'eccezione esplicita nella logica di checkout in modalità merge: i file speciali (allowed_Dipendenti, .rvc_policy, allowed_Responsabili) del branch di destinazione vengono _sempre preservati_, anche se il branch sorgente li ha modificati. Le modifiche ai file speciali nel sorgente vengono scartate silenziosamente durante il merge e devono essere applicate separatamente con un commit amministrativo esplicito, firmato dal Responsabile del branch di destinazione. Questo garantisce che nessun merge possa elevare i propri permessi al di sopra di quelli del branch che lo accoglie.
+
+== Verificatore di integrità della catena (RS02, RS02, RS06)
+
+Il verificatore rvc integrity è il controllo post-hoc che completa il sistema: mentre CheckValidity agisce prima del commit come guardia preventiva, `VerifyIntegrity` può essere eseguito in qualsiasi momento — anche su una #gl("repository") ricevuta da un canale non fidato — per accertare l'integrità della catena dall'inizio alla fine.
 
 Per ogni commit nella catena, il verificatore controlla quattro proprietà in cascata:
 
@@ -706,3 +785,8 @@ L'output risultante è un messaggio leggibile al posto di un traceback interno:
 )
 
 La rinomina del flag `-vers` in `-allver` merita una nota: il parser CLI di #gl("rvc", capitalize: true) usa il prefisso come disambiguatore. Il flag `-vers` veniva interpretato come abbreviazione di `-ver` con valore `s`, producendo una ricerca della versione `"s"` nella #gl("repository") e un crash per `ArchiverByExt(nil)`. La rinomina in `-allver` elimina l'ambiguità senza alterare la funzionalità.
+
+=== Sintesi del soddisfacimento dei requisiti
+
+A conclusione degli interventi di miglioramento descritti, è possibile tracciare un quadro riassuntivo dello stato dei requisiti formali definiti nella @cap:modello-sicurezza. L'implementazione e l'integrazione dei controlli preventivi nel motore di #gl("rvc", capitalize: true), affiancate dallo sviluppo del verificatore post-hoc e del meccanismo di Redazione Trasparente, hanno permesso di colmare integralmente il divario riscontrato all'avvio dello stage.
+L'architettura proposta non si limita a fornire una protezione reattiva delegata a verifiche asincrone, ma converte i vincoli crittografici in barriere operative preventive, garantendo la conformità del sistema ai requisiti di sicurezza aziendali senza comprometterne la natura distribuita.

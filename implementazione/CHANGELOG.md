@@ -3,6 +3,24 @@
 Formato: `[DATA] FILE — descrizione sintetica della modifica`
 Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 
+[2026-05-19] rvc2/ProjectImage.cpl — BUGFIX CRITICO CheckValidity: specialFileChanged sempre true per commit delta (level 0); readFileFromCommit leggeva solo l'ultimo ZIP delta dove allowed_Dipendenti non c'era; sostituito con getFileFromHistory che attraversa tutta la catena di commit → commit successivi al primo ora funzionano correttamente
+[2026-05-19] rvc2/ProjectImage.cpl — BUGFIX VerifyIntegrity: crash "Unable to add name 'rcpDisp'" su progetti level 4; variabili rcpDisp/rcpDispSep/rcpDispLine/rcpDispSsh/rcpDispName dichiarate dentro un if (vietato in CPL); spostate a scope funzione
+[2026-05-19] rvc2/ProjectImage.cpl — SECURITY: VerifySignature: cv.author non quotato in cmd /c ssh-keygen -Y verify -I <author>; aggiunto: (1) validazione isValidAuthorName(cv.author) prima dell'exec; (2) doppi apici attorno al valore
+[2026-05-19] rvc2/ProjectImage.cpl — SECURITY: ageRcpKey injection: chiave con " nel valore potrebbe spezzare le virgolette nel comando age; aggiunto guard At('"', ageRcpKey)=0 prima di appendere il parametro -r
+[2026-05-19] rvc2/ProjectImage.cpl — SECURITY: checkout level 4 senza age-key: errormsg sovrascritta con fmc.errormsg=nil produceva ERROR:???; aggiunto guard (if fmc.errormsg <> nil) prima di sovrascrivere errormsg
+[2026-05-19] rvc2/ProjectImage.cpl — SECURITY: rimossi rp.Report('ERROR: ...') ridondanti dentro Checkout per level 4 (l'outer handler in rvc.cpl già stampa l'errore)
+[2026-05-19] rvc2/ProjectImage.cpl — ROBUSTEZZA: getManifest: aggiunto guard (if pkn = nil) prima di ArchiverByExt; -ver=NONEXISTENT o -ver=../evil davano crash invece di errore leggibile "Versione non trovata nel repository: ..."
+[2026-05-19] rvc2/ProjectImage.cpl — ROBUSTEZZA: NewProject: aggiunto errormsg := iif(fmc.errormsg <> nil, fmc.errormsg, 'Failed to create project first commit') → il messaggio di validazione (es. "Invalid project name: ...") ora arriva all'utente invece del generico
+[2026-05-19] rvc2/ProjectImage.cpl — ROBUSTEZZA: NewProject: aggiunta validazione projectName=nil/"" e level 0-4 PRIMA di toccare il filesystem; livello non valido (es. -level=9) ora dà errore chiaro
+[2026-05-19] rvc2/ProjectImage.cpl — ROBUSTEZZA: idem per InitRepo: rimossi rp.Error() interni (doppia stampa); errormsg già impostato, l'outer handler stampa una sola volta
+[2026-05-19] rvc2/RvcEngine.cpl — SECURITY: isValidProjectName, isValidAuthorName, isValidBranchName, isValidTagName: aggiunti limiti massimi di lunghezza (project/author/branch: 64 chars; tag: 128 chars); impedisce crash da Windows MAX_PATH su nomi lunghi centinaia di caratteri
+[2026-05-19] rvc.cpl — BUGFIX: -vers interpretato come -ver=s (param.Val('ver')='s'); rinominato flag in -allver per evitare collisione con il prefisso -ver=
+[2026-05-19] rvc.cpl — ROBUSTEZZA: comando file: aggiunto guard filePath=nil → errore "Parametro -file= obbligatorio" invece di crash in FindFile
+[2026-05-19] rvc.cpl — ROBUSTEZZA: comando redact: aggiunto ok:=false quando mancano -id/-range/-branch; aggiunto pre-flight check su -project= e -master-key= obbligatori; aggiunto "and ok" alle chiamate elseif Redact/RedactRange/RedactBranch
+[2026-05-19] rvc.cpl — SECURITY: path -dir= con " nel valore spezzerebbe le virgolette nel cmd /C mkdir di fallback; aggiunto guard At('"', path)>0 → errore "Il path di directory non può contenere il carattere "
+[2026-05-19] rvc2/Init.cpl — SECURITY: signWithKey: aggiunto guard At('"', keyPath)>0 → errore "Il path della chiave non può contenere il carattere"; difesa in profondità contro config file tamperata con keyPath malevolo
+[2026-05-19] rvc.cpl — SECURITY: syncRvcEnvVars: rvcHome scritto dentro $h = "..." in script PS1 generato; aggiunto guard At('"', rvcHome)>0 → errore prima di generare lo script; difesa contro rvc_home con " in config file
+
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: estrazione keytype SSH per age: cerca posizione di 'ssh-'/'ecdsa-'/'sk-' nel recipient invece di assumere nome=un token; supporta nomi con spazi (es. "Alice Foo-Bar")
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: dichiarazioni variabili (rcpNameEnd, ageRcpKey) spostate fuori dal while per rispettare scoping CPL
 [2026-05-18] rvc2/ProjectImage.cpl — RS12 fix: checkout con chiave errata/non autorizzata ora dà messaggio pulito invece di crash "Load on nil" (controlla swappedFiles.Len=0)
@@ -10,6 +28,9 @@ Ogni riga = una modifica atomica. Aggiornare ad ogni sessione di lavoro.
 [2026-05-18] rvc2/ProjectImage.cpl — getManifest: gestione level 4 ZIP cifrato; project name derivato da cvGm.fn se non passato esplicitamente; costruisce pmf minimale da .sig (project, ver, prev, author, note) senza aprire lo ZIP
 [2026-05-18] rvc.cpl — ReportInfo: mostra author e note; per level 4 (content=nil) mostra messaggio cifrato e salta lista file senza crash
 [2026-05-18] rvc2/ProjectImage.cpl — integrity e history: data commit (YYYY-MM-DD HH:MM) mostrata sempre affianco all'ID, decodificata dal timestamp base36
+[2026-05-18] rvc2/Init.cpl — copyPubKeyAsAllowedSigners: aggiunto parametro useAuthorAsName; per -op-key= singola usa il nome author come principal (non il commento della chiave); per file multi-utente (-signers=) usa il commento della chiave
+[2026-05-18] rvc2/ProjectImage.cpl — InitRepo: validazione anticipata di tutti i parametri obbligatori (-master-pub, -master-key, -op-key, -author) PRIMA di creare file; cleanup automatico se firma fallisce a metà
+[2026-05-18] rvc2/Init.cpl — aggiunta isPubKeyFile(): verifica che un file sia una chiave pubblica SSH (non privata); usata in InitRepo per -master-pub e -op-key
 [2026-05-18] rvc.cpl — history: author non usa più il default da config (solo filtro esplicito con -author=); fix bug che mostrava solo i commit dell'ultimo autore usato
 [2026-05-18] rvc.cpl — ReportInfo: aggiunta data/ora (YYYY-MM-DD HH:MM) accanto all'ID versione; tag sempre mostrato se presente
 [2026-05-18] rvc2/ProjectImage.cpl — Recording level 4: rimosso !isRecording dalla condizione di cifratura; recording cifrati con age come i commit normali

@@ -666,7 +666,7 @@ Lo scenario T5 aveva identificato quattordici situazioni in cui il motore produc
      [`ArchiverByExt(nil)` — path ZIP nil quando versione non trovata], [Guard `if pkn <> nil` in `getManifest` con messaggio esplicito],
      [Doppia stampa errore: `rp.Error()` sia in InitRepo sia nell'outer handler], [Rimossi tutti i `rp.Error()` interni; solo `errormsg` impostato],
      [`errormsg` sovrascritta con `nil` da `errormsg := fmc.errormsg`], [Guard `if fmc.errormsg <> nil` prima della sovrascrittura],
-     [Flag `-vers` interpretato come `-ver=s` dal parser CLI], [Rinominato in `-allver`],
+     [Flag `-vers` interpretato come `-ver=s`], [Rinominato in `-allver`],
      [Comandi eseguiti senza parametri obbligatori], [Guard all'ingresso con messaggi di errore espliciti],
   )
 ]

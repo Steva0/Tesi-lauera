@@ -15,7 +15,7 @@ Lo stage ha riguardato l'analisi della sicurezza di #gl("rvc", capitalize: true)
 \ \
 Il lavoro ha previsto lo studio delle tecnologie crittografiche alla base del sistema — chiavi #gl("ssh", capitalize: true) #gl("ed25519"), firma-digitale e cifratura asimmetrica con #gl("age") — seguito dalla definizione di un modello di sicurezza formale composto da quattordici requisiti classificati per priorità e tipologia. Il modello introduce una gerarchia di fiducia a tre livelli (amministratore, responsabile di progetto, dipendente), un progetto speciale `_rvc_root` come radice di fiducia verificabile autonomamente tramite chiave master, e cinque livelli di sicurezza configurabili per progetto — dall'accesso anonimo senza firma (livello 0) alla cifratura dei contenuti tramite #gl("age") (livello 4). Ogni commit è vincolato a una catena crittografica basata su un `cumulativeHash` progressivo che incorpora l'intera storia precedente, permettendo la verifica dell'ordine dei commit indipendentemente da qualsiasi server centrale.
 \ \
-Il lavoro include la simulazione di quattro scenari di attacco con livelli crescenti di accesso dell'attaccante — dall'esterno senza credenziali fino alla compromissione della chiave dell'amministratore — e la successiva implementazione dei miglioramenti nel codice sorgente in linguaggio #gl("cpl"). Tra le funzionalità realizzate figurano il verificatore di integrità della catena crittografica, il controllo preventivo delle autorizzazioni per progetto tramite file `allowed_Dipendenti` versionato, la protezione dei file speciali di configurazione e il meccanismo di redazione-trasparente per la rimozione forense di contenuti dalla storia. Gli stessi scenari di attacco vengono quindi ripetuti sulla versione aggiornata del sistema per documentare l'efficacia dei controlli introdotti.
+Il lavoro include la simulazione di quattro scenari di attacco con livelli crescenti di accesso dell'attaccante — dall'esterno senza credenziali fino alla compromissione della chiave dell'amministratore — e la successiva implementazione dei miglioramenti nel codice sorgente in linguaggio #gl("cpl"). Tra le funzionalità realizzate figurano il verificatore di integrità della catena crittografica, il controllo preventivo delle autorizzazioni per progetto tramite file allowed_Dipendenti versionato, la protezione dei file speciali di configurazione e il meccanismo di redazione-trasparente per la rimozione forense di contenuti dalla storia. Gli stessi scenari di attacco vengono quindi ripetuti sulla versione aggiornata del sistema per documentare l'efficacia dei controlli introdotti.
 \ \
 
 #linebreak()
@@ -40,8 +40,6 @@ Durante la stesura del testo sono state adottate le seguenti convenzioni tipogra
 
 - Gli acronimi, le abbreviazioni e i termini di uso non comune vengono definiti nel #link(<glossary>)[glossario], situato alla fine del documento (#link(<glossary>)[p. #context counter(page).at(<glossary>).at(0)]);
 - I termini presenti nel glossario sono indicati con la notazione: #gl("rvc", capitalize: true)\;
-- Le citazioni ad un libro o ad una risorsa presente nella #link(<bibliography>)[bibliografia] (#link(<bibliography>)[p. #context counter(page).at(<bibliography>).at(0)]) saranno affiancate dal rispettivo numero identificativo, es. $[1]$;
-
 - I termini in lingua straniera non di uso comune o appartenenti al gergo tecnico sono evidenziati in _corsivo_;
 - I nomi di funzioni, variabili o comandi sono scritti con carattere `monospaziato`;
 - I riferimenti bibliografici sono indicati con il numero identificativo della fonte, es. $[1]$;
@@ -49,7 +47,7 @@ Durante la stesura del testo sono state adottate le seguenti convenzioni tipogra
 #linebreak()
 #figure(caption: "Esempio di funzione CPL estratta dal sorgente di " + gl("rvc") + ".")[
 ```cpl
-proc ReportInfo(FileManifestPersistent fm, bool files:=false)
+proc ReportInfo(FileManifest fm, bool files:=false)
   if fm.tag <> nil
     ? '    tag:', fm.tag
   end

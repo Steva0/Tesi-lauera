@@ -22,18 +22,43 @@
     date: auto,
   )
 
-  // Codly bootstrap and setup
-  show: codly-init.with()
-  codly(
-    languages: (
-      ..codly-languages,
-      CPL: (name: "CPL", color: rgb("#6b9bd2"), icon: none),
-    ),
-    zebra-fill: gray.lighten(90%)
+  show raw: set text(font: "DejaVu Sans Mono", size: 9pt)
+  show raw.where(block: true): it => {
+    let badge = if it.lang == "cpl" {
+      box(
+        fill: rgb("#6b9bd2"),
+        radius: 2pt,
+        inset: (x: 6pt, y: 2pt),
+        text(size: 7pt, fill: white, weight: "bold", "cpl"),
+      )
+    }
+    block(
+      width: 100%,
+      fill: rgb(248, 248, 248),
+      stroke: (left: 3pt + rgb("#6b9bd2")),
+      radius: 3pt,
+      inset: (x: 1em, y: 0.5em),
+      {
+        if badge != none {
+          place(top + right, badge)
+        }
+        
+        set par(leading: 0.45em, spacing: 0.45em, justify: false)
+        set align(left) 
+        v(0.7em) 
+        it
+        v(0.7em) 
+      },
+    )
+  }
+  show raw.where(block: false): it => box(
+    fill: rgb("#eef5fc"),
+    inset: (x: 3pt, y: 0pt), 
+    outset: (y: 3pt), 
+    radius: 2pt, 
+    text(fill: rgb("#021122"), weight: 300 , it) 
   )
 
-  // Page and typography settings
-  // Interlinea 1.5 come da specifiche FIUP
   set page(
     margin: 3cm,
     numbering: myNumbering,
@@ -50,9 +75,6 @@
     size: 11pt,
   )
   set heading(numbering: myNumbering)
-
-  // Codice monospaziato
-  show raw: set text(font: "DejaVu Sans Mono", size: 10pt)
 
   // Spaziatura headings — struttura accessibile
   show heading: set block(above: 2em, below: 1.4em)

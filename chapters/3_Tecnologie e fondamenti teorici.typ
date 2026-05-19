@@ -63,7 +63,7 @@ Gli algoritmi crittografici moderni si basano su problemi matematici computazion
 #gl("ssh", capitalize: true) supporta due modalità principali di autenticazione: tramite password e tramite coppia di chiavi. L'autenticazione con chiavi è considerata più sicura e viene raccomandata in tutti i contesti professionali. Il funzionamento è il seguente:
 
 + L'utente genera una coppia di chiavi con `ssh-keygen`.
-+ La chiave-pubblica viene copiata sul server remoto, nella cartella `~/.ssh/authorized_keys`.
++ La chiave-pubblica viene copiata sul server remoto, nella cartella ~/.ssh/authorized_keys.
 + Al momento della connessione, il server invia una sfida cifrata con la chiave-pubblica dell'utente.
 + Il client dimostra di possedere la chiave-privata corrispondente risolvendo la sfida.
 + La connessione viene stabilita senza che la chiave-privata abbia mai lasciato il client.
@@ -172,7 +172,7 @@ Un _commit_ #gl("git", capitalize: true) contiene: il riferimento all'albero dei
   )
 ]
 
-La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni commit produce un file `.sig` che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un commit invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nella @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
+La differenza più significativa riguarda la sicurezza: mentre in #gl("git", capitalize: true) la firma è un'opzione che il singolo sviluppatore può scegliere di abilitare o meno, in #gl("rvc", capitalize: true) è parte del modello stesso. Ogni commit produce un file .sig che contiene gli #gl("hash") crittografici del contenuto e della catena precedente, costruendo una struttura analoga a una _blockchain_: modificare un commit invalida tutti quelli successivi perché l'hash cumulativo non corrisponde più. Il modello di sicurezza proposto nella @cap:modello-sicurezza estende questa struttura con campi aggiuntivi per supportare la gerarchia di fiducia, i livelli di sicurezza configurabili e la gestione degli incidenti.
 
 == RVC: architettura e funzionamento
 
@@ -180,7 +180,7 @@ La differenza più significativa riguarda la sicurezza: mentre in #gl("git", cap
 
 Una _repository_ #gl("rvc", capitalize: true) è una semplice cartella sul filesystem, senza strutture dati complesse o indici da mantenere. Ogni _commit_ è rappresentato da due file:
 
-- Un archivio *ZIP* contenente il _commit_ del progetto nella versione corrispondente, incluso il file `.FileManifest` che descrive lo stato di tutti i file tracciati.
+- Un archivio *ZIP* contenente il _commit_ del progetto nella versione corrispondente, incluso il file .FileManifest che descrive lo stato di tutti i file tracciati.
 - Un file *.sig* contenente i metadati del commit e la firma #gl("ssh", capitalize: true), la cui apposizione è opzionale nella versione iniziale del sistema.
 
 I file seguono una convenzione di denominazione che codifica la struttura della storia:
@@ -190,11 +190,11 @@ I file seguono una convenzione di denominazione che codifica la struttura della 
 <progetto>.<id>.sig
 ```
 
-L'`id` è un timestamp codificato in #gl("base36") (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
+L'id è un timestamp codificato in #gl("base36") (cifre 0-9 e lettere A-Z), che permette l'ordinamento cronologico dei commit semplicemente confrontando i nomi dei file. Il riferimento al commit precedente è incorporato nel nome del file ZIP, rendendo la struttura della storia navigabile senza alcun indice aggiuntivo.
 
 === Il file .sig e la blockchain degli hash
 
-Il file `.sig` è il cuore del sistema di sicurezza di #gl("rvc", capitalize: true). Contiene in formato binario proprietario i seguenti campi:
+Il file .sig è il cuore del sistema di sicurezza di #gl("rvc", capitalize: true). Contiene in formato binario proprietario i seguenti campi:
 
 - `author`: il nome dell'autore del commit
 - `comment`: il messaggio del commit
@@ -205,14 +205,14 @@ Il file `.sig` è il cuore del sistema di sicurezza di #gl("rvc", capitalize: tr
 - `prevHash`: lo SHA256 del file ZIP del commit precedente
 - `cumulativeHash`: lo SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` del commit precedente
 
-Il `cumulativeHash` è la chiave della sicurezza: ogni commit incorpora crittograficamente l'intera storia precedente. Verificare che il `cumulativeHash` di un commit sia corretto significa verificare implicitamente che tutti i commit precedenti siano integri.
+Il cumulativeHash è la chiave della sicurezza: ogni commit incorpora crittograficamente l'intera storia precedente. Verificare che il cumulativeHash di un commit sia corretto significa verificare implicitamente che tutti i commit precedenti siano integri.
 
 #figure(
   image("../images/cumulative_hash.png", width: 80%),
   caption: "Struttura del file .sig e la catena degli hash cumulativi"
 )
 
-Dopo i metadati, il file `.sig` contiene una firma #gl("ssh", capitalize: true) nel formato standard:
+Dopo i metadati, il file .sig contiene una firma #gl("ssh", capitalize: true) nel formato standard:
 
 ```
 -----BEGIN SSH SIGNATURE-----
@@ -228,9 +228,9 @@ Questi sono i campi presenti nella versione attuale di #gl("rvc", capitalize: tr
 
 #gl("rvc", capitalize: true) è scritto in *#gl("cpl", capitalize: true)* (_CodePainter Language_), un linguaggio proprietario sviluppato da Zucchetti S.p.A. #gl("cpl", capitalize: true) è un linguaggio interpretato tipizzato staticamente, con supporto a classi, moduli e gestione dei file. Viene eseguito tramite un interprete (`cpl.exe`) che supporta sia interpretazione diretta che compilazione #gl("jit", capitalize: true).
 
-Le caratteristiche principali che distinguono #gl("cpl", capitalize: true) dai linguaggi comuni includono la sintassi di assegnazione con `:=`, l'assenza dell'istruzione `return` esplicita (si usa invece la variabile implicita `result`), la dichiarazione obbligatoria di tutte le variabili in cima alla funzione prima di qualsiasi blocco di codice, e la distinzione tra `func` (funzione con valore di ritorno) e `proc` (procedura senza valore di ritorno).
+Le caratteristiche principali che distinguono #gl("cpl", capitalize: true) dai linguaggi comuni includono la sintassi di assegnazione con `:=`, l'assenza dell'istruzione `return` esplicita (si usa invece la variabile implicita `result`), la dichiarazione obbligatoria di tutte le variabili in cima alla funzione prima di qualsiasi blocco di codice, e la distinzione tra `func` (funzione con valore di ritorno) e proc (procedura senza valore di ritorno).
 
-Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi moduli #gl("cpl", capitalize: true), ciascuno con responsabilità ben definite: `ProjectImage.cpl` contiene la logica ad alto livello, `RvcEngine.cpl` gestisce la #gl("repository") fisica, `FileManifest.cpl` gestisce il #gl("manifest") dei file tracciati.
+Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi moduli #gl("cpl", capitalize: true), ciascuno con responsabilità ben definite: ProjectImage.cpl contiene la logica ad alto livello, RvcEngine.cpl gestisce la #gl("repository") fisica, FileManifest.cpl gestisce il #gl("manifest") dei file tracciati.
 
 #figure(
   image("../images/struttura_rvc.png", width: 110%),
@@ -241,12 +241,12 @@ Il codice sorgente di #gl("rvc", capitalize: true) è organizzato in diversi mod
 
 Quando un utente esegue `rvc commit`, il sistema esegue i seguenti passi:
 
-+ Legge il file `.FileManifest` nella cartella di lavoro per conoscere lo stato corrente del progetto.
++ Legge il file .FileManifest nella cartella di lavoro per conoscere lo stato corrente del progetto.
 + Scansiona la directory e calcola le differenze rispetto allo stato precedente.
-+ Crea un archivio ZIP con i file modificati e il nuovo `.FileManifest`.
++ Crea un archivio ZIP con i file modificati e il nuovo .FileManifest.
 + Calcola lo SHA256 dell'archivio ZIP.
-+ Recupera l'hash e il `cumulativeHash` del commit precedente dal suo file `.sig`.
-+ Calcola il nuovo `cumulativeHash` come SHA256 della concatenazione dell'hash attuale con il `cumulativeHash` precedente.
-+ Crea il file `.sig` con tutti i metadati.
-+ Esegue `ssh-keygen -Y sign` per firmare il file `.sig` e accoda la firma al file.
++ Recupera l'hash e il cumulativeHash del commit precedente dal suo file .sig.
++ Calcola il nuovo cumulativeHash come SHA256 della concatenazione dell'hash attuale con il cumulativeHash precedente.
++ Crea il file .sig con tutti i metadati.
++ Esegue `ssh-keygen -Y sign` per firmare il file .sig e accoda la firma al file.
 + Copia i due file nella #gl("repository").
